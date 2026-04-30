@@ -1,4 +1,4 @@
-package com.vampyrelord.w2t.solutionft
+package com.vampyreworld.w2t.solutionft
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

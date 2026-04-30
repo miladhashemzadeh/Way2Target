@@ -1,4 +1,4 @@
-package com.vampyrelord.w2t.solutionft
+package com.vampyreworld.w2t.solutionft
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.vampyrelord.w2t.solution.test", appContext.packageName)
+        assertEquals("com.vampyreworld.w2t.solutionft.test", appContext.packageName)
     }
 }
