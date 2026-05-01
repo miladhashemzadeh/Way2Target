@@ -6,6 +6,9 @@ data class Decision(
     val solutionId: Long?,
     val title: String,
     val desc: String,
+    val energyCost: Byte,
+    val timeCost: Byte,
+    val moneyCost: Byte,
     val userRate: Byte,
     val appRate: Byte,
 ): WayNode
