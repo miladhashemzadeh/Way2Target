@@ -30,7 +30,7 @@ sealed class Screens {
     @Serializable
     data object Preferences : Screens()
     @Serializable
-    data object Landing : Screens()
+    data object OnBoarding : Screens()
     @Serializable
     data object Splash : Screens()
     @Serializable
