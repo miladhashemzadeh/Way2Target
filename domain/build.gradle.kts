@@ -31,7 +31,7 @@ kotlin {
     // A step-by-step guide on how to include this library in an XCode
     // project can be found here:
     // https://developer.android.com/kotlin/multiplatform/migrate
-    val xcfName = "domainsKit"
+    val xcfName = "domainKit"
 
     iosX64 {
         binaries.framework {
@@ -50,6 +50,7 @@ kotlin {
             baseName = xcfName
         }
     }
+    jvm()
 
     // Source set declarations.
     // Declaring a target automatically creates a source set with the same name. By default, the

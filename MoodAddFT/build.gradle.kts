@@ -50,7 +50,7 @@ kotlin {
             baseName = xcfName
         }
     }
-
+    jvm()
     // Source set declarations.
     // Declaring a target automatically creates a source set with the same name. By default, the
     // Kotlin Gradle Plugin creates additional source sets that depend on each other, since it is
@@ -62,9 +62,8 @@ kotlin {
                 implementation(libs.kotlin.stdlib)
                 implementation(project(":sharedUI"))
                 implementation(project(":di"))
-                implementation(project(":domains"))
-                implementation(libs.haze)
-                implementation(libs.haze.blur)
+                implementation(project(":domain"))
+
 
             }
         }
@@ -77,6 +76,8 @@ kotlin {
 
         androidMain {
             dependencies {
+                implementation(libs.haze)
+                implementation(libs.haze.blur)
                 // Add Android-specific dependencies here. Note that this source set depends on
                 // commonMain by default and will correctly pull the Android artifacts of any KMP
                 // dependencies declared in commonMain.

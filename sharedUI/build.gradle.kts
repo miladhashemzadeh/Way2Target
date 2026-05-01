@@ -53,7 +53,7 @@ kotlin {
             baseName = xcfName
         }
     }
-
+    jvm()
     // Source set declarations.
     // Declaring a target automatically creates a source set with the same name. By default, the
     // Kotlin Gradle Plugin creates additional source sets that depend on each other, since it is
@@ -73,8 +73,6 @@ kotlin {
                 api(libs.androidx.navigation.compose)
                 api(libs.androidx.lifecycle.runtimeCompose)
                 api(libs.coil.compose)
-                implementation(libs.haze)
-                implementation(libs.haze.blur)
                 api(libs.kotlinx.coroutines.core)
                 implementation(libs.compose.components.resources)
 
