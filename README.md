@@ -1,48 +1,32 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Desktop (JVM).
+# Way2Target
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+Way2Target is a self-growth lifestyle app that helps users improve their lives by guiding them toward their personal goals.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+## 🚀 Features
 
-### Build and Run Android Application
+- 🎯 **Goal Selection**  
+  Choose a goal and define your path to success.
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+- 📈 **Progress Guidance**  
+  Discover actionable steps to improve and move forward.
 
-### Build and Run Desktop (JVM) Application
+- 🧠 **Challenge Support**  
+  Get help when facing obstacles or difficult situations.
 
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
+- 🛠️ **Practical Strategies**  
+  Learn and apply effective strategies to overcome challenges.
 
-### Build and Run iOS Application
+## 💡 How It Works
 
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+1. Select a personal goal.
+2. Explore tailored recommendations to achieve it.
+3. Track your progress and adjust your approach.
+4. Access support and strategies whenever you face difficulties.
+
+## 📌 Purpose
+
+Way2Target is designed to empower individuals to stay focused, grow continuously, and confidently navigate life’s challenges.
 
 ---
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+> Build your path. Achieve your goals. Become your best self.
