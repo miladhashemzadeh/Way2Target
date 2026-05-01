@@ -60,7 +60,12 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                implementation(project(":sharedUI"))
+                implementation(project(":di"))
+                implementation(project(":domains"))
+                implementation(libs.haze)
+                implementation(libs.haze.blur)
+
             }
         }
 

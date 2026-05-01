@@ -1,10 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
-    alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
@@ -13,7 +10,7 @@ kotlin {
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
     androidLibrary {
-        namespace = "com.vampyreworld.w2t.sharedui"
+        namespace = "com.vampyreworld.w2t.domain"
         compileSdk = 36
         minSdk = 24
 
@@ -34,7 +31,7 @@ kotlin {
     // A step-by-step guide on how to include this library in an XCode
     // project can be found here:
     // https://developer.android.com/kotlin/multiplatform/migrate
-    val xcfName = "sharedUIKit"
+    val xcfName = "domainsKit"
 
     iosX64 {
         binaries.framework {
@@ -63,21 +60,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                api(libs.compose.runtime)
-                api(libs.compose.foundation)
-                api(libs.compose.material3)
-                api(libs.compose.ui)
-                api(libs.compose.components.resources)
-                api(libs.compose.uiToolingPreview)
-                api(libs.androidx.lifecycle.viewmodelCompose)
-                api(libs.androidx.navigation.compose)
-                api(libs.androidx.lifecycle.runtimeCompose)
-                api(libs.coil.compose)
-                implementation(libs.haze)
-                implementation(libs.haze.blur)
-                api(libs.kotlinx.coroutines.core)
-                implementation(libs.compose.components.resources)
-
+                // Add KMP dependencies here
             }
         }
 

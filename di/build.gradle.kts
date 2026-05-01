@@ -60,7 +60,10 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                implementation(project(":domains"))
+                implementation(project(":data"))
+                implementation(libs.koin.core)
+
             }
         }
 
