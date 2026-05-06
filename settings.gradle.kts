@@ -3,12 +3,12 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
-        google()
+        /*google()
         mavenCentral()
         gradlePluginPortal()
-        maven { url = uri("https://jitpack.io") }
+        maven { url = uri("https://jitpack.io") }*/
         maven {
-            url = uri("https://maven.myket.ir")
+            url = uri("https://maven.myket.ir")//fuck irgc
         }
 
     }
@@ -16,10 +16,10 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
-        google()
+        /*google()
         mavenCentral()
         gradlePluginPortal()
-        maven { url = uri("https://jitpack.io") }
+        maven { url = uri("https://jitpack.io") }*/
         maven {
             url = uri("https://maven.myket.ir")
         }
@@ -33,18 +33,13 @@ plugins {
 include(":composeApp")
 include(":core")
 include(":data")
-include(":domain")
 include(":di")
 include(":TargetFT")
 include(":sharedUI")
-include(":Solution")
 include(":SolutionFT")
 include(":composeApp:navigation")
 include(":ChallengeFT")
 include(":SChallengeFT")
-include(":SChallengeAddFT")
-include(":SolutionAddFT")
-include(":TargetAddFT")
 include(":MoodAddFT")
 include(":DecissionMakingFT")
-include(":PrefrencesFT")
+include(":domain")

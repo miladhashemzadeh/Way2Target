@@ -1,7 +1,10 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
@@ -50,7 +53,7 @@ kotlin {
             baseName = xcfName
         }
     }
-
+    jvm()
     // Source set declarations.
     // Declaring a target automatically creates a source set with the same name. By default, the
     // Kotlin Gradle Plugin creates additional source sets that depend on each other, since it is
@@ -60,7 +63,19 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                api(libs.compose.runtime)
+                api(libs.compose.foundation)
+                api(libs.compose.material3)
+                api(libs.compose.ui)
+                api(libs.compose.components.resources)
+                api(libs.compose.uiToolingPreview)
+                api(libs.androidx.lifecycle.viewmodelCompose)
+                api(libs.androidx.navigation.compose)
+                api(libs.androidx.lifecycle.runtimeCompose)
+                api(libs.coil.compose)
+                api(libs.kotlinx.coroutines.core)
+                implementation(libs.compose.components.resources)
+
             }
         }
 

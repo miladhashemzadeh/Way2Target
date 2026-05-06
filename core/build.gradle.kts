@@ -50,7 +50,7 @@ kotlin {
             baseName = xcfName
         }
     }
-
+    jvm()
     // Source set declarations.
     // Declaring a target automatically creates a source set with the same name. By default, the
     // Kotlin Gradle Plugin creates additional source sets that depend on each other, since it is
@@ -60,7 +60,9 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                implementation(project(":sharedUI"))
+                implementation(libs.kotlinx.serialization.json)
+
             }
         }
 
