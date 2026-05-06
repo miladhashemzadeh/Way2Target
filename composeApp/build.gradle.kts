@@ -46,6 +46,8 @@ kotlin {
             implementation(project(":SolutionFT"))
             implementation(project(":TargetFT"))
             implementation(project(":DecissionMakingFT"))
+            implementation(project(":PrefrencesFT"))
+
 
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
