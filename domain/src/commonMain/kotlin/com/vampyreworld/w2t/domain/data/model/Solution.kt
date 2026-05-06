@@ -5,11 +5,9 @@ data class Solution(
     val title: String,
     val desc: String,
     val solutionType: SolutionType,
-    val moneyCost: String,
-    val energyCost: Byte,
-    val timeCost: Byte,
-    val powerToAid: Long,
-    val result: SolutionResult = SolutionResult.UNKNOWN
+    val cost: Cost,
+    val aidStrength: Int,               //how much this solution advances the goal (0–100)
+    val result: SolutionResult = SolutionResult.UNKNOWN,
 )
 
 enum class SolutionType {

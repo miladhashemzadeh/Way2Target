@@ -1,15 +1,18 @@
 package com.vampyreworld.w2t.domain.data.model
 
 data class Goal(
-    val id:Long,
-    val upperGoalId:Long?,
-    val lowerGoalId:Long?,
-    val priority: GoalPriority,
+    val id: Long,
+    val upperGoalId: Long?,
+    val childGoalIds: List<Long>,
+    val tier: GoalTier,
     val isSkill: Boolean,
-    val treeOfWay: Map<Long, String>?,
-    val walkedWay: List<WayNode>?,
+    val wayIds: List<Long>,
+    val walkedWayId: Long?,
 )
 
-enum class GoalPriority {
-    MASTER,MILESTONE,ACTION
+
+enum class GoalTier {
+    MASTER,
+    MILESTONE,
+    ACTION
 }
