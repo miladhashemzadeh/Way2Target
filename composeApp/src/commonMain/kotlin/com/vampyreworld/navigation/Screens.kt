@@ -28,7 +28,13 @@ sealed class Screens {
     @Serializable
     data object AddChallenge : Screens()
     @Serializable
+    data object Preferences : Screens()
+    @Serializable
+    data object OnBoarding : Screens()
+    @Serializable
     data object Splash : Screens()
+    @Serializable
+    data object Home : Screens()
     @Serializable
     data object AddMood : Screens()
     @Serializable
