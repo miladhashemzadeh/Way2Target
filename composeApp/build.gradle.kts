@@ -41,6 +41,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(project(":di"))
+            implementation(project(":sharedUI"))
             implementation(project(":MoodAddFT"))
             implementation(project(":SChallengeFT"))
             implementation(project(":SolutionFT"))
