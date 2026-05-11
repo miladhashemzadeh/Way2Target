@@ -7,6 +7,7 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.vampyreworld.w2t.root.RootComponent
 import com.vampyreworld.w2t.sharedui.theme.W2TTheme
+import com.vampyreworld.w2t.targetft.ui.TargetScreen
 
 @Composable
 fun App(root: RootComponent) {
@@ -21,6 +22,9 @@ fun App(root: RootComponent) {
                 }
                 is RootComponent.Child.Home -> {
                     Text("Home Screen")
+                }
+                is RootComponent.Child.Target -> {
+                    TargetScreen(child.component)
                 }
             }
         }
