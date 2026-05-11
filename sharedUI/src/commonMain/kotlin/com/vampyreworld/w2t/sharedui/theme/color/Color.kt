@@ -6,8 +6,8 @@ import androidx.compose.ui.graphics.Color
 // BASE COLORS (DEFINED DIRECTLY)
 // ======================================================
 
-val primary100 = Color(0xFF39608F)
-val Secondary = Color(0xFF2B6A46)
+val primary100 = Color(0x1e88E5FF)
+val Secondary = Color(0x35d687FF)
 
 val Primary80 = primary100.copy(alpha = .8f)
 val Primary60 = primary100.copy(alpha = .6f)
@@ -168,7 +168,7 @@ val primaryContainerDark = Color(0xFF1D4875)
 val outlineDark = Color(0xFF8D9199)
 val outlineVariantDark = Color(0xFF43474E)
 
-val backgroundDark = Color(0xFF111418)
+val backgroundDark = Color(0xFF1e1e1e)
 
 val inversePrimaryDark = Color(0xFF39608F)
 
@@ -176,13 +176,13 @@ val inversePrimaryDark = Color(0xFF39608F)
 // CUSTOM DARK COLORS
 // ======================================================
 
-val customColor1Dark = Color(0xFF94D5A9)
+val customColor1Dark = Color(0xd7ecef)
 val customColor1ContainerDark = Color(0xFF0C5130)
 
-val customColor2Dark = Color(0xFFF6BC70)
+val customColor2Dark = Color(0xD8FBEA)
 val customColor2ContainerDark = Color(0xFF643F00)
 
-val customColor3Dark = Color(0xFF9ACBFA)
+val customColor3Dark = Color(0xffb347FF)
 val customColor3ContainerDark = Color(0xFF0B4A72)
 
 val customColor4Dark = Color(0xFF8CCFF1)
