@@ -6,6 +6,8 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
 import com.vampyreworld.navigation.Screens
+import com.vampyreworld.w2t.targetft.component.DefaultTargetComponent
+import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import kotlinx.serialization.Serializable
 
 class DefaultRootComponent(
@@ -27,6 +29,12 @@ class DefaultRootComponent(
         when (config) {
             is Screens.Splash -> RootComponent.Child.Splash(object : RootComponent.SplashComponent {})
             is Screens.Home -> RootComponent.Child.Home(object : RootComponent.HomeComponent {})
-            else -> RootComponent.Child.Splash(object : RootComponent.SplashComponent {}) // Fallback
+            is Screens.Goal -> RootComponent.Child.Target(
+                DefaultTargetComponent(
+                    componentContext = componentContext,
+                    storeFactory = DefaultStoreFactory()
+                )
+            )
+            else -> RootComponent.Child.Splash(object : RootComponent.SplashComponent {})
         }
 }
