@@ -38,8 +38,10 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.decompose.android)
         }
         commonMain.dependencies {
+            implementation(project(":core"))
             implementation(project(":di"))
             implementation(project(":sharedUI"))
             implementation(project(":MoodAddFT"))

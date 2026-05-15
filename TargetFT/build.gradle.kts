@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
 }
@@ -63,7 +65,7 @@ kotlin {
                 implementation(project(":sharedUI"))
                 implementation(project(":di"))
                 implementation(project(":domain"))
-
+                implementation(project(":core"))
 
             }
         }
