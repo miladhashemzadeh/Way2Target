@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
 }
@@ -50,6 +52,7 @@ kotlin {
             baseName = xcfName
         }
     }
+    jvm()
 
     // Source set declarations.
     // Declaring a target automatically creates a source set with the same name. By default, the
@@ -60,7 +63,11 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
+                implementation(libs.decompose)
+                implementation(project(":sharedUI"))
+                implementation(project(":di"))
+                implementation(project(":domain"))
+                implementation(project(":core"))
             }
         }
 
@@ -75,6 +82,8 @@ kotlin {
                 // Add Android-specific dependencies here. Note that this source set depends on
                 // commonMain by default and will correctly pull the Android artifacts of any KMP
                 // dependencies declared in commonMain.
+                implementation(libs.haze)
+                implementation(libs.haze.blur)
             }
         }
 

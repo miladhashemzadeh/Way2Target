@@ -49,6 +49,10 @@ kotlin {
             implementation(project(":DecissionMakingFT"))
             implementation(project(":PrefrencesFT"))
 
+            implementation(libs.decompose)
+            implementation(libs.decompose.extensions.compose)
+            implementation(libs.mvikotlin.main)
+            implementation(libs.mvikotlin.logging)
 
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
