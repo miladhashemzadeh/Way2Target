@@ -38,7 +38,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
-            implementation(libs.koin.android)
+            implementation(libs.koin.android.lib)
         }
         commonMain.dependencies {
             implementation(project(":di"))

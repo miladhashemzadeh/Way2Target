@@ -2,10 +2,10 @@ package com.vampyreworld.w2t.di
 
 import com.vampyreworld.w2t.domain.usecase.*
 import org.koin.core.context.startKoin
-import org.koin.core.context.GlobalContext
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
+import org.koin.mp.KoinPlatformTools
 
 val useCaseModule = module {
     factoryOf(::GetGoalsUseCase)
@@ -19,7 +19,7 @@ val useCaseModule = module {
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
-    if (GlobalContext.getOrNull() == null) {
+    if (KoinPlatformTools.defaultContext().getOrNull() == null) {
         startKoin {
             appDeclaration()
             modules(useCaseModule)
