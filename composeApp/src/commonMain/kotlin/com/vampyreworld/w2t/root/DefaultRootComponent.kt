@@ -20,10 +20,12 @@ import com.vampyreworld.w2t.schallengeft.DefaultSChallengeComponent
 import com.vampyreworld.w2t.solutionft.DefaultSolutionComponent
 import com.vampyreworld.w2t.splash.DefaultSplashComponent
 import com.vampyreworld.w2t.targetft.component.DefaultTargetComponent
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 class DefaultRootComponent(
     componentContext: ComponentContext
-) : RootComponent, ComponentContext by componentContext {
+) : RootComponent, KoinComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<Screens>()
 
@@ -69,6 +71,8 @@ class DefaultRootComponent(
             is Screens.Goal -> RootComponent.Child.Target(
                 DefaultTargetComponent(
                     componentContext = componentContext,
+                    getGoalsUseCase = get(),
+                    saveGoalUseCase = get(),
                     onBack = { navigation.pop() }
                 )
             )
@@ -76,6 +80,8 @@ class DefaultRootComponent(
             is Screens.AddMood -> RootComponent.Child.MoodAdd(
                 DefaultMoodAddComponent(
                     componentContext = componentContext,
+                    addMoodUseCase = get(),
+                    getMoodHistoryUseCase = get(),
                     onBack = { navigation.pop() }
                 )
             )
@@ -83,6 +89,8 @@ class DefaultRootComponent(
             is Screens.AddChallenge -> RootComponent.Child.SChallenge(
                 DefaultSChallengeComponent(
                     componentContext = componentContext,
+                    addChallengeUseCase = get(),
+                    getChallengesUseCase = get(),
                     onBack = { navigation.pop() }
                 )
             )
@@ -90,6 +98,7 @@ class DefaultRootComponent(
             is Screens.DecisionMaking -> RootComponent.Child.DecisionMaking(
                 DefaultDecisionMakingComponent(
                     componentContext = componentContext,
+                    makeDecisionUseCase = get(),
                     onBack = { navigation.pop() }
                 )
             )
@@ -97,6 +106,7 @@ class DefaultRootComponent(
             is Screens.AddSolution -> RootComponent.Child.Solution(
                 DefaultSolutionComponent(
                     componentContext = componentContext,
+                    addSolutionUseCase = get(),
                     onBack = { navigation.pop() }
                 )
             )

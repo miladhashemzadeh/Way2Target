@@ -4,9 +4,11 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
+import com.vampyreworld.w2t.di.initKoin
 import com.vampyreworld.w2t.root.DefaultRootComponent
 
 fun main() {
+    initKoin()
     val lifecycle = LifecycleRegistry()
     val root = DefaultRootComponent(DefaultComponentContext(lifecycle))
 

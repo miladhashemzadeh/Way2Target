@@ -38,9 +38,11 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(project(":di"))
+            implementation(project(":domain"))
             implementation(project(":sharedUI"))
             implementation(project(":MoodAddFT"))
             implementation(project(":SChallengeFT"))
@@ -51,8 +53,6 @@ kotlin {
 
             implementation(libs.decompose)
             implementation(libs.decompose.extensions.compose)
-            implementation(libs.mvikotlin.main)
-            implementation(libs.mvikotlin.logging)
 
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
@@ -60,8 +60,6 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.navigation.compose)
 
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.serialization.json)
