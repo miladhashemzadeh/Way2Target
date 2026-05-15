@@ -45,5 +45,6 @@ sealed class Screens {
     data class Goal(val goalId: String?): Screens()
     @Serializable
     data object AddGoal : Screens()
-
+    @Serializable
+    data object AboutUs : Screens()
 }
