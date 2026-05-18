@@ -63,7 +63,7 @@ kotlin {
                 implementation(project(":data"))
                 implementation(project(":domain"))
 
-                implementation(libs.koin.core)
+                api(libs.koin.core)
 
             }
         }

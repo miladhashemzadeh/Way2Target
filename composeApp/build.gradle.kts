@@ -38,9 +38,12 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.decompose.android)
+            implementation(libs.koin.android)
             implementation(libs.koin.android.lib)
         }
         commonMain.dependencies {
+            implementation(project(":core"))
             implementation(project(":di"))
             implementation(project(":domain"))
             implementation(project(":sharedUI"))

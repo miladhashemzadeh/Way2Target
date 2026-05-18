@@ -63,6 +63,11 @@ kotlin {
                 implementation(project(":sharedUI"))
                 implementation(libs.kotlinx.serialization.json)
 
+                api(libs.decompose)
+                api(libs.decompose.extensions.compose)
+                api(libs.mvikotlin)
+                api(libs.mvikotlin.main)
+                api(libs.mvikotlin.extensions.coroutines)
             }
         }
 

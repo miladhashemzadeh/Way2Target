@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
 }
@@ -10,7 +12,7 @@ kotlin {
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
     androidLibrary {
-        namespace = "com.vampyreLord.w2t.shomeft"
+        namespace = "com.vampyreworld.w2t.shomeft"
         compileSdk = 36
         minSdk = 24
 
@@ -50,6 +52,7 @@ kotlin {
             baseName = xcfName
         }
     }
+    jvm()
 
     // Source set declarations.
     // Declaring a target automatically creates a source set with the same name. By default, the

@@ -25,5 +25,5 @@ class MainActivity : ComponentActivity() {
 @Preview
 @Composable
 fun AppAndroidPreview() {
-    // App(root = ...) // Preview requires a mock root component
+    //App()
 }

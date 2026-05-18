@@ -3,10 +3,10 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
-        /*google()
+        google()
         mavenCentral()
         gradlePluginPortal()
-        maven { url = uri("https://jitpack.io") }*/
+        maven { url = uri("https://jitpack.io") }
         maven {
             url = uri("https://maven.myket.ir")//fuck irgc
         }
@@ -16,10 +16,10 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
-        /*google()
+        google()
         mavenCentral()
         gradlePluginPortal()
-        maven { url = uri("https://jitpack.io") }*/
+        maven { url = uri("https://jitpack.io") }
         maven {
             url = uri("https://maven.myket.ir")
         }

@@ -25,9 +25,7 @@ import com.vampyreworld.w2t.targetft.ui.TargetScreen
 fun App(root: RootComponent) {
     W2TTheme {
         Children(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .safeContentPadding(),
+            modifier = Modifier.background(MaterialTheme.colorScheme.background),
             stack = root.childStack,
             animation = stackAnimation(fade()),
         ) {
