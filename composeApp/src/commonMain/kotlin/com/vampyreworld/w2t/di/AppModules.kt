@@ -1,5 +1,6 @@
 package com.vampyreworld.w2t.di
 
+import com.vampyreworld.w2t.appraiseft.di.appraiseModule
 import com.vampyreworld.w2t.decissionmakingft.decisionMakingModule
 import com.vampyreworld.w2t.moodaddft.moodAddModule
 import com.vampyreworld.w2t.schallengeft.sChallengeModule
@@ -17,7 +18,8 @@ val featureModules = module {
         decisionMakingModule,
         solutionModule,
         prefrencesModule,
-        sHomeModule
+        sHomeModule,
+        appraiseModule
     )
 }
 

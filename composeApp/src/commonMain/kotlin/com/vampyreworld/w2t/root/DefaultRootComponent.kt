@@ -69,7 +69,24 @@ class DefaultRootComponent(
                 )
             )
 
-            is Screens.Goal -> RootComponent.Child.Target(
+            is Screens.TargetMaster -> RootComponent.Child.Target(
+                DefaultTargetMasterComponent(
+                    componentContext = componentContext,
+                    storeFactory = get(),
+                    getGoalsUseCase = get(),
+                    onOutput = { label ->
+                        when (label) {
+                            TargetMasterComponent.Label.Back -> navigation.pop()
+                            is TargetMasterComponent.Label.NavigateToDetail -> 
+                                navigation.push(Screens.TargetDetail(label.goalId))
+                            TargetMasterComponent.Label.NavigateToAddMilestone -> 
+                                navigation.push(Screens.AddTargetMilestone)
+                        }
+                    }
+                )
+            )
+
+            is Screens.TargetDetail -> RootComponent.Child.Target(
                 DefaultTargetComponent(
                     componentContext = componentContext,
                     getGoalsUseCase = get(),
@@ -77,6 +94,38 @@ class DefaultRootComponent(
                     onBack = { navigation.pop() }
                 )
             )
+
+            is Screens.ListOfChallenges -> RootComponent.Child.SChallenge(
+                DefaultSChallengeComponent(
+                    componentContext = componentContext,
+                    addChallengeUseCase = get(),
+                    getChallengesUseCase = get(),
+                    onBack = { navigation.pop() }
+                )
+            )
+
+            is Screens.ListOfSolutions -> RootComponent.Child.Solution(
+                DefaultSolutionComponent(
+                    componentContext = componentContext,
+                    addSolutionUseCase = get(),
+                    onBack = { navigation.pop() }
+                )
+            )
+
+            is Screens.DecisionForTarget -> RootComponent.Child.DecisionMaking(
+                DefaultDecisionMakingComponent(
+                    componentContext = componentContext,
+                    makeDecisionUseCase = get(),
+                    onBack = { navigation.pop() }
+                )
+            )
+            
+            // AppraiseFT - Placeholder mapping
+            is Screens.AppraiseTarget -> RootComponent.Child.Splash(
+                DefaultSplashComponent(componentContext, { navigation.pop() })
+            )
+            
+            // Add other cases as I implement them...
 
             is Screens.AddMood -> RootComponent.Child.MoodAdd(
                 DefaultMoodAddComponent(

@@ -22,11 +22,38 @@ sealed class Screens {
     data class ClearBackStack(val target: Screens) : Screens()
 
     @Serializable
-    data class Challenge(val challengeId: String,val goalId: String) : Screens()
+    data object TargetMaster : Screens()
     @Serializable
-    data class DecisionMaking(val challengeId: String,val goalId: String) : Screens()
+    data object AddTargetMilestone : Screens()
     @Serializable
-    data object AddChallenge : Screens()
+    data object AddActionTarget : Screens()
+    @Serializable
+    data class ActionTargetDetail(val goalId: Long) : Screens()
+    @Serializable
+    data class TargetDetail(val goalId: Long?) : Screens()
+
+    @Serializable
+    data class ListOfChallenges(val goalId: Long) : Screens()
+    @Serializable
+    data class AddChallenge(val goalId: Long) : Screens()
+    @Serializable
+    data class DetailOfChallenge(val goalId: Long, val challengeId: Long) : Screens()
+
+    @Serializable
+    data class ListOfSolutions(val goalId: Long?, val challengeId: Long?) : Screens()
+    @Serializable
+    data class AddSolution(val goalId: Long?, val challengeId: Long?) : Screens()
+
+    @Serializable
+    data class DecisionForTarget(val goalId: Long) : Screens()
+    @Serializable
+    data class DecisionForChallenge(val goalId: Long, val challengeId: Long) : Screens()
+
+    @Serializable
+    data class AppraiseTarget(val goalId: Long) : Screens()
+    @Serializable
+    data class AppraiseChallenge(val goalId: Long, val challengeId: Long) : Screens()
+
     @Serializable
     data object Preferences : Screens()
     @Serializable
@@ -37,14 +64,6 @@ sealed class Screens {
     data object Home : Screens()
     @Serializable
     data object AddMood : Screens()
-    @Serializable
-    data object AddSolution : Screens()
-    @Serializable
-    data class Solution(val solutionId: String) : Screens()
-    @Serializable
-    data class Goal(val goalId: String?): Screens()
-    @Serializable
-    data object AddGoal : Screens()
     @Serializable
     data object AboutUs : Screens()
 }
