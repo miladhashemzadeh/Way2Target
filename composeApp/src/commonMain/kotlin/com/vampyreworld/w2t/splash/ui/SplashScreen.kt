@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.vampyreworld.w2t.splash.SplashComponent
+import com.vampyreworld.w2t.splash.SplashContract
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import way2target.composeapp.generated.resources.Res
@@ -21,7 +22,7 @@ fun SplashScreen(component: SplashComponent) {
     LaunchedEffect(Unit) {
         // Wait for 7 seconds as requested
         delay(7000)
-        component.onSplashFinished()
+        component.onIntent(SplashContract.Intent.OnFinished)
     }
 
     Box(

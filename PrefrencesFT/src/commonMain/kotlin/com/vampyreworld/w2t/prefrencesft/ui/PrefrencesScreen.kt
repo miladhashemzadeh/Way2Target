@@ -8,11 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.vampyreworld.w2t.prefrencesft.PrefrencesComponent
+import com.vampyreworld.w2t.prefrencesft.PrefrencesContract
 
 @Composable
 fun PrefrencesScreen(component: PrefrencesComponent) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Button(onClick = { component.onBackClicked() }) {
+        Button(onClick = { component.onIntent(PrefrencesContract.Intent.OnBackClicked) }) {
             Text("Prefrences Screen - Go Back")
         }
     }
