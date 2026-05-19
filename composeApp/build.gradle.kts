@@ -53,6 +53,7 @@ kotlin {
             implementation(project(":TargetFT"))
             implementation(project(":DecissionMakingFT"))
             implementation(project(":PrefrencesFT"))
+            implementation(project(":SHomeFT"))
 
             implementation(libs.decompose)
             implementation(libs.decompose.extensions.compose)

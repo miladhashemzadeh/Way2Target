@@ -13,7 +13,7 @@ import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import com.vampyreworld.navigation.Screens
 import com.vampyreworld.w2t.aboutus.DefaultAboutUsComponent
 import com.vampyreworld.w2t.decissionmakingft.DefaultDecisionMakingComponent
-import com.vampyreworld.w2t.home.DefaultHomeComponent
+import com.vampyreworld.w2t.shomeft.DefaultHomeComponent
 import com.vampyreworld.w2t.moodaddft.DefaultMoodAddComponent
 import com.vampyreworld.w2t.onboarding.DefaultOnboardingComponent
 import com.vampyreworld.w2t.prefrencesft.DefaultPrefrencesComponent

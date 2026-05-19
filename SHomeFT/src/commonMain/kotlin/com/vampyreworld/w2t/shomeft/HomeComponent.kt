@@ -1,4 +1,4 @@
-package com.vampyreworld.w2t.home
+package com.vampyreworld.w2t.shomeft
 
 import com.arkivanov.decompose.ComponentContext
 
