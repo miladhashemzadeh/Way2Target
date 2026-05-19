@@ -6,6 +6,7 @@ import com.vampyreworld.w2t.schallengeft.sChallengeModule
 import com.vampyreworld.w2t.targetft.targetModule
 import com.vampyreworld.w2t.solutionft.solutionModule
 import com.vampyreworld.w2t.prefrencesft.prefrencesModule
+import com.vampyreworld.w2t.shomeft.sHomeModule
 import org.koin.dsl.module
 
 val featureModules = module {
@@ -15,7 +16,8 @@ val featureModules = module {
         sChallengeModule,
         decisionMakingModule,
         solutionModule,
-        prefrencesModule
+        prefrencesModule,
+        sHomeModule
     )
 }
 

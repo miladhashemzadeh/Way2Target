@@ -10,7 +10,7 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.vampyreworld.w2t.aboutus.ui.AboutUsScreen
 import com.vampyreworld.w2t.decissionmakingft.ui.DecisionMakingScreen
-import com.vampyreworld.w2t.home.ui.HomeScreen
+import com.vampyreworld.w2t.shomeft.ui.HomeScreen
 import com.vampyreworld.w2t.moodaddft.ui.MoodAddScreen
 import com.vampyreworld.w2t.onboarding.ui.OnboardingScreen
 import com.vampyreworld.w2t.prefrencesft.ui.PrefrencesScreen

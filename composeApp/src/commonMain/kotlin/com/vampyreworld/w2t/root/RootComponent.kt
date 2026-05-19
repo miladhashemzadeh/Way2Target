@@ -4,7 +4,7 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
 import com.vampyreworld.w2t.aboutus.AboutUsComponent
 import com.vampyreworld.w2t.decissionmakingft.DecisionMakingComponent
-import com.vampyreworld.w2t.home.HomeComponent
+import com.vampyreworld.w2t.shomeft.HomeComponent
 import com.vampyreworld.w2t.moodaddft.MoodAddComponent
 import com.vampyreworld.w2t.onboarding.OnboardingComponent
 import com.vampyreworld.w2t.prefrencesft.PrefrencesComponent
