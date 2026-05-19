@@ -10,20 +10,23 @@ import com.vampyreworld.w2t.targetft.store.TargetStore
 import com.vampyreworld.w2t.targetft.store.TargetStoreFactory
 import kotlinx.coroutines.flow.Flow
 
-class DefaultTargetComponent(
+class MVITargetComponent(
     componentContext: ComponentContext,
-    storeFactory: StoreFactory
+    storeFactory: StoreFactory,
+    private val onBack: () -> Unit
 ) : TargetComponent, ComponentContext by componentContext {
 
     private val store = instanceKeeper.getStore {
         TargetStoreFactory(storeFactory).create()
     }
 
-    override val state: Value<TargetStore.State> = store.asValue()
+     val state: Value<TargetStore.State> = store.asValue()
 
-    override val labels: Flow<TargetStore.Label> = store.labels
+     val labels: Flow<TargetStore.Label> = store.labels
 
-    override fun onIntent(intent: TargetStore.Intent) {
+     fun onIntent(intent: TargetStore.Intent) {
         store.accept(intent)
     }
+
+    override fun onBackClicked() = onBack()
 }

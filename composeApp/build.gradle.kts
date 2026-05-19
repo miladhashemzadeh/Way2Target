@@ -40,10 +40,12 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.decompose.android)
             implementation(libs.koin.android)
+            implementation(libs.koin.android.lib)
         }
         commonMain.dependencies {
             implementation(project(":core"))
             implementation(project(":di"))
+            implementation(project(":domain"))
             implementation(project(":sharedUI"))
             implementation(project(":MoodAddFT"))
             implementation(project(":SChallengeFT"))
@@ -52,6 +54,8 @@ kotlin {
             implementation(project(":DecissionMakingFT"))
             implementation(project(":PrefrencesFT"))
 
+            implementation(libs.decompose)
+            implementation(libs.decompose.extensions.compose)
 
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
@@ -59,8 +63,6 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.navigation.compose)
 
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.serialization.json)
@@ -68,6 +70,7 @@ kotlin {
             implementation(libs.multiplatform.settings.noarg)
 
             implementation(libs.koin.core)
+            implementation(libs.koin.compose)
 
             implementation(libs.kotlinx.coroutines.core)
 
