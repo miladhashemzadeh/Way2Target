@@ -1,7 +1,11 @@
 package com.vampyreworld.w2t.schallengeft
 
+import com.vampyreworld.w2t.domain.usecase.AddChallengeUseCase
+import com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 val sChallengeModule = module {
-    // SChallenge feature dependencies
+    factoryOf(::AddChallengeUseCase)
+    factoryOf(::GetChallengesUseCase)
 }
