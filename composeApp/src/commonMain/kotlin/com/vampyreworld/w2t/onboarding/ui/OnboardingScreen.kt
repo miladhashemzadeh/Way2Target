@@ -8,11 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.vampyreworld.w2t.onboarding.OnboardingComponent
+import com.vampyreworld.w2t.onboarding.OnboardingContract
 
 @Composable
 fun OnboardingScreen(component: OnboardingComponent) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Button(onClick = { component.onFinished() }) {
+        Button(onClick = { component.onIntent(OnboardingContract.Intent.OnFinishClicked) }) {
             Text("Onboarding Screen - Finish")
         }
     }

@@ -6,9 +6,11 @@ import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.vampyreworld.w2t.core.arch.asValue
+import com.vampyreworld.w2t.targetft.TargetContract
 import com.vampyreworld.w2t.targetft.store.TargetStore
 import com.vampyreworld.w2t.targetft.store.TargetStoreFactory
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class MVITargetComponent(
     componentContext: ComponentContext,
@@ -20,13 +22,22 @@ class MVITargetComponent(
         TargetStoreFactory(storeFactory).create()
     }
 
-     val state: Value<TargetStore.State> = store.asValue()
+    override val state: Value<TargetContract.State> = store.asValue()
 
-     val labels: Flow<TargetStore.Label> = store.labels
-
-     fun onIntent(intent: TargetStore.Intent) {
-        store.accept(intent)
+    override val sideEffects: Flow<TargetContract.SideEffect> = store.labels.map { label ->
+        when (label) {
+            is TargetStore.Label.Error -> {
+                // For now, map all labels to Back as a placeholder, 
+                // or you might want to add more SideEffects to TargetContract
+                TargetContract.SideEffect.Back
+            }
+        }
     }
 
-    override fun onBackClicked() = onBack()
+    override fun onIntent(intent: TargetContract.Intent) {
+        when (intent) {
+            TargetContract.Intent.OnBackClicked -> onBack()
+            TargetContract.Intent.Refresh -> store.accept(TargetStore.Intent.Refresh)
+        }
+    }
 }

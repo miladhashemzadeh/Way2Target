@@ -8,11 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.vampyreworld.w2t.moodaddft.MoodAddComponent
+import com.vampyreworld.w2t.moodaddft.MoodAddContract
 
 @Composable
 fun MoodAddScreen(component: MoodAddComponent) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Button(onClick = { component.onBackClicked() }) {
+        Button(onClick = { component.onIntent(MoodAddContract.Intent.OnBackClicked) }) {
             Text("Mood Add Screen - Go Back")
         }
     }

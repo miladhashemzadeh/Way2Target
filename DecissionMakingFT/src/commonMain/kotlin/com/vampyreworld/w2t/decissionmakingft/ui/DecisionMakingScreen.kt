@@ -8,11 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.vampyreworld.w2t.decissionmakingft.DecisionMakingComponent
+import com.vampyreworld.w2t.decissionmakingft.DecisionMakingContract
 
 @Composable
 fun DecisionMakingScreen(component: DecisionMakingComponent) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Button(onClick = { component.onBackClicked() }) {
+        Button(onClick = { component.onIntent(DecisionMakingContract.Intent.OnBackClicked) }) {
             Text("Decision Making Screen - Go Back")
         }
     }

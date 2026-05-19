@@ -8,11 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.vampyreworld.w2t.schallengeft.SChallengeComponent
+import com.vampyreworld.w2t.schallengeft.SChallengeContract
 
 @Composable
 fun SChallengeScreen(component: SChallengeComponent) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Button(onClick = { component.onBackClicked() }) {
+        Button(onClick = { component.onIntent(SChallengeContract.Intent.OnBackClicked) }) {
             Text("SChallenge Screen - Go Back")
         }
     }

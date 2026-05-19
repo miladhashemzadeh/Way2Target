@@ -8,11 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.vampyreworld.w2t.aboutus.AboutUsComponent
+import com.vampyreworld.w2t.aboutus.AboutUsContract
 
 @Composable
 fun AboutUsScreen(component: AboutUsComponent) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Button(onClick = { component.onBackClicked() }) {
+        Button(onClick = { component.onIntent(AboutUsContract.Intent.OnBackClicked) }) {
             Text("About Us Screen - Go Back")
         }
     }

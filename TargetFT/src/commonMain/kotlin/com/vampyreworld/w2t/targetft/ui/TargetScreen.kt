@@ -7,12 +7,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.vampyreworld.w2t.targetft.TargetContract
 import com.vampyreworld.w2t.targetft.component.TargetComponent
 
 @Composable
 fun TargetScreen(component: TargetComponent) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Button(onClick = { component.onBackClicked() }) {
+        Button(onClick = { component.onIntent(TargetContract.Intent.OnBackClicked) }) {
             Text("Target Screen - Go Back")
         }
     }
