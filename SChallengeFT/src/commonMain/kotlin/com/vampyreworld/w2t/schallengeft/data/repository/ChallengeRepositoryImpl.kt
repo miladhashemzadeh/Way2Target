@@ -1,4 +1,4 @@
-package com.vampreworld.w2t.data.repository
+package com.vampyreworld.w2t.schallengeft.data.repository
 
 import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.repository.ChallengeRepository

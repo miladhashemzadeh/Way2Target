@@ -1,4 +1,4 @@
-package com.vampreworld.w2t.data.repository
+package com.vampyreworld.w2t.solutionft.data.repository
 
 import com.vampyreworld.w2t.domain.data.model.Solution
 import com.vampyreworld.w2t.domain.repository.SolutionRepository

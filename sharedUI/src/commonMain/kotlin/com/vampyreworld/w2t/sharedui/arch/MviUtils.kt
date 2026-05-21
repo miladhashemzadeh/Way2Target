@@ -1,4 +1,4 @@
-package com.vampyreworld.w2t.core.arch
+package com.vampyreworld.w2t.sharedui.arch
 
 import com.arkivanov.decompose.Cancellation
 import com.arkivanov.decompose.value.Value

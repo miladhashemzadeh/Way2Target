@@ -70,11 +70,15 @@ kotlin {
                 api(libs.compose.ui)
                 api(libs.compose.components.resources)
                 api(libs.compose.uiToolingPreview)
-                api(libs.androidx.lifecycle.viewmodelCompose)
-                api(libs.androidx.navigation.compose)
-                api(libs.androidx.lifecycle.runtimeCompose)
                 api(libs.coil.compose)
                 api(libs.kotlinx.coroutines.core)
+                api(libs.kotlinx.serialization.json)
+
+                api(libs.decompose)
+                api(libs.decompose.extensions.compose)
+                api(libs.mvikotlin)
+                api(libs.mvikotlin.main)
+                api(libs.mvikotlin.extensions.coroutines)
                 implementation(libs.compose.components.resources)
 
             }

@@ -60,7 +60,6 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                implementation(project(":data"))
                 implementation(project(":domain"))
 
                 api(libs.koin.core)

@@ -5,7 +5,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
-import com.vampyreworld.w2t.core.arch.asValue
+import com.vampyreworld.w2t.sharedui.arch.asValue
 import com.vampyreworld.w2t.targetft.presentation.intent.TargetMasterIntent
 import com.vampyreworld.w2t.targetft.presentation.state.TargetMasterState
 import com.vampyreworld.w2t.targetft.presentation.store.TargetMasterStore
