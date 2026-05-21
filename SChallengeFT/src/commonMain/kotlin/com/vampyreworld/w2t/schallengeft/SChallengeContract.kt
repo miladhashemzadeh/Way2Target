@@ -1,12 +1,14 @@
 package com.vampyreworld.w2t.schallengeft
 
 import com.vampyreworld.w2t.domain.data.model.Challenges
+import com.vampyreworld.w2t.domain.data.model.Solution
 
 interface SChallengeContract {
     data class State(
         val isLoading: Boolean = false,
         val challenges: List<Challenges> = emptyList(),
-        val selectedChallenge: Challenges? = null
+        val selectedChallenge: Challenges? = null,
+        val solutions: List<Solution> = emptyList()
     )
 
     sealed interface SideEffect {
