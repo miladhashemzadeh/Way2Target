@@ -1,11 +1,13 @@
 package com.vampyreworld.w2t.targetft.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.targetft.TargetContract
@@ -21,7 +23,7 @@ fun TargetScreen(component: TargetComponent) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 title = { Text(if (goal == null) "New Target" else goal.tier.name) },
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(TargetContract.Intent.OnBackClicked) }) {
@@ -31,10 +33,19 @@ fun TargetScreen(component: TargetComponent) {
             )
         }
     ) { padding ->
-        if (goal == null) {
-            TargetCreateScreen(component, padding)
-        } else {
-            TargetDetailScreen(goal, component, padding)
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (goal == null) {
+                TargetCreateScreen(component, padding)
+            } else {
+                TargetDetailScreen(goal, state.relatedGoals, state.challenges, component, padding)
+            }
+
+            AnimatedVisibility(
+                visible = state.isLoading,
+                modifier = Modifier.align(Alignment.TopCenter).padding(padding)
+            ) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
         }
     }
 }

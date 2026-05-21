@@ -33,7 +33,7 @@ fun SChallengeScreen(component: SChallengeComponent) {
         if (challenge == null) {
             ChallengesListScreen(state, component, padding)
         } else {
-            ChallengeDetailScreen(challenge, component, padding)
+            ChallengeDetailScreen(challenge, state.solutions, component, padding)
         }
     }
 }

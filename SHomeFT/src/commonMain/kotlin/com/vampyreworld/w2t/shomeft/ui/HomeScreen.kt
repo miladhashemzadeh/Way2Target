@@ -32,22 +32,22 @@ fun HomeScreen(component: HomeComponent) {
                     IconButton(onClick = { component.onIntent(HomeContract.Intent.OnProfileClick) }) {
                         Icon(Icons.Default.Person, contentDescription = "Profile")
                     }
-                },
+                }
             )
         },
         floatingActionButton = {
-            LargeFloatingActionButton(
+            ExtendedFloatingActionButton(
                 onClick = { component.onIntent(HomeContract.Intent.CreateMasterGoal) },
+                icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                text = { Text("New Master Goal") },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Master Goal")
-            }
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         }
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(bottom = 80.dp, start = 16.dp, end = 16.dp, top = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
@@ -72,12 +72,24 @@ fun HomeScreen(component: HomeComponent) {
                 )
             }
 
-            items(state.masterGoals) { goal ->
-                MasterGoalCard(
-                    goal = goal,
-                    onClick = { component.onIntent(HomeContract.Intent.OnMasterGoalClick(goal.id)) },
-                    onDelete = { showDeleteSheet = goal }
-                ) { component.onIntent(HomeContract.Intent.CreateChallengeForMasterGoal(goal.id)) }
+            if (state.masterGoals.isEmpty()) {
+                item {
+                    Text(
+                        "No master goals yet. Start by creating one!",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 32.dp)
+                    )
+                }
+            } else {
+                items(state.masterGoals) { goal ->
+                    MasterGoalCard(
+                        goal = goal,
+                        onClick = { component.onIntent(HomeContract.Intent.OnMasterGoalClick(goal.id)) },
+                        onDelete = { showDeleteSheet = goal },
+                        onChallenge = { component.onIntent(HomeContract.Intent.CreateChallengeForMasterGoal(goal.id)) }
+                    )
+                }
             }
             
             item {
@@ -105,6 +117,11 @@ fun HomeScreen(component: HomeComponent) {
                         Text("Settings")
                     }
                 }
+            }
+
+            // Adding extra space at the end to ensure FAB doesn't hide content
+            item {
+                Spacer(modifier = Modifier.height(32.dp))
             }
         }
 

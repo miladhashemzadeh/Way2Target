@@ -3,6 +3,8 @@ package com.vampyreworld.w2t.targetft.component
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
+import com.vampyreworld.w2t.domain.data.model.Challenges
+import com.vampyreworld.w2t.domain.data.model.Cost
 import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.domain.data.model.GoalTier
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
@@ -30,8 +32,15 @@ class DefaultTargetComponent(
     private val _state = MutableValue(
         TargetContract.State(
             selectedGoal = goalId?.let { 
-                Goal(it, null, emptyList(), if (it == 1L) GoalTier.MASTER else GoalTier.MILESTONE, false, emptyList(), null) 
-            }
+                Goal(it, null, listOf(101, 102), if (it == 1L) GoalTier.MASTER else if (it == 101L) GoalTier.MILESTONE else GoalTier.ACTION, false, emptyList(), null) 
+            },
+            relatedGoals = if (goalId == 1L) listOf(
+                Goal(101, 1, emptyList(), GoalTier.MILESTONE, false, emptyList(), null),
+                Goal(102, 1, emptyList(), GoalTier.MILESTONE, false, emptyList(), null)
+            ) else emptyList(),
+            challenges = if (goalId != null) listOf(
+                Challenges(501, goalId, "Technical Barrier", "Hard to implement X", Cost(10, 50, 100), 80, true, goalId, emptyList(), emptyList(), emptyList(), 10, null, null)
+            ) else emptyList()
         )
     )
     override val state: Value<TargetContract.State> = _state

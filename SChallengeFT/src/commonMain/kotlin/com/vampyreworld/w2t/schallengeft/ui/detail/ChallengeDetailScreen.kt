@@ -9,14 +9,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.vampyreworld.w2t.domain.data.model.Challenges
+import com.vampyreworld.w2t.domain.data.model.Solution
 import com.vampyreworld.w2t.schallengeft.SChallengeComponent
 import com.vampyreworld.w2t.schallengeft.SChallengeContract
 
 @Composable
 fun ChallengeDetailScreen(
     challenge: Challenges,
+    solutions: List<Solution>,
     component: SChallengeComponent,
     padding: PaddingValues
 ) {
@@ -34,11 +37,17 @@ fun ChallengeDetailScreen(
         }
 
         item {
-            Text("Solutions", style = MaterialTheme.typography.titleLarge)
+            Text("Suggested Solutions", style = MaterialTheme.typography.titleLarge)
         }
 
-        items(listOf("Increase daily exercise", "Monitor sleep patterns")) { solution ->
-            SolutionItem(solution)
+        if (solutions.isEmpty()) {
+            item {
+                Text("No solutions found. Try AI Help or make a decision.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        } else {
+            items(solutions) { solution ->
+                SolutionItem(solution)
+            }
         }
 
         item {
@@ -90,15 +99,21 @@ private fun ActionRow(component: SChallengeComponent) {
 }
 
 @Composable
-private fun SolutionItem(title: String) {
+private fun SolutionItem(solution: Solution) {
     OutlinedCard(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(title, style = MaterialTheme.typography.bodyLarge)
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(solution.title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(solution.desc, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text("Type: ${solution.solutionType}", style = MaterialTheme.typography.labelSmall)
+                Text("Strength: ${solution.aidStrength}%", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+            }
         }
     }
 }

@@ -5,6 +5,9 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.data.model.Cost
+import com.vampyreworld.w2t.domain.data.model.Solution
+import com.vampyreworld.w2t.domain.data.model.SolutionResult
+import com.vampyreworld.w2t.domain.data.model.SolutionType
 import com.vampyreworld.w2t.domain.usecase.AddChallengeUseCase
 import com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase
 import kotlinx.coroutines.flow.Flow
@@ -28,7 +31,11 @@ class DefaultSChallengeComponent(
     private val _state = MutableValue(
         SChallengeContract.State(
             challenges = listOf(
-                Challenges(1, null, "Dummy Challenge 1", "Desc", Cost(0, 0, 0), 50, false, null, emptyList(), emptyList(), emptyList(), 0, null, null)
+                Challenges(1, null, "Resource Shortage", "Not enough memory for cache", Cost(0, 0, 0), 50, false, null, emptyList(), emptyList(), emptyList(), 0, null, null)
+            ),
+            solutions = listOf(
+                Solution(1, "Increase Cache Size", "Adjust configuration to 512MB", SolutionType.DIRECT_CONFRONTATION, Cost(0, 10, 0), 80, SolutionResult.IN_PROGRESS),
+                Solution(2, "Implement LRU", "Add eviction policy to save memory", SolutionType.PLANNING, Cost(0, 40, 0), 90, SolutionResult.UNKNOWN)
             )
         )
     )

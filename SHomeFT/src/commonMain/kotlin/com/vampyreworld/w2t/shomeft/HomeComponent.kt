@@ -38,7 +38,10 @@ class DefaultHomeComponent(
         HomeContract.State(
             masterGoals = listOf(
                 Goal(1, null, emptyList(), GoalTier.MASTER, false, emptyList(), null),
-                Goal(2, null, emptyList(), GoalTier.MASTER, false, emptyList(), null)
+                Goal(2, null, emptyList(), GoalTier.MASTER, false, emptyList(), null),
+                Goal(3, null, emptyList(), GoalTier.MASTER, false, emptyList(), null),
+                Goal(4, null, emptyList(), GoalTier.MASTER, false, emptyList(), null),
+                Goal(5, null, emptyList(), GoalTier.MASTER, false, emptyList(), null)
             )
         )
     )

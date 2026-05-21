@@ -1,12 +1,14 @@
 package com.vampyreworld.w2t.targetft
 
+import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.data.model.Goal
 
 interface TargetContract {
     data class State(
         val isLoading: Boolean = false,
         val selectedGoal: Goal? = null,
-        val relatedGoals: List<Goal> = emptyList()
+        val relatedGoals: List<Goal> = emptyList(),
+        val challenges: List<Challenges> = emptyList()
     )
 
     sealed interface SideEffect {
