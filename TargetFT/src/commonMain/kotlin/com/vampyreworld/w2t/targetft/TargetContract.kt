@@ -5,7 +5,8 @@ import com.vampyreworld.w2t.domain.data.model.Goal
 interface TargetContract {
     data class State(
         val isLoading: Boolean = false,
-        val goals: List<Goal> = emptyList()
+        val selectedGoal: Goal? = null,
+        val relatedGoals: List<Goal> = emptyList()
     )
 
     sealed interface SideEffect {
@@ -15,5 +16,8 @@ interface TargetContract {
     sealed interface Intent {
         data object OnBackClicked : Intent
         data object Refresh : Intent
+        data object CreateChallenge : Intent
+        data object CreateMilestone : Intent
+        data object CancelGoal : Intent
     }
 }

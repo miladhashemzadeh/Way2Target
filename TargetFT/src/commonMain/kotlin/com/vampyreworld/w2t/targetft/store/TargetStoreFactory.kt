@@ -29,6 +29,15 @@ class TargetStoreFactory(private val storeFactory: StoreFactory) {
                     // Simulate loading
                     dispatch(Msg.Loaded(emptyList()))
                 }
+                TargetStore.Intent.CancelGoal -> {
+                    // TODO: Handle CancelGoal
+                }
+                TargetStore.Intent.CreateChallenge -> {
+                    // TODO: Handle CreateChallenge
+                }
+                TargetStore.Intent.CreateMilestone -> {
+                    // TODO: Handle CreateMilestone
+                }
             }
         }
     }
@@ -37,7 +46,7 @@ class TargetStoreFactory(private val storeFactory: StoreFactory) {
         override fun TargetContract.State.reduce(msg: Msg): TargetContract.State =
             when (msg) {
                 Msg.Loading -> copy(isLoading = true)
-                is Msg.Loaded -> copy(isLoading = false, goals = msg.goals)
+                is Msg.Loaded -> copy(isLoading = false, relatedGoals = msg.goals)
             }
     }
 }

@@ -61,10 +61,10 @@ class DefaultRootComponent(
             is Screens.Home -> RootComponent.Child.Home(
                 DefaultHomeComponent(
                     componentContext = componentContext,
-                    navigateToTarget = { navigation.push(Screens.TargetDetail(null)) },
+                    navigateToTarget = { id -> navigation.push(Screens.TargetDetail(id)) },
                     navigateToMoodAdd = { navigation.push(Screens.AddMood) },
-                    navigateToSChallenge = { navigation.push(Screens.AddChallenge(0L)) },
-                    navigateToDecisionMaking = { navigation.push(Screens.DecisionForTarget(0L)) },
+                    navigateToSChallenge = { id -> navigation.push(Screens.AddChallenge(id)) },
+                    navigateToDecisionMaking = { id -> navigation.push(Screens.DecisionForTarget(id)) },
                     navigateToSolution = { navigation.push(Screens.AddSolution(null, null)) },
                     navigateToPreferences = { navigation.push(Screens.Preferences) },
                     navigateToAboutUs = { navigation.push(Screens.AboutUs) }
@@ -91,6 +91,7 @@ class DefaultRootComponent(
             is Screens.TargetDetail -> RootComponent.Child.Target(
                 DefaultTargetComponent(
                     componentContext = componentContext,
+                    goalId = config.goalId,
                     getGoalsUseCase = get(),
                     saveGoalUseCase = get(),
                     onBack = { navigation.pop() }
