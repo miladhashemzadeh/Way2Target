@@ -3,6 +3,8 @@ package com.vampyreworld.w2t.targetft.component
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
+import com.vampyreworld.w2t.domain.data.model.Goal
+import com.vampyreworld.w2t.domain.data.model.GoalTier
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.targetft.TargetContract
@@ -19,12 +21,19 @@ interface TargetComponent {
 
 class DefaultTargetComponent(
     componentContext: ComponentContext,
+    private val goalId: Long?,
     private val getGoalsUseCase: GetGoalsUseCase,
     private val saveGoalUseCase: SaveGoalUseCase,
     private val onBack: () -> Unit
 ) : TargetComponent, ComponentContext by componentContext {
 
-    private val _state = MutableValue(TargetContract.State())
+    private val _state = MutableValue(
+        TargetContract.State(
+            selectedGoal = goalId?.let { 
+                Goal(it, null, emptyList(), if (it == 1L) GoalTier.MASTER else GoalTier.MILESTONE, false, emptyList(), null) 
+            }
+        )
+    )
     override val state: Value<TargetContract.State> = _state
 
     private val _sideEffects = MutableSharedFlow<TargetContract.SideEffect>()
@@ -35,6 +44,15 @@ class DefaultTargetComponent(
             TargetContract.Intent.OnBackClicked -> onBack()
             TargetContract.Intent.Refresh -> {
                 // Handle refresh
+            }
+            TargetContract.Intent.CancelGoal -> {
+                // Handle CancelGoal
+            }
+            TargetContract.Intent.CreateChallenge -> {
+                // Handle CreateChallenge
+            }
+            TargetContract.Intent.CreateMilestone -> {
+                // Handle CreateMilestone
             }
         }
     }

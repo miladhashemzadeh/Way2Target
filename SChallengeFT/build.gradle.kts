@@ -63,10 +63,15 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.decompose)
+                implementation(libs.decompose.extensions.compose)
+                implementation(libs.compose.material3)
+                implementation(libs.compose.material)
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.ui)
                 implementation(project(":sharedUI"))
                 implementation(project(":di"))
                 implementation(project(":domain"))
-
 
             }
         }

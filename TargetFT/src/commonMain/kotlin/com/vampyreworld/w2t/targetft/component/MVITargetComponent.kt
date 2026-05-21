@@ -38,6 +38,9 @@ class MVITargetComponent(
         when (intent) {
             TargetContract.Intent.OnBackClicked -> onBack()
             TargetContract.Intent.Refresh -> store.accept(TargetStore.Intent.Refresh)
+            TargetContract.Intent.CancelGoal -> store.accept(TargetStore.Intent.CancelGoal)
+            TargetContract.Intent.CreateChallenge -> store.accept(TargetStore.Intent.CreateChallenge)
+            TargetContract.Intent.CreateMilestone -> store.accept(TargetStore.Intent.CreateMilestone)
         }
     }
 }
