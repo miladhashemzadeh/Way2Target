@@ -21,6 +21,8 @@ import com.vampyreworld.w2t.schallengeft.DefaultSChallengeComponent
 import com.vampyreworld.w2t.solutionft.DefaultSolutionComponent
 import com.vampyreworld.w2t.splash.DefaultSplashComponent
 import com.vampyreworld.w2t.targetft.component.DefaultTargetComponent
+import com.vampyreworld.w2t.targetft.presentation.component.DefaultTargetMasterComponent
+import com.vampyreworld.w2t.targetft.presentation.component.TargetMasterComponent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
@@ -59,17 +61,17 @@ class DefaultRootComponent(
             is Screens.Home -> RootComponent.Child.Home(
                 DefaultHomeComponent(
                     componentContext = componentContext,
-                    navigateToTarget = { navigation.push(Screens.Goal(null)) },
+                    navigateToTarget = { navigation.push(Screens.TargetDetail(null)) },
                     navigateToMoodAdd = { navigation.push(Screens.AddMood) },
-                    navigateToSChallenge = { navigation.push(Screens.AddChallenge) },
-                    navigateToDecisionMaking = { navigation.push(Screens.DecisionMaking("", "")) },
-                    navigateToSolution = { navigation.push(Screens.AddSolution) },
+                    navigateToSChallenge = { navigation.push(Screens.AddChallenge(0L)) },
+                    navigateToDecisionMaking = { navigation.push(Screens.DecisionForTarget(0L)) },
+                    navigateToSolution = { navigation.push(Screens.AddSolution(null, null)) },
                     navigateToPreferences = { navigation.push(Screens.Preferences) },
                     navigateToAboutUs = { navigation.push(Screens.AboutUs) }
                 )
             )
 
-            is Screens.TargetMaster -> RootComponent.Child.Target(
+            is Screens.TargetMaster -> RootComponent.Child.TargetMaster(
                 DefaultTargetMasterComponent(
                     componentContext = componentContext,
                     storeFactory = get(),
@@ -115,7 +117,7 @@ class DefaultRootComponent(
             is Screens.DecisionForTarget -> RootComponent.Child.DecisionMaking(
                 DefaultDecisionMakingComponent(
                     componentContext = componentContext,
-                    makeDecisionUseCase = get(),
+                    saveDecisionUseCase = get(),
                     onBack = { navigation.pop() }
                 )
             )
@@ -145,13 +147,6 @@ class DefaultRootComponent(
                 )
             )
 
-            is Screens.DecisionMaking -> RootComponent.Child.DecisionMaking(
-                DefaultDecisionMakingComponent(
-                    componentContext = componentContext,
-                    makeDecisionUseCase = get(),
-                    onBack = { navigation.pop() }
-                )
-            )
 
             is Screens.AddSolution -> RootComponent.Child.Solution(
                 DefaultSolutionComponent(

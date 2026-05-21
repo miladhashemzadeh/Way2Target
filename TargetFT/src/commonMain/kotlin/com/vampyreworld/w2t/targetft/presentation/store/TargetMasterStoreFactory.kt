@@ -8,6 +8,7 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.targetft.presentation.intent.TargetMasterIntent
 import com.vampyreworld.w2t.targetft.presentation.state.TargetMasterState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class TargetMasterStoreFactory(
@@ -31,6 +32,8 @@ class TargetMasterStoreFactory(
     }
 
     private inner class ExecutorImpl : CoroutineExecutor<TargetMasterIntent, Unit, TargetMasterState, Msg, TargetMasterStore.Label>() {
+        private var loadJob: Job? = null
+
         override fun executeAction(action: Unit) {
             loadGoals()
         }
@@ -43,13 +46,13 @@ class TargetMasterStoreFactory(
         }
 
         private fun loadGoals() {
-            scope.launch {
+            loadJob?.cancel()
+            loadJob = scope.launch {
                 dispatch(Msg.Loading)
                 try {
-                    // Assuming GetGoalsUseCase returns a Flow or a List
-                    // Existing GetGoalsUseCase returned a List.
-                    val goals = getGoalsUseCase() 
-                    dispatch(Msg.GoalsLoaded(goals))
+                    getGoalsUseCase().collect { goals ->
+                        dispatch(Msg.GoalsLoaded(goals))
+                    }
                 } catch (e: Exception) {
                     dispatch(Msg.Error(e.message ?: "Unknown error"))
                 }
