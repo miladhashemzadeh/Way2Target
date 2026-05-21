@@ -3,7 +3,7 @@ package com.vampyreworld.w2t.di
 import org.koin.dsl.module
 
 val baseModule = module {
-    // Core application-wide dependencies (e.g., Database, Network, Repositories)
+    // Shared base dependencies if any
 }
 
 val appModule = module {

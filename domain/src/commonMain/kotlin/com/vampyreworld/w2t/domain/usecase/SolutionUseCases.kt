@@ -1,7 +1,12 @@
 package com.vampyreworld.w2t.domain.usecase
 
 import com.vampyreworld.w2t.domain.data.model.Solution
+import kotlinx.coroutines.flow.Flow
 
-class AddSolutionUseCase {
-    operator fun invoke(solution: Solution) { /* TODO: Implement */ }
+interface GetSolutionsUseCase {
+    operator fun invoke(goalId: Long?, challengeId: Long?): Flow<List<Solution>>
+}
+
+interface AddSolutionUseCase {
+    suspend operator fun invoke(solution: Solution)
 }

@@ -2,10 +2,10 @@ package com.vampyreworld.w2t.domain.usecase
 
 import com.vampyreworld.w2t.domain.data.model.UserMood
 
-class AddMoodUseCase {
-    operator fun invoke(mood: UserMood) { /* TODO: Implement */ }
+interface AddMoodUseCase {
+    operator fun invoke(mood: UserMood)
 }
 
-class GetMoodHistoryUseCase {
-    operator fun invoke(): List<UserMood> = emptyList()
+interface GetMoodHistoryUseCase {
+    operator fun invoke(): List<UserMood>
 }

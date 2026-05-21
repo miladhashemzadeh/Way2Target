@@ -60,8 +60,9 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
+                implementation(libs.kotlinx.coroutines.core)
                 implementation(project(":domain"))
-
+                implementation(libs.koin.core)
             }
         }
 

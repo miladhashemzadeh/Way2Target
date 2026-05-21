@@ -20,6 +20,7 @@ import com.vampyreworld.w2t.sharedui.theme.W2TTheme
 import com.vampyreworld.w2t.solutionft.ui.SolutionScreen
 import com.vampyreworld.w2t.splash.ui.SplashScreen
 import com.vampyreworld.w2t.targetft.ui.TargetScreen
+import com.vampyreworld.w2t.targetft.presentation.screen.TargetMasterScreen
 import org.koin.compose.KoinContext
 
 @Composable
@@ -36,6 +37,7 @@ fun App(root: RootComponent) {
                     is RootComponent.Child.Onboarding -> OnboardingScreen(child.component)
                     is RootComponent.Child.Home -> HomeScreen(child.component)
                     is RootComponent.Child.Target -> TargetScreen(child.component)
+                    is RootComponent.Child.TargetMaster -> TargetMasterScreen(child.component)
                     is RootComponent.Child.MoodAdd -> MoodAddScreen(child.component)
                     is RootComponent.Child.SChallenge -> SChallengeScreen(child.component)
                     is RootComponent.Child.DecisionMaking -> DecisionMakingScreen(child.component)

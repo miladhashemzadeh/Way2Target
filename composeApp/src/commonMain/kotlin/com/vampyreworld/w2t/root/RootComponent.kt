@@ -12,6 +12,7 @@ import com.vampyreworld.w2t.schallengeft.SChallengeComponent
 import com.vampyreworld.w2t.solutionft.SolutionComponent
 import com.vampyreworld.w2t.splash.SplashComponent
 import com.vampyreworld.w2t.targetft.component.TargetComponent
+import com.vampyreworld.w2t.targetft.presentation.component.TargetMasterComponent
 
 interface RootComponent {
     val childStack: Value<ChildStack<*, Child>>
@@ -21,6 +22,7 @@ interface RootComponent {
         data class Onboarding(val component: OnboardingComponent) : Child()
         data class Home(val component: HomeComponent) : Child()
         data class Target(val component: TargetComponent) : Child()
+        data class TargetMaster(val component: TargetMasterComponent) : Child()
         data class MoodAdd(val component: MoodAddComponent) : Child()
         data class SChallenge(val component: SChallengeComponent) : Child()
         data class DecisionMaking(val component: DecisionMakingComponent) : Child()

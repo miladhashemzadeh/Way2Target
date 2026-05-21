@@ -1,11 +1,16 @@
 package com.vampyreworld.w2t.domain.usecase
 
 import com.vampyreworld.w2t.domain.data.model.Challenges
+import kotlinx.coroutines.flow.Flow
 
-class AddChallengeUseCase {
-    operator fun invoke(challenge: Challenges) { /* TODO: Implement */ }
+interface GetChallengesUseCase {
+    operator fun invoke(goalId: Long): Flow<List<Challenges>>
 }
 
-class GetChallengesUseCase {
-    operator fun invoke(): List<Challenges> = emptyList()
+interface AddChallengeUseCase {
+    suspend operator fun invoke(challenge: Challenges)
+}
+
+interface GetChallengeByIdUseCase {
+    operator fun invoke(id: Long): Flow<Challenges?>
 }

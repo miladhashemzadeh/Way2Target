@@ -61,12 +61,11 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.kotlin.stdlib)
+                                                                implementation(libs.kotlin.stdlib)
                 implementation(libs.decompose)
                 implementation(project(":sharedUI"))
                 implementation(project(":di"))
                 implementation(project(":domain"))
-                implementation(project(":core"))
 
 
             }

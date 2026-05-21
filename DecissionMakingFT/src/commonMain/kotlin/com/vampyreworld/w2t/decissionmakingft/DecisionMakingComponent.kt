@@ -3,7 +3,7 @@ package com.vampyreworld.w2t.decissionmakingft
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
-import com.vampyreworld.w2t.domain.usecase.MakeDecisionUseCase
+import com.vampyreworld.w2t.domain.usecase.SaveDecisionUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -17,7 +17,7 @@ interface DecisionMakingComponent {
 
 class DefaultDecisionMakingComponent(
     componentContext: ComponentContext,
-    private val makeDecisionUseCase: MakeDecisionUseCase,
+    private val saveDecisionUseCase: SaveDecisionUseCase,
     private val onBack: () -> Unit
 ) : DecisionMakingComponent, ComponentContext by componentContext {
 

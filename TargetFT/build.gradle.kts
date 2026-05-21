@@ -66,7 +66,6 @@ kotlin {
                 implementation(project(":sharedUI"))
                 implementation(project(":di"))
                 implementation(project(":domain"))
-                implementation(project(":core"))
 
             }
         }

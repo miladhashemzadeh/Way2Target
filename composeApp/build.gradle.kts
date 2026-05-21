@@ -43,7 +43,6 @@ kotlin {
             implementation(libs.koin.android.lib)
         }
         commonMain.dependencies {
-            implementation(project(":core"))
             implementation(project(":di"))
             implementation(project(":domain"))
             implementation(project(":sharedUI"))
@@ -54,6 +53,7 @@ kotlin {
             implementation(project(":DecissionMakingFT"))
             implementation(project(":PrefrencesFT"))
             implementation(project(":SHomeFT"))
+            implementation(project(":AppraiseFT"))
 
             implementation(libs.decompose)
             implementation(libs.decompose.extensions.compose)

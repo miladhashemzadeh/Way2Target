@@ -64,16 +64,21 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.stdlib)
                 api(libs.compose.runtime)
-                api(libs.compose.foundation)
-                api(libs.compose.material3)
+                                api(libs.compose.foundation)
+                                                                api(libs.compose.material3)
+                api(compose.materialIconsExtended)
                 api(libs.compose.ui)
                 api(libs.compose.components.resources)
                 api(libs.compose.uiToolingPreview)
-                api(libs.androidx.lifecycle.viewmodelCompose)
-                api(libs.androidx.navigation.compose)
-                api(libs.androidx.lifecycle.runtimeCompose)
                 api(libs.coil.compose)
                 api(libs.kotlinx.coroutines.core)
+                api(libs.kotlinx.serialization.json)
+
+                api(libs.decompose)
+                api(libs.decompose.extensions.compose)
+                api(libs.mvikotlin)
+                api(libs.mvikotlin.main)
+                api(libs.mvikotlin.extensions.coroutines)
                 implementation(libs.compose.components.resources)
 
             }

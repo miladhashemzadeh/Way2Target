@@ -1,11 +1,12 @@
 package com.vampyreworld.w2t.domain.usecase
 
 import com.vampyreworld.w2t.domain.data.model.Goal
+import kotlinx.coroutines.flow.Flow
 
-class GetGoalsUseCase {
-    operator fun invoke(): List<Goal> = emptyList() // TODO: Implement with repository
+interface GetGoalsUseCase {
+    operator fun invoke(): Flow<List<Goal>>
 }
 
-class SaveGoalUseCase {
-    operator fun invoke(goal: Goal) { /* TODO: Implement with repository */ }
+interface SaveGoalUseCase {
+    suspend operator fun invoke(goal: Goal)
 }
