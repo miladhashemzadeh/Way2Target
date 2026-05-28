@@ -94,7 +94,9 @@ class DefaultRootComponent(
                     goalId = config.goalId,
                     getGoalsUseCase = get(),
                     saveGoalUseCase = get(),
-                    onBack = { navigation.pop() }
+                    onBack = { navigation.pop() },
+                    navigateToDecision = { id -> navigation.push(Screens.DecisionForTarget(id)) },
+                    navigateToMood = { navigation.push(Screens.AddMood) }
                 )
             )
 

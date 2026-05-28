@@ -38,6 +38,15 @@ class TargetStoreFactory(private val storeFactory: StoreFactory) {
                 TargetStore.Intent.CreateMilestone -> {
                     // TODO: Handle CreateMilestone
                 }
+                is TargetStore.Intent.DeleteSubGoal -> {
+                    // TODO: Handle DeleteSubGoal
+                }
+                is TargetStore.Intent.OnChallengeClick -> {
+                    // TODO: Handle OnChallengeClick
+                }
+                is TargetStore.Intent.ReplaceSubGoal -> {
+                    // TODO: Handle ReplaceSubGoal
+                }
             }
         }
     }

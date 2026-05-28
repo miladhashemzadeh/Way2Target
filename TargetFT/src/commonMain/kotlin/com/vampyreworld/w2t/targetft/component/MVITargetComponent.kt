@@ -15,7 +15,9 @@ import kotlinx.coroutines.flow.map
 class MVITargetComponent(
     componentContext: ComponentContext,
     storeFactory: StoreFactory,
-    private val onBack: () -> Unit
+    private val onBack: () -> Unit,
+    private val navigateToDecision: (Long) -> Unit = {},
+    private val navigateToMood: () -> Unit = {}
 ) : TargetComponent, ComponentContext by componentContext {
 
     private val store = instanceKeeper.getStore {
@@ -41,6 +43,13 @@ class MVITargetComponent(
             TargetContract.Intent.CancelGoal -> store.accept(TargetStore.Intent.CancelGoal)
             TargetContract.Intent.CreateChallenge -> store.accept(TargetStore.Intent.CreateChallenge)
             TargetContract.Intent.CreateMilestone -> store.accept(TargetStore.Intent.CreateMilestone)
+            TargetContract.Intent.MakeDecision -> {
+                state.value.selectedGoal?.id?.let(navigateToDecision)
+            }
+            TargetContract.Intent.SetMood -> navigateToMood()
+            is TargetContract.Intent.OnChallengeClick -> store.accept(TargetStore.Intent.OnChallengeClick(intent.challengeId))
+            is TargetContract.Intent.DeleteSubGoal -> store.accept(TargetStore.Intent.DeleteSubGoal(intent.goalId))
+            is TargetContract.Intent.ReplaceSubGoal -> store.accept(TargetStore.Intent.ReplaceSubGoal(intent.goalId))
         }
     }
 }

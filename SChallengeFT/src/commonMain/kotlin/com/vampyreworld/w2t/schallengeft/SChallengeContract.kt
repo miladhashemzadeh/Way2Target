@@ -22,5 +22,6 @@ interface SChallengeContract {
         data object OnTakeAiHelp : Intent
         data object OnMakeDecision : Intent
         data object OnAddSolution : Intent
+        data class OnUpdateStabilityCondition(val conditionId: Long, val isMaintained: Boolean) : Intent
     }
 }

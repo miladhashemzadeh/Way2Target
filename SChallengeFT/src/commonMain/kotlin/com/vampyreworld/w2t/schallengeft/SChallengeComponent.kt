@@ -31,7 +31,7 @@ class DefaultSChallengeComponent(
     private val _state = MutableValue(
         SChallengeContract.State(
             challenges = listOf(
-                Challenges(1, null, "Resource Shortage", "Not enough memory for cache", Cost(0, 0, 0), 50, false, null, emptyList(), emptyList(), emptyList(), 0, null, null)
+                Challenges(1, null, "Resource Shortage", "Not enough memory for cache", Cost(0, 0, 0), 50, false, null, emptyList(), emptyList(), emptyList(), 0, null, null, emptyList())
             ),
             solutions = listOf(
                 Solution(1, "Increase Cache Size", "Adjust configuration to 512MB", SolutionType.DIRECT_CONFRONTATION, Cost(0, 10, 0), 80, SolutionResult.IN_PROGRESS),
@@ -62,6 +62,18 @@ class DefaultSChallengeComponent(
             SChallengeContract.Intent.OnTakeAiHelp -> {}
             SChallengeContract.Intent.OnMakeDecision -> {}
             SChallengeContract.Intent.OnAddSolution -> {}
+            is SChallengeContract.Intent.OnUpdateStabilityCondition -> {
+                // Logic to update stability condition in the state
+                _state.value = _state.value.copy(
+                    selectedChallenge = _state.value.selectedChallenge?.let { challenge ->
+                        challenge.copy(
+                            stabilityConditions = challenge.stabilityConditions.map { 
+                                if (it.id == intent.conditionId) it.copy(isMaintained = intent.isMaintained) else it
+                            }
+                        )
+                    }
+                )
+            }
         }
     }
 }

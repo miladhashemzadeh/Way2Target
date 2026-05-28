@@ -26,20 +26,27 @@ class DefaultTargetComponent(
     private val goalId: Long?,
     private val getGoalsUseCase: GetGoalsUseCase,
     private val saveGoalUseCase: SaveGoalUseCase,
-    private val onBack: () -> Unit
+    private val onBack: () -> Unit,
+    private val navigateToDecision: (Long) -> Unit = {},
+    private val navigateToMood: () -> Unit = {}
 ) : TargetComponent, ComponentContext by componentContext {
 
     private val _state = MutableValue(
         TargetContract.State(
             selectedGoal = goalId?.let { 
-                Goal(it, null, listOf(101, 102), if (it == 1L) GoalTier.MASTER else if (it == 101L) GoalTier.MILESTONE else GoalTier.ACTION, false, emptyList(), null) 
+                Goal(
+                    id = it,
+                    title = "Goal $it",
+                    tier = if (it == 1L) GoalTier.MASTER else if (it == 101L) GoalTier.MILESTONE else GoalTier.ACTION,
+                    childGoalIds = listOf(101, 102)
+                ) 
             },
             relatedGoals = if (goalId == 1L) listOf(
-                Goal(101, 1, emptyList(), GoalTier.MILESTONE, false, emptyList(), null),
-                Goal(102, 1, emptyList(), GoalTier.MILESTONE, false, emptyList(), null)
+                Goal(id = 101, title = "Milestone 101", upperGoalId = 1, tier = GoalTier.MILESTONE),
+                Goal(id = 102, title = "Milestone 102", upperGoalId = 1, tier = GoalTier.MILESTONE)
             ) else emptyList(),
             challenges = if (goalId != null) listOf(
-                Challenges(501, goalId, "Technical Barrier", "Hard to implement X", Cost(10, 50, 100), 80, true, goalId, emptyList(), emptyList(), emptyList(), 10, null, null)
+                Challenges(501, goalId, "Technical Barrier", "Hard to implement X", Cost(10, 50, 100), 80, true, goalId, emptyList(), emptyList(), emptyList(), 10, null, null, emptyList())
             ) else emptyList()
         )
     )
@@ -62,6 +69,21 @@ class DefaultTargetComponent(
             }
             TargetContract.Intent.CreateMilestone -> {
                 // Handle CreateMilestone
+            }
+            TargetContract.Intent.MakeDecision -> {
+                goalId?.let { navigateToDecision(it) }
+            }
+            TargetContract.Intent.SetMood -> {
+                navigateToMood()
+            }
+            is TargetContract.Intent.OnChallengeClick -> {
+                // Navigate to challenge detail
+            }
+            is TargetContract.Intent.DeleteSubGoal -> {
+                // Handle DeleteSubGoal
+            }
+            is TargetContract.Intent.ReplaceSubGoal -> {
+                // Handle ReplaceSubGoal
             }
         }
     }
