@@ -63,6 +63,9 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(project(":domain"))
                 implementation(libs.koin.core)
+                implementation(libs.multiplatform.settings)
+                implementation(libs.multiplatform.settings.noarg)
+                implementation(libs.multiplatform.settings.coroutines)
             }
         }
 
