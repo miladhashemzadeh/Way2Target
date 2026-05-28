@@ -48,3 +48,20 @@ interface HomeContract {
 - **Surgical Edits**: When modifying files, use `replace_file_content` or `multi_replace_file_content` for minimal impact.
 - **Commits**: Every meaningful task must be followed by a git commit with a descriptive message.
 - **Consistency**: Maintain the existing code style and naming conventions.
+
+### 7. RTK Rules
+
+When running terminal commands in this project:
+
+- Prefer `.\rtk` wrappers over raw shell commands whenever possible.
+- Use `.\rtk git status` instead of `git status`
+- Use `.\rtk read <file>` instead of `cat <file>`
+- Use `.\rtk grep <pattern>` instead of `grep`
+- Use `.\rtk find` instead of `find`
+- Use `.\rtk test` for tests
+- Use `.\rtk err <command>` when checking build errors
+- Use `.\rtk diff` for diffs
+- Prefer compact output to minimize token usage
+
+Goal:
+Reduce terminal output size and token usage while keeping relevant debugging information.
