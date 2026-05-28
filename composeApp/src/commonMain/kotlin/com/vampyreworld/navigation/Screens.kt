@@ -24,13 +24,9 @@ sealed class Screens {
     @Serializable
     data object TargetMaster : Screens()
     @Serializable
-    data object AddTargetMilestone : Screens()
+    data class AddGoal(val parentId: Long?, val tier: String) : Screens()
     @Serializable
-    data object AddActionTarget : Screens()
-    @Serializable
-    data class ActionTargetDetail(val goalId: Long) : Screens()
-    @Serializable
-    data class TargetDetail(val goalId: Long?) : Screens()
+    data class TargetDetail(val goalId: Long) : Screens()
 
     @Serializable
     data class ListOfChallenges(val goalId: Long) : Screens()

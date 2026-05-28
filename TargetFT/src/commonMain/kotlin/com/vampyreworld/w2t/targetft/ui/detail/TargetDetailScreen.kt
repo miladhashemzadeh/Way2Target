@@ -49,14 +49,15 @@ fun TargetDetailScreen(
         }
 
         if (goal.tier == GoalTier.MASTER || goal.tier == GoalTier.MILESTONE) {
+            val sectionTitle = if (goal.tier == GoalTier.MASTER) "Milestones" else "Actions"
             item {
-                SectionHeader("Sub-Goals / Milestones")
+                SectionHeader(sectionTitle)
             }
             if (relatedGoals.isEmpty()) {
-                item { EmptySectionText("No milestones added yet.") }
+                item { EmptySectionText("No $sectionTitle added yet.") }
             } else {
-                items(relatedGoals) { milestone ->
-                    GoalListItem(milestone, component)
+                items(relatedGoals) { childGoal ->
+                    GoalListItem(childGoal, component)
                 }
             }
         }
@@ -188,9 +189,10 @@ private fun ActionButtons(goal: Goal, component: TargetComponent) {
             Text("Challenge")
         }
         if (goal.tier != GoalTier.ACTION) {
-            OutlinedButton(onClick = { component.onIntent(TargetContract.Intent.CreateMilestone) }, modifier = Modifier.weight(1f)) {
+            val childType = if (goal.tier == GoalTier.MASTER) "Milestone" else "Action"
+            OutlinedButton(onClick = { component.onIntent(TargetContract.Intent.CreateChildGoal) }, modifier = Modifier.weight(1f)) {
                 Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                Text("Milestone")
+                Text(childType)
             }
         }
     }
@@ -237,9 +239,14 @@ private fun EmptySectionText(text: String) {
 
 @Composable
 private fun GoalListItem(goal: Goal, component: TargetComponent) {
+    val icon = when(goal.tier) {
+        GoalTier.MASTER -> Icons.Default.AccountTree
+        GoalTier.MILESTONE -> Icons.Default.Flag
+        GoalTier.ACTION -> Icons.AutoMirrored.Filled.DirectionsRun
+    }
     ListItem(
-        headlineContent = { Text(goal.title.ifEmpty { "Milestone #${goal.id}" }) },
-        leadingContent = { Icon(Icons.Default.OutlinedFlag, contentDescription = null) },
+        headlineContent = { Text(goal.title.ifEmpty { "${goal.tier.name} #${goal.id}" }) },
+        leadingContent = { Icon(icon, contentDescription = null) },
         trailingContent = { 
             Row {
                 IconButton(onClick = { component.onIntent(TargetContract.Intent.ReplaceSubGoal(goal.id)) }) { 

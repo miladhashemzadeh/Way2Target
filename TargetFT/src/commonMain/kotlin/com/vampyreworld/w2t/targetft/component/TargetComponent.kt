@@ -7,6 +7,7 @@ import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.data.model.Cost
 import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.domain.data.model.GoalTier
+import com.vampyreworld.w2t.domain.data.model.StabilityCondition
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.targetft.TargetContract
@@ -24,11 +25,16 @@ interface TargetComponent {
 class DefaultTargetComponent(
     componentContext: ComponentContext,
     private val goalId: Long?,
+    private val initialTier: String? = null,
+    private val parentId: Long? = null,
     private val getGoalsUseCase: GetGoalsUseCase,
     private val saveGoalUseCase: SaveGoalUseCase,
     private val onBack: () -> Unit,
     private val navigateToDecision: (Long) -> Unit = {},
-    private val navigateToMood: () -> Unit = {}
+    private val navigateToMood: () -> Unit = {},
+    private val navigateToChildTarget: (parentId: Long, tier: String) -> Unit = { _, _ -> },
+    private val navigateToChallenge: (goalId: Long) -> Unit = {},
+    private val navigateToChallengeDetail: (goalId: Long, challengeId: Long) -> Unit = { _, _ -> }
 ) : TargetComponent, ComponentContext by componentContext {
 
     private val _state = MutableValue(
@@ -38,7 +44,8 @@ class DefaultTargetComponent(
                     id = it,
                     title = "Goal $it",
                     tier = if (it == 1L) GoalTier.MASTER else if (it == 101L) GoalTier.MILESTONE else GoalTier.ACTION,
-                    childGoalIds = listOf(101, 102)
+                    childGoalIds = if (it == 1L) listOf(101, 102) else emptyList(),
+                    priority = if (it == 1L) 85 else 40
                 ) 
             },
             relatedGoals = if (goalId == 1L) listOf(
@@ -46,8 +53,26 @@ class DefaultTargetComponent(
                 Goal(id = 102, title = "Milestone 102", upperGoalId = 1, tier = GoalTier.MILESTONE)
             ) else emptyList(),
             challenges = if (goalId != null) listOf(
-                Challenges(501, goalId, "Technical Barrier", "Hard to implement X", Cost(10, 50, 100), 80, true, goalId, emptyList(), emptyList(), emptyList(), 10, null, null, emptyList())
-            ) else emptyList()
+                Challenges(
+                    id = 501, 
+                    solvingBeforeGoalId = goalId, 
+                    title = "Technical Barrier", 
+                    desc = "Hard to implement X", 
+                    cost = Cost(10, 50, 100), 
+                    priority = 80, 
+                    isBarrier = true, 
+                    parentGoalId = goalId, 
+                    moodImpact = 10, 
+                    prosAfterSolve = null, 
+                    consAfterFailure = null,
+                    stabilityConditions = listOf(
+                        StabilityCondition(1, "Internet Access", "Stable connection required", true),
+                        StabilityCondition(2, "Energy Level", "High focus needed", false)
+                    )
+                )
+            ) else emptyList(),
+            initialTier = initialTier,
+            parentId = parentId
         )
     )
     override val state: Value<TargetContract.State> = _state
@@ -65,10 +90,17 @@ class DefaultTargetComponent(
                 // Handle CancelGoal
             }
             TargetContract.Intent.CreateChallenge -> {
-                // Handle CreateChallenge
+                goalId?.let { navigateToChallenge(it) }
             }
-            TargetContract.Intent.CreateMilestone -> {
-                // Handle CreateMilestone
+            TargetContract.Intent.CreateChildGoal -> {
+                state.value.selectedGoal?.let { currentGoal ->
+                    val childTier = when (currentGoal.tier) {
+                        GoalTier.MASTER -> "MILESTONE"
+                        GoalTier.MILESTONE -> "ACTION"
+                        GoalTier.ACTION -> "ACTION"
+                    }
+                    navigateToChildTarget(currentGoal.id, childTier)
+                }
             }
             TargetContract.Intent.MakeDecision -> {
                 goalId?.let { navigateToDecision(it) }
@@ -77,7 +109,7 @@ class DefaultTargetComponent(
                 navigateToMood()
             }
             is TargetContract.Intent.OnChallengeClick -> {
-                // Navigate to challenge detail
+                goalId?.let { navigateToChallengeDetail(it, intent.challengeId) }
             }
             is TargetContract.Intent.DeleteSubGoal -> {
                 // Handle DeleteSubGoal

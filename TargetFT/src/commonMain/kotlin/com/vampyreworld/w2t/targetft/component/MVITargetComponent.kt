@@ -17,7 +17,10 @@ class MVITargetComponent(
     storeFactory: StoreFactory,
     private val onBack: () -> Unit,
     private val navigateToDecision: (Long) -> Unit = {},
-    private val navigateToMood: () -> Unit = {}
+    private val navigateToMood: () -> Unit = {},
+    private val navigateToChildTarget: (parentId: Long, tier: String) -> Unit = { _, _ -> },
+    private val navigateToChallenge: (goalId: Long) -> Unit = {},
+    private val navigateToChallengeDetail: (goalId: Long, challengeId: Long) -> Unit = { _, _ -> }
 ) : TargetComponent, ComponentContext by componentContext {
 
     private val store = instanceKeeper.getStore {
@@ -41,13 +44,30 @@ class MVITargetComponent(
             TargetContract.Intent.OnBackClicked -> onBack()
             TargetContract.Intent.Refresh -> store.accept(TargetStore.Intent.Refresh)
             TargetContract.Intent.CancelGoal -> store.accept(TargetStore.Intent.CancelGoal)
-            TargetContract.Intent.CreateChallenge -> store.accept(TargetStore.Intent.CreateChallenge)
-            TargetContract.Intent.CreateMilestone -> store.accept(TargetStore.Intent.CreateMilestone)
+            TargetContract.Intent.CreateChallenge -> {
+                // If we want to use navigation instead of store for this:
+                state.value.selectedGoal?.id?.let(navigateToChallenge)
+                // store.accept(TargetStore.Intent.CreateChallenge) 
+            }
+            TargetContract.Intent.CreateChildGoal -> {
+                state.value.selectedGoal?.let { currentGoal ->
+                    val childTier = when (currentGoal.tier) {
+                        com.vampyreworld.w2t.domain.data.model.GoalTier.MASTER -> "MILESTONE"
+                        com.vampyreworld.w2t.domain.data.model.GoalTier.MILESTONE -> "ACTION"
+                        com.vampyreworld.w2t.domain.data.model.GoalTier.ACTION -> "ACTION"
+                    }
+                    navigateToChildTarget(currentGoal.id, childTier)
+                }
+            }
             TargetContract.Intent.MakeDecision -> {
                 state.value.selectedGoal?.id?.let(navigateToDecision)
             }
             TargetContract.Intent.SetMood -> navigateToMood()
-            is TargetContract.Intent.OnChallengeClick -> store.accept(TargetStore.Intent.OnChallengeClick(intent.challengeId))
+            is TargetContract.Intent.OnChallengeClick -> {
+                state.value.selectedGoal?.id?.let { goalId ->
+                    navigateToChallengeDetail(goalId, intent.challengeId)
+                }
+            }
             is TargetContract.Intent.DeleteSubGoal -> store.accept(TargetStore.Intent.DeleteSubGoal(intent.goalId))
             is TargetContract.Intent.ReplaceSubGoal -> store.accept(TargetStore.Intent.ReplaceSubGoal(intent.goalId))
         }

@@ -100,6 +100,13 @@ private fun ActionRow(component: SChallengeComponent) {
             Text("AI Help")
         }
         Button(
+            onClick = { component.onIntent(SChallengeContract.Intent.OnAddSolution) },
+            modifier = Modifier.weight(1f)
+        ) {
+            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+            Text("Solution")
+        }
+        OutlinedButton(
             onClick = { component.onIntent(SChallengeContract.Intent.OnMakeDecision) },
             modifier = Modifier.weight(1f)
         ) {

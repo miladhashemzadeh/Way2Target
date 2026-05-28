@@ -7,19 +7,25 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.domain.data.model.GoalTier
 import com.vampyreworld.w2t.targetft.TargetContract
 import com.vampyreworld.w2t.targetft.component.TargetComponent
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TargetCreateScreen(
     component: TargetComponent,
     padding: PaddingValues
 ) {
+    val state by component.state.subscribeAsState()
+    
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-    var selectedTier by remember { mutableStateOf(GoalTier.MASTER) }
+    var selectedTier by remember(state.initialTier) { 
+        mutableStateOf(
+            GoalTier.entries.find { it.name == state.initialTier } ?: GoalTier.MASTER
+        ) 
+    }
 
     Column(
         modifier = Modifier
@@ -28,7 +34,8 @@ fun TargetCreateScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text("Create New Target", style = MaterialTheme.typography.headlineMedium)
+        val parentText = if (state.parentId != null) " as child of #${state.parentId}" else ""
+        Text("Create New ${selectedTier.name} Goal$parentText", style = MaterialTheme.typography.headlineMedium)
         
         OutlinedTextField(
             value = title,
