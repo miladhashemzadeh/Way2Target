@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.data.model.Solution
+import com.vampyreworld.w2t.domain.data.model.StabilityCondition
 import com.vampyreworld.w2t.schallengeft.SChallengeComponent
 import com.vampyreworld.w2t.schallengeft.SChallengeContract
 
@@ -34,6 +35,15 @@ fun ChallengeDetailScreen(
 
         item {
             ActionRow(component)
+        }
+
+        if (challenge.stabilityConditions.isNotEmpty()) {
+            item {
+                Text("Stability Conditions", style = MaterialTheme.typography.titleLarge)
+            }
+            items(challenge.stabilityConditions) { condition ->
+                StabilityConditionItem(condition, component)
+            }
         }
 
         item {
@@ -90,6 +100,13 @@ private fun ActionRow(component: SChallengeComponent) {
             Text("AI Help")
         }
         Button(
+            onClick = { component.onIntent(SChallengeContract.Intent.OnAddSolution) },
+            modifier = Modifier.weight(1f)
+        ) {
+            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+            Text("Solution")
+        }
+        OutlinedButton(
             onClick = { component.onIntent(SChallengeContract.Intent.OnMakeDecision) },
             modifier = Modifier.weight(1f)
         ) {
@@ -113,6 +130,25 @@ private fun SolutionItem(solution: Solution) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("Type: ${solution.solutionType}", style = MaterialTheme.typography.labelSmall)
                 Text("Strength: ${solution.aidStrength}%", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+            }
+        }
+    }
+}
+
+@Composable
+private fun StabilityConditionItem(condition: StabilityCondition, component: SChallengeComponent) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Checkbox(
+            checked = condition.isMaintained,
+            onCheckedChange = { component.onIntent(SChallengeContract.Intent.OnUpdateStabilityCondition(condition.id, it)) }
+        )
+        Column {
+            Text(condition.title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+            if (condition.description.isNotEmpty()) {
+                Text(condition.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }

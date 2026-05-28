@@ -15,6 +15,7 @@ data class Challenges(
     val moodImpact: Int,
     val prosAfterSolve: Long?,
     val consAfterFailure: Long?,
+    val stabilityConditions: List<StabilityCondition> = emptyList(),
 ) : WayNode {
 
 

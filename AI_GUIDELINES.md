@@ -42,7 +42,19 @@ interface HomeContract {
 - Dependencies (UseCases, Stores) must be defined within the feature's Koin module.
 - Features are dynamically installed in the main app via `includes()` in `AppModules.kt`.
 
-### 6. Rules for AI Agents
+### 6. Domain Model Rules
+- **Goal Hierarchy**: Master (Main) -> Milestone (Path) -> Action (Task).
+- **Goal Fields**: Must include `title`, `description`, `priority` (0-100), `status`, and `scheduling`.
+- **Challenges**: Can have `StabilityCondition`s which must be maintained to solve/manage the challenge.
+- **Priority Logic**: Goals with priority > 70 should trigger/suggest "Decision Making" flow.
+
+### 7. Module Dependency Rules
+- **Domain**: Pure Kotlin, no dependencies. Contains models, repository interfaces, and use cases.
+- **Data**: Depends on **Domain**. Implements repositories.
+- **SharedUI**: Contains common UI components, Theme, and Decompose utilities.
+- **Feature Modules (*FT)**: Depend on **Domain** and **SharedUI**. Handle specific user flows.
+
+### 8. Rules for AI Agents
 - **No ViewModels**: Do not create or use `androidx.lifecycle.ViewModel`. Use Decompose Components instead.
 - **MVI Pattern**: Always follow the Intent -> Store -> State/Label flow.
 - **Surgical Edits**: When modifying files, use `replace_file_content` or `multi_replace_file_content` for minimal impact.

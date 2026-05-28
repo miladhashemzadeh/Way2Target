@@ -42,15 +42,22 @@ fun TargetDetailScreen(
             ActionButtons(goal, component)
         }
 
-        if (goal.tier == GoalTier.MASTER || goal.tier == GoalTier.MILESTONE) {
+        if (goal.priority > 70) {
             item {
-                SectionHeader("Sub-Goals / Milestones")
+                PriorityDecisionSection(component)
+            }
+        }
+
+        if (goal.tier == GoalTier.MASTER || goal.tier == GoalTier.MILESTONE) {
+            val sectionTitle = if (goal.tier == GoalTier.MASTER) "Milestones" else "Actions"
+            item {
+                SectionHeader(sectionTitle)
             }
             if (relatedGoals.isEmpty()) {
-                item { EmptySectionText("No milestones added yet.") }
+                item { EmptySectionText("No $sectionTitle added yet.") }
             } else {
-                items(relatedGoals) { milestone ->
-                    GoalListItem(milestone)
+                items(relatedGoals) { childGoal ->
+                    GoalListItem(childGoal, component)
                 }
             }
         }
@@ -61,14 +68,15 @@ fun TargetDetailScreen(
         if (challenges.isEmpty()) {
             item { EmptySectionText("No active challenges.") }
         } else {
-            items(challenges) { challenge ->
+            val sortedChallenges = challenges.sortedByDescending { it.priority }
+            items(sortedChallenges) { challenge ->
                 ChallengeListItem(challenge)
             }
         }
         
         if (goal.tier == GoalTier.ACTION) {
             item {
-                ScheduleSection()
+                ScheduleSection(goal, component)
             }
         }
 
@@ -110,18 +118,64 @@ private fun HeaderSection(goal: Goal) {
                     label = { Text(goal.tier.name) },
                     colors = SuggestionChipDefaults.suggestionChipColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
                 )
+                Spacer(modifier = Modifier.weight(1f))
+                if (goal.priority > 0) {
+                    Badge(containerColor = MaterialTheme.colorScheme.errorContainer) {
+                        Text("Priority: ${goal.priority}", modifier = Modifier.padding(4.dp))
+                    }
+                }
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Target Goal #${goal.id}", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+            Text(
+                text = goal.title.ifEmpty { "Target Goal #${goal.id}" },
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Description of the target goes here. This is a focus area that requires consistent effort to achieve results.",
+                text = goal.description.ifEmpty { "No description provided." },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(16.dp))
             LinearProgressIndicator(progress = { 0.45f }, modifier = Modifier.fillMaxWidth().height(8.dp), strokeCap = androidx.compose.ui.graphics.StrokeCap.Round)
             Text(text = "45% Complete", style = MaterialTheme.typography.labelSmall, modifier = Modifier.align(Alignment.End))
+        }
+    }
+}
+
+@Composable
+private fun PriorityDecisionSection(component: TargetComponent) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                "High Priority Target",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.error
+            )
+            Text(
+                "This goal has a high priority. It is recommended to make a formal decision or set your mood before proceeding.",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = { component.onIntent(TargetContract.Intent.MakeDecision) },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Make Decision")
+                }
+                OutlinedButton(
+                    onClick = { component.onIntent(TargetContract.Intent.SetMood) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Set Mood")
+                }
+            }
         }
     }
 }
@@ -135,30 +189,39 @@ private fun ActionButtons(goal: Goal, component: TargetComponent) {
             Text("Challenge")
         }
         if (goal.tier != GoalTier.ACTION) {
-            OutlinedButton(onClick = { component.onIntent(TargetContract.Intent.CreateMilestone) }, modifier = Modifier.weight(1f)) {
+            val childType = if (goal.tier == GoalTier.MASTER) "Milestone" else "Action"
+            OutlinedButton(onClick = { component.onIntent(TargetContract.Intent.CreateChildGoal) }, modifier = Modifier.weight(1f)) {
                 Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                Text("Milestone")
+                Text(childType)
             }
         }
     }
 }
 
 @Composable
-private fun ScheduleSection() {
+private fun ScheduleSection(goal: Goal, component: TargetComponent) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Schedules", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Scheduling & Notifications", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.weight(1f))
+                Switch(
+                    checked = goal.notificationEnabled,
+                    onCheckedChange = { /* Update goal via component */ }
+                )
+            }
             Spacer(modifier = Modifier.height(12.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Notifications, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.width(12.dp))
-                Text("Daily at 09:00 AM", style = MaterialTheme.typography.bodyMedium)
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.DateRange, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                Spacer(modifier = Modifier.width(12.dp))
-                Text("Weekdays Only", style = MaterialTheme.typography.bodyMedium)
+                val scheduleText = goal.scheduling?.let { 
+                    "Starts at: ${it.startTime ?: "Not set"}"
+                } ?: "No schedule set"
+                Text(scheduleText, style = MaterialTheme.typography.bodyMedium)
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(onClick = { /* Change schedule */ }) {
+                    Icon(Icons.Default.Edit, contentDescription = "Edit Schedule", modifier = Modifier.size(18.dp))
+                }
             }
         }
     }
@@ -175,11 +238,25 @@ private fun EmptySectionText(text: String) {
 }
 
 @Composable
-private fun GoalListItem(goal: Goal) {
+private fun GoalListItem(goal: Goal, component: TargetComponent) {
+    val icon = when(goal.tier) {
+        GoalTier.MASTER -> Icons.Default.AccountTree
+        GoalTier.MILESTONE -> Icons.Default.Flag
+        GoalTier.ACTION -> Icons.AutoMirrored.Filled.DirectionsRun
+    }
     ListItem(
-        headlineContent = { Text("Milestone #${goal.id}") },
-        leadingContent = { Icon(Icons.Default.OutlinedFlag, contentDescription = null) },
-        trailingContent = { Icon(Icons.Default.ChevronRight, contentDescription = null) },
+        headlineContent = { Text(goal.title.ifEmpty { "${goal.tier.name} #${goal.id}" }) },
+        leadingContent = { Icon(icon, contentDescription = null) },
+        trailingContent = { 
+            Row {
+                IconButton(onClick = { component.onIntent(TargetContract.Intent.ReplaceSubGoal(goal.id)) }) { 
+                    Icon(Icons.Default.SwapHoriz, contentDescription = "Replace") 
+                }
+                IconButton(onClick = { component.onIntent(TargetContract.Intent.DeleteSubGoal(goal.id)) }) { 
+                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error) 
+                }
+            }
+        },
         modifier = Modifier.background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.medium).clickable {  }
     )
 }
@@ -188,8 +265,36 @@ private fun GoalListItem(goal: Goal) {
 private fun ChallengeListItem(challenge: Challenges) {
     ListItem(
         headlineContent = { Text(challenge.title) },
-        supportingContent = { Text(challenge.desc) },
-        leadingContent = { Icon(Icons.Default.FlashOn, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary) },
+        supportingContent = { 
+            Column {
+                Text(challenge.desc)
+                if (challenge.stabilityConditions.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier.padding(top = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        challenge.stabilityConditions.take(2).forEach { condition ->
+                            Surface(
+                                color = if (condition.isMaintained) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
+                                shape = MaterialTheme.shapes.extraSmall
+                            ) {
+                                Text(
+                                    condition.title,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        leadingContent = { 
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Icon(Icons.Default.FlashOn, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary)
+                Text("${challenge.priority}", style = MaterialTheme.typography.labelSmall)
+            }
+        },
         trailingContent = { Icon(Icons.Default.ChevronRight, contentDescription = null) },
         modifier = Modifier.background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.medium).clickable {  }
     )

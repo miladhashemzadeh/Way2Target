@@ -8,7 +8,9 @@ interface TargetContract {
         val isLoading: Boolean = false,
         val selectedGoal: Goal? = null,
         val relatedGoals: List<Goal> = emptyList(),
-        val challenges: List<Challenges> = emptyList()
+        val challenges: List<Challenges> = emptyList(),
+        val initialTier: String? = null,
+        val parentId: Long? = null
     )
 
     sealed interface SideEffect {
@@ -19,7 +21,12 @@ interface TargetContract {
         data object OnBackClicked : Intent
         data object Refresh : Intent
         data object CreateChallenge : Intent
-        data object CreateMilestone : Intent
+        data object CreateChildGoal : Intent
         data object CancelGoal : Intent
+        data object MakeDecision : Intent
+        data object SetMood : Intent
+        data class OnChallengeClick(val challengeId: Long) : Intent
+        data class DeleteSubGoal(val goalId: Long) : Intent
+        data class ReplaceSubGoal(val goalId: Long) : Intent
     }
 }

@@ -37,11 +37,11 @@ class DefaultHomeComponent(
     private val _state = MutableValue(
         HomeContract.State(
             masterGoals = listOf(
-                Goal(1, null, emptyList(), GoalTier.MASTER, false, emptyList(), null),
-                Goal(2, null, emptyList(), GoalTier.MASTER, false, emptyList(), null),
-                Goal(3, null, emptyList(), GoalTier.MASTER, false, emptyList(), null),
-                Goal(4, null, emptyList(), GoalTier.MASTER, false, emptyList(), null),
-                Goal(5, null, emptyList(), GoalTier.MASTER, false, emptyList(), null)
+                Goal(id = 1, title = "Master Goal 1", tier = GoalTier.MASTER),
+                Goal(id = 2, title = "Master Goal 2", tier = GoalTier.MASTER),
+                Goal(id = 3, title = "Master Goal 3", tier = GoalTier.MASTER),
+                Goal(id = 4, title = "Master Goal 4", tier = GoalTier.MASTER),
+                Goal(id = 5, title = "Master Goal 5", tier = GoalTier.MASTER)
             )
         )
     )
