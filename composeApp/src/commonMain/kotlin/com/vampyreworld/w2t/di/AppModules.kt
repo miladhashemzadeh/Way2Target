@@ -1,6 +1,7 @@
 package com.vampyreworld.w2t.di
 
-import com.vampreworld.w2t.data.di.dataModule
+import com.vampreworld.w2t.data.di.dataModule as settingsModule
+import com.vampyreworld.w2t.di.dataModule as databaseModule
 import com.vampyreworld.w2t.domain.di.domainModule
 import com.vampyreworld.w2t.appraiseft.di.appraiseModule
 import com.vampyreworld.w2t.decissionmakingft.decisionMakingModule
@@ -14,7 +15,8 @@ import org.koin.dsl.module
 
 val featureModules = module {
     includes(
-        dataModule,
+        settingsModule,
+        databaseModule,
         domainModule,
         targetModule,
         moodAddModule,
