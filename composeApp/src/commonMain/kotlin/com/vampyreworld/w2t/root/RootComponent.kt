@@ -16,6 +16,7 @@ import com.vampyreworld.w2t.targetft.presentation.component.TargetMasterComponen
 
 interface RootComponent {
     val childStack: Value<ChildStack<*, Child>>
+    val isDarkMode: Value<Boolean>
 
     sealed class Child {
         data class Splash(val component: SplashComponent) : Child()

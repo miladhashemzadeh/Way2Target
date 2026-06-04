@@ -1,5 +1,7 @@
 package com.vampyreworld.w2t.di
 
+import com.vampreworld.w2t.data.di.dataModule
+import com.vampyreworld.w2t.domain.di.domainModule
 import com.vampyreworld.w2t.appraiseft.di.appraiseModule
 import com.vampyreworld.w2t.decissionmakingft.decisionMakingModule
 import com.vampyreworld.w2t.moodaddft.moodAddModule
@@ -12,6 +14,8 @@ import org.koin.dsl.module
 
 val featureModules = module {
     includes(
+        dataModule,
+        domainModule,
         targetModule,
         moodAddModule,
         sChallengeModule,
@@ -19,7 +23,7 @@ val featureModules = module {
         solutionModule,
         prefrencesModule,
         sHomeModule,
-        appraiseModule
+        appraiseModule,
     )
 }
 

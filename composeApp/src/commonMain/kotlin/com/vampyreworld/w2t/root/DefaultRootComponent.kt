@@ -23,12 +23,31 @@ import com.vampyreworld.w2t.splash.DefaultSplashComponent
 import com.vampyreworld.w2t.targetft.component.DefaultTargetComponent
 import com.vampyreworld.w2t.targetft.presentation.component.DefaultTargetMasterComponent
 import com.vampyreworld.w2t.targetft.presentation.component.TargetMasterComponent
+import com.arkivanov.decompose.value.MutableValue
+import com.arkivanov.decompose.value.update
+import com.vampyreworld.w2t.domain.usecase.prefrences.GetThemeUseCase
+import com.vampyreworld.w2t.sharedui.arch.componentScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
 class DefaultRootComponent(
     componentContext: ComponentContext
 ) : RootComponent, KoinComponent, ComponentContext by componentContext {
+
+    private val getThemeUseCase: GetThemeUseCase = get()
+
+    private val _isDarkMode = MutableValue(true)
+    override val isDarkMode: Value<Boolean> = _isDarkMode
+
+    init {
+        getThemeUseCase()
+            .onEach { isDark ->
+                _isDarkMode.update { isDark }
+            }
+            .launchIn(componentScope())
+    }
 
     private val navigation = StackNavigation<Screens>()
 
@@ -232,6 +251,8 @@ class DefaultRootComponent(
             is Screens.Preferences -> RootComponent.Child.Preferences(
                 DefaultPrefrencesComponent(
                     componentContext = componentContext,
+                    getThemeUseCase = get(),
+                    setThemeUseCase = get(),
                     onBack = { navigation.pop() }
                 )
             )

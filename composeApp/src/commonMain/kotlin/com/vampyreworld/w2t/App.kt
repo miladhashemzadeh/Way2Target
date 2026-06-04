@@ -4,10 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.aboutus.ui.AboutUsScreen
 import com.vampyreworld.w2t.decissionmakingft.ui.DecisionMakingScreen
 import com.vampyreworld.w2t.shomeft.ui.HomeScreen
@@ -25,8 +27,10 @@ import org.koin.compose.KoinContext
 
 @Composable
 fun App(root: RootComponent) {
+    val isDarkMode by root.isDarkMode.subscribeAsState()
+
     KoinContext {
-        W2TTheme {
+        W2TTheme(isDarkMode = isDarkMode) {
             Children(
                 modifier = Modifier.background(MaterialTheme.colorScheme.background),
                 stack = root.childStack,

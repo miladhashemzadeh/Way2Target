@@ -44,6 +44,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(project(":di"))
+            implementation(project(":data"))
             implementation(project(":domain"))
             implementation(project(":sharedUI"))
             implementation(project(":MoodAddFT"))
