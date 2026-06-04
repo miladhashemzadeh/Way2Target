@@ -1,0 +1,164 @@
+CREATE TABLE GoalEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    upperGoalId INTEGER,
+    childGoalIds TEXT NOT NULL,
+    tier TEXT NOT NULL,
+    isSkill INTEGER NOT NULL,
+    wayIds TEXT NOT NULL,
+    walkedWayId INTEGER,
+    priority INTEGER NOT NULL,
+    status TEXT NOT NULL,
+    scheduling TEXT,
+    notificationEnabled INTEGER NOT NULL
+);
+
+CREATE TABLE WayEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    goalId INTEGER NOT NULL,
+    status TEXT NOT NULL,
+    steps TEXT
+);
+
+CREATE TABLE SolutionEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    solutionType TEXT NOT NULL,
+    cost TEXT NOT NULL,
+    aidStrength INTEGER NOT NULL,
+    result TEXT NOT NULL
+);
+
+CREATE TABLE DecisionEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    context TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    cost TEXT NOT NULL,
+    userRate INTEGER NOT NULL,
+    aiScore INTEGER NOT NULL
+);
+
+CREATE TABLE ChallengesEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    solvingBeforeGoalId INTEGER,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    cost TEXT NOT NULL,
+    priority INTEGER NOT NULL,
+    isBarrier INTEGER NOT NULL,
+    parentGoalId INTEGER,
+    preferredSolutions TEXT NOT NULL,
+    helpsToSolution TEXT NOT NULL,
+    failedDecisions TEXT NOT NULL,
+    moodImpact INTEGER NOT NULL,
+    prosAfterSolve INTEGER,
+    consAfterFailure INTEGER,
+    stabilityConditions TEXT
+);
+
+CREATE TABLE UserMoodEntity (
+    timestamp INTEGER PRIMARY KEY,
+    energyRate INTEGER NOT NULL,
+    creativityRate INTEGER NOT NULL,
+    focusRate INTEGER NOT NULL,
+    socialRate INTEGER NOT NULL,
+    selfControlRate INTEGER NOT NULL
+);
+
+-- Queries for Goal
+insertGoal:
+INSERT INTO GoalEntity (title, description, upperGoalId, childGoalIds, tier, isSkill, wayIds, walkedWayId, priority, status, scheduling, notificationEnabled)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateGoal:
+UPDATE GoalEntity SET title = ?, description = ?, upperGoalId = ?, childGoalIds = ?, tier = ?, isSkill = ?, wayIds = ?, walkedWayId = ?, priority = ?, status = ?, scheduling = ?, notificationEnabled = ?
+WHERE id = ?;
+
+deleteGoal:
+DELETE FROM GoalEntity WHERE id = ?;
+
+selectAllGoals:
+SELECT * FROM GoalEntity;
+
+selectGoalById:
+SELECT * FROM GoalEntity WHERE id = ?;
+
+-- Queries for Way
+insertWay:
+INSERT INTO WayEntity (goalId, status, steps)
+VALUES (?, ?, ?);
+
+updateWay:
+UPDATE WayEntity SET goalId = ?, status = ?, steps = ?
+WHERE id = ?;
+
+selectAllWays:
+SELECT * FROM WayEntity;
+
+selectWayById:
+SELECT * FROM WayEntity WHERE id = ?;
+
+-- Queries for Solution
+insertSolution:
+INSERT INTO SolutionEntity (title, description, solutionType, cost, aidStrength, result)
+VALUES (?, ?, ?, ?, ?, ?);
+
+updateSolution:
+UPDATE SolutionEntity SET title = ?, description = ?, solutionType = ?, cost = ?, aidStrength = ?, result = ?
+WHERE id = ?;
+
+deleteSolution:
+DELETE FROM SolutionEntity WHERE id = ?;
+
+selectAllSolutions:
+SELECT * FROM SolutionEntity;
+
+selectSolutionById:
+SELECT * FROM SolutionEntity WHERE id = ?;
+
+-- Queries for Decision
+insertDecision:
+INSERT INTO DecisionEntity (context, title, description, cost, userRate, aiScore)
+VALUES (?, ?, ?, ?, ?, ?);
+
+updateDecision:
+UPDATE DecisionEntity SET context = ?, title = ?, description = ?, cost = ?, userRate = ?, aiScore = ?
+WHERE id = ?;
+
+deleteDecision:
+DELETE FROM DecisionEntity WHERE id = ?;
+
+selectAllDecisions:
+SELECT * FROM DecisionEntity;
+
+selectDecisionById:
+SELECT * FROM DecisionEntity WHERE id = ?;
+
+-- Queries for Challenges
+insertChallenge:
+INSERT INTO ChallengesEntity (solvingBeforeGoalId, title, description, cost, priority, isBarrier, parentGoalId, preferredSolutions, helpsToSolution, failedDecisions, moodImpact, prosAfterSolve, consAfterFailure, stabilityConditions)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateChallenge:
+UPDATE ChallengesEntity SET solvingBeforeGoalId = ?, title = ?, description = ?, cost = ?, priority = ?, isBarrier = ?, parentGoalId = ?, preferredSolutions = ?, helpsToSolution = ?, failedDecisions = ?, moodImpact = ?, prosAfterSolve = ?, consAfterFailure = ?, stabilityConditions = ?
+WHERE id = ?;
+
+deleteChallenge:
+DELETE FROM ChallengesEntity WHERE id = ?;
+
+selectAllChallenges:
+SELECT * FROM ChallengesEntity;
+
+selectChallengeById:
+SELECT * FROM ChallengesEntity WHERE id = ?;
+
+-- Queries for UserMood
+insertUserMood:
+INSERT INTO UserMoodEntity (timestamp, energyRate, creativityRate, focusRate, socialRate, selfControlRate)
+VALUES (?, ?, ?, ?, ?, ?);
+
+selectAllUserMoods:
+SELECT * FROM UserMoodEntity ORDER BY timestamp DESC;

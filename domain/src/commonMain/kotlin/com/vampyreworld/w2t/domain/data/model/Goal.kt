@@ -1,5 +1,8 @@
 package com.vampyreworld.w2t.domain.data.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Goal(
     val id: Long,
     val title: String = "",
@@ -16,12 +19,14 @@ data class Goal(
     val notificationEnabled: Boolean = false
 )
 
+@Serializable
 enum class GoalTier {
     MASTER,    // Main Target
     MILESTONE, // Path Target
     ACTION     // Action Goal
 }
 
+@Serializable
 enum class GoalStatus {
     ACTIVE,
     COMPLETED,
@@ -29,6 +34,7 @@ enum class GoalStatus {
     ON_HOLD
 }
 
+@Serializable
 data class SchedulingInfo(
     val startTime: Long? = null, // Epoch millis
     val endTime: Long? = null,

@@ -3,10 +3,12 @@ package com.vampyreworld.w2t.decissionmakingft
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
+import com.vampyreworld.w2t.core.utils.componentScope
 import com.vampyreworld.w2t.domain.usecase.SaveDecisionUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 
 interface DecisionMakingComponent {
     val state: Value<DecisionMakingContract.State>
@@ -21,6 +23,7 @@ class DefaultDecisionMakingComponent(
     private val onBack: () -> Unit
 ) : DecisionMakingComponent, ComponentContext by componentContext {
 
+    private val scope = componentScope()
     private val _state = MutableValue(DecisionMakingContract.State())
     override val state: Value<DecisionMakingContract.State> = _state
 
@@ -31,7 +34,21 @@ class DefaultDecisionMakingComponent(
         when (intent) {
             DecisionMakingContract.Intent.OnBackClicked -> onBack()
             is DecisionMakingContract.Intent.OnMakeDecision -> {
-                // Handle make decision
+                makeDecision(intent)
+            }
+        }
+    }
+
+    private fun makeDecision(intent: DecisionMakingContract.Intent.OnMakeDecision) {
+        scope.launch {
+            _state.value = _state.value.copy(isLoading = true)
+            try {
+                saveDecisionUseCase(intent.decision)
+                // Possibly dispatch a side effect or update state
+            } catch (e: Exception) {
+                // Handle error
+            } finally {
+                _state.value = _state.value.copy(isLoading = false)
             }
         }
     }

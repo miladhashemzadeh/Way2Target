@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
+    alias(libs.plugins.sqldelight)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
@@ -26,10 +28,6 @@ kotlin {
 
     // For iOS targets, this is also where you should
     // configure native binary output. For more information, see:
-    // https://kotlinlang.org/docs/multiplatform-build-native-binaries.html#build-xcframeworks
-
-    // A step-by-step guide on how to include this library in an XCode
-    // project can be found here:
     // https://developer.android.com/kotlin/multiplatform/migrate
     val xcfName = "dataKit"
 
@@ -66,6 +64,10 @@ kotlin {
                 implementation(libs.multiplatform.settings)
                 implementation(libs.multiplatform.settings.noarg)
                 implementation(libs.multiplatform.settings.coroutines)
+                implementation(libs.kotlinx.serialization.json)
+                
+                implementation(libs.sqldelight.runtime)
+                implementation(libs.sqldelight.coroutines.extensions)
             }
         }
 
@@ -77,9 +79,13 @@ kotlin {
 
         androidMain {
             dependencies {
-                // Add Android-specific dependencies here. Note that this source set depends on
-                // commonMain by default and will correctly pull the Android artifacts of any KMP
-                // dependencies declared in commonMain.
+                implementation(libs.sqldelight.android.driver)
+            }
+        }
+
+        jvmMain {
+            dependencies {
+                implementation(libs.sqldelight.sqlite.driver)
             }
         }
 
@@ -93,13 +99,17 @@ kotlin {
 
         iosMain {
             dependencies {
-                // Add iOS-specific dependencies here. This a source set created by Kotlin Gradle
-                // Plugin (KGP) that each specific iOS target (e.g., iosX64) depends on as
-                // part of KMP’s default source set hierarchy. Note that this source set depends
-                // on common by default and will correctly pull the iOS artifacts of any
-                // KMP dependencies declared in commonMain.
+                implementation(libs.sqldelight.native.driver)
             }
         }
     }
+}
 
+sqldelight {
+    databases {
+        create("W2TDatabase") {
+            packageName.set("com.vampyreworld.w2t.database")
+            srcDirs("src/commonMain/sqldelight")
+        }
+    }
 }

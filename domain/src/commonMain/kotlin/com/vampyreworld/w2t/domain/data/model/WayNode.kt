@@ -1,3 +1,6 @@
 package com.vampyreworld.w2t.domain.data.model
 
-interface WayNode
+import kotlinx.serialization.Serializable
+
+@Serializable
+sealed interface WayNode

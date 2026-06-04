@@ -1,4 +1,6 @@
 package com.vampyreworld.w2t.domain.data.model
+
+import kotlinx.serialization.Serializable
  
 /**
  * Unified cost representation used across Decision, Solution, and Challenge.
@@ -13,6 +15,7 @@ package com.vampyreworld.w2t.domain.data.model
  * doesn't make sense (e.g. "$50–$200/mo"), but prefer [moneyCost] (0–100 relative scale)
  * for ML features.
  */
+@Serializable
 data class Cost(
     val energyCost: Int,            // 0–100 relative effort scale; -1 = unknown
     val timeCost: Int,              // 0–100 relative time scale; -1 = unknown
@@ -25,4 +28,3 @@ data class Cost(
         if (moneyCost  < 0) 0.5f else moneyCost  / 100f,
     )
 }
- 

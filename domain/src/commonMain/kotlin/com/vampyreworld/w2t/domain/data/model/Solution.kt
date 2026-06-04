@@ -1,5 +1,8 @@
 package com.vampyreworld.w2t.domain.data.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Solution(
     val id: Long,
     val title: String,
@@ -10,6 +13,7 @@ data class Solution(
     val result: SolutionResult = SolutionResult.UNKNOWN,
 )
 
+@Serializable
 enum class SolutionType {
     AVOIDANCE,
     DIRECT_CONFRONTATION,
@@ -22,6 +26,8 @@ enum class SolutionType {
     HELP,
     TRY_AND_FAIL
 }
+
+@Serializable
 enum class SolutionResult {
     IN_PROGRESS,
     FAILED,

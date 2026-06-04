@@ -9,7 +9,6 @@ import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
-import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import com.vampyreworld.navigation.Screens
 import com.vampyreworld.w2t.aboutus.DefaultAboutUsComponent
 import com.vampyreworld.w2t.decissionmakingft.DefaultDecisionMakingComponent
@@ -80,6 +79,7 @@ class DefaultRootComponent(
             is Screens.Home -> RootComponent.Child.Home(
                 DefaultHomeComponent(
                     componentContext = componentContext,
+                    getGoalsUseCase = get(),
                     navigateToTarget = { id -> 
                         if (id == null) {
                             navigation.push(Screens.AddGoal(null, "MASTER"))
@@ -172,6 +172,7 @@ class DefaultRootComponent(
                     challengeId = null,
                     addChallengeUseCase = get(),
                     getChallengesUseCase = get(),
+                    getChallengeByIdUseCase = get(),
                     onBack = { navigation.pop() },
                     navigateToAddSolution = { challengeId -> 
                         navigation.push(Screens.AddSolution(null, challengeId)) 
@@ -183,6 +184,9 @@ class DefaultRootComponent(
                 DefaultSolutionComponent(
                     componentContext = componentContext,
                     addSolutionUseCase = get(),
+                    getSolutionsUseCase = get(),
+                    goalId = null,
+                    challengeId = null,
                     onBack = { navigation.pop() }
                 )
             )
@@ -199,8 +203,6 @@ class DefaultRootComponent(
             is Screens.AppraiseTarget -> RootComponent.Child.Splash(
                 DefaultSplashComponent(componentContext, { navigation.pop() })
             )
-            
-            // Add other cases as I implement them...
 
             is Screens.AddMood -> RootComponent.Child.MoodAdd(
                 DefaultMoodAddComponent(
@@ -218,6 +220,7 @@ class DefaultRootComponent(
                     challengeId = null,
                     addChallengeUseCase = get(),
                     getChallengesUseCase = get(),
+                    getChallengeByIdUseCase = get(),
                     onBack = { navigation.pop() },
                     navigateToAddSolution = { challengeId -> 
                         navigation.push(Screens.AddSolution(null, challengeId)) 
@@ -232,6 +235,7 @@ class DefaultRootComponent(
                     challengeId = config.challengeId,
                     addChallengeUseCase = get(),
                     getChallengesUseCase = get(),
+                    getChallengeByIdUseCase = get(),
                     onBack = { navigation.pop() },
                     navigateToAddSolution = { challengeId -> 
                         navigation.push(Screens.AddSolution(null, challengeId)) 
@@ -244,6 +248,9 @@ class DefaultRootComponent(
                 DefaultSolutionComponent(
                     componentContext = componentContext,
                     addSolutionUseCase = get(),
+                    getSolutionsUseCase = get(),
+                    goalId = config.goalId,
+                    challengeId = config.challengeId,
                     onBack = { navigation.pop() }
                 )
             )

@@ -5,6 +5,7 @@ import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
+import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.targetft.presentation.intent.TargetMasterIntent
 import com.vampyreworld.w2t.targetft.presentation.state.TargetMasterState
@@ -26,9 +27,8 @@ class TargetMasterStoreFactory(
 
     private sealed interface Msg {
         data object Loading : Msg
-        data class Loaded(val goals: com.vampyreworld.w2t.domain.data.model.Goal) : Msg // Wait, should be list
         data class Error(val message: String) : Msg
-        data class GoalsLoaded(val goals: List<com.vampyreworld.w2t.domain.data.model.Goal>) : Msg
+        data class GoalsLoaded(val goals: List<Goal>) : Msg
     }
 
     private inner class ExecutorImpl : CoroutineExecutor<TargetMasterIntent, Unit, TargetMasterState, Msg, TargetMasterStore.Label>() {
@@ -66,7 +66,6 @@ class TargetMasterStoreFactory(
                 is Msg.Loading -> copy(isLoading = true, error = null)
                 is Msg.GoalsLoaded -> copy(isLoading = false, goals = msg.goals)
                 is Msg.Error -> copy(isLoading = false, error = msg.message)
-                else -> this
             }
     }
 }
