@@ -1,9 +1,12 @@
 package com.vampyreworld.w2t.solutionft
 
+import com.vampyreworld.w2t.domain.data.model.Solution
+
 interface SolutionContract {
     data class State(
         val isLoading: Boolean = false,
-        val solutionText: String = ""
+        val solutionText: String = "",
+        val solutions: List<Solution> = emptyList()
     )
 
     sealed interface SideEffect {

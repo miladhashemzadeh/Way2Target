@@ -3,14 +3,18 @@ package com.vampyreworld.w2t.shomeft
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
+import com.vampyreworld.w2t.core.utils.componentScope
 import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.domain.data.model.GoalTier
+import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 
 interface HomeComponent {
     val state: Value<HomeContract.State>
-    val sideEffects: kotlinx.coroutines.flow.Flow<HomeContract.SideEffect>
+    val sideEffects: Flow<HomeContract.SideEffect>
 
     fun onIntent(intent: HomeContract.Intent)
 
@@ -25,6 +29,7 @@ interface HomeComponent {
 
 class DefaultHomeComponent(
     componentContext: ComponentContext,
+    private val getGoalsUseCase: GetGoalsUseCase,
     private val navigateToTarget: (Long?) -> Unit,
     private val navigateToMoodAdd: () -> Unit,
     private val navigateToSChallenge: (Long) -> Unit,
@@ -34,21 +39,26 @@ class DefaultHomeComponent(
     private val navigateToAboutUs: () -> Unit
 ) : HomeComponent, ComponentContext by componentContext {
 
-    private val _state = MutableValue(
-        HomeContract.State(
-            masterGoals = listOf(
-                Goal(id = 1, title = "Master Goal 1", tier = GoalTier.MASTER),
-                Goal(id = 2, title = "Master Goal 2", tier = GoalTier.MASTER),
-                Goal(id = 3, title = "Master Goal 3", tier = GoalTier.MASTER),
-                Goal(id = 4, title = "Master Goal 4", tier = GoalTier.MASTER),
-                Goal(id = 5, title = "Master Goal 5", tier = GoalTier.MASTER)
-            )
-        )
-    )
+    private val scope = componentScope()
+    private val _state = MutableValue(HomeContract.State())
     override val state: Value<HomeContract.State> = _state
 
     private val _sideEffects = MutableSharedFlow<HomeContract.SideEffect>()
     override val sideEffects = _sideEffects.asSharedFlow()
+
+    init {
+        loadGoals()
+    }
+
+    private fun loadGoals() {
+        scope.launch {
+            _state.value = _state.value.copy(isLoading = true)
+            getGoalsUseCase().collect { goals ->
+                val masterGoals = goals.filter { it.tier == GoalTier.MASTER }
+                _state.value = _state.value.copy(masterGoals = masterGoals, isLoading = false)
+            }
+        }
+    }
 
     override fun onIntent(intent: HomeContract.Intent) {
         when (intent) {
@@ -62,10 +72,7 @@ class DefaultHomeComponent(
                 navigateToTarget(intent.goalId)
             }
             is HomeContract.Intent.DeleteMasterGoal -> {
-                // For now just remove from list to show it "works"
-                _state.value = _state.value.copy(
-                    masterGoals = _state.value.masterGoals.filter { it.id != intent.goalId }
-                )
+                // Delete logic should call a DeleteGoalUseCase (needs implementation)
             }
             is HomeContract.Intent.CreateChallengeForMasterGoal -> {
                 navigateToSChallenge(intent.goalId)

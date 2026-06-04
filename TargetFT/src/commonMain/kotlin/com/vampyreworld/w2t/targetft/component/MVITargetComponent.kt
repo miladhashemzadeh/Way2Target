@@ -5,6 +5,8 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
+import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
+import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.sharedui.arch.asValue
 import com.vampyreworld.w2t.targetft.TargetContract
 import com.vampyreworld.w2t.targetft.store.TargetStore
@@ -15,6 +17,8 @@ import kotlinx.coroutines.flow.map
 class MVITargetComponent(
     componentContext: ComponentContext,
     storeFactory: StoreFactory,
+    getGoalsUseCase: GetGoalsUseCase,
+    saveGoalUseCase: SaveGoalUseCase,
     private val onBack: () -> Unit,
     private val navigateToDecision: (Long) -> Unit = {},
     private val navigateToMood: () -> Unit = {},
@@ -24,7 +28,7 @@ class MVITargetComponent(
 ) : TargetComponent, ComponentContext by componentContext {
 
     private val store = instanceKeeper.getStore {
-        TargetStoreFactory(storeFactory).create()
+        TargetStoreFactory(storeFactory, getGoalsUseCase, saveGoalUseCase).create()
     }
 
     override val state: Value<TargetContract.State> = store.asValue()
@@ -32,8 +36,6 @@ class MVITargetComponent(
     override val sideEffects: Flow<TargetContract.SideEffect> = store.labels.map { label ->
         when (label) {
             is TargetStore.Label.Error -> {
-                // For now, map all labels to Back as a placeholder, 
-                // or you might want to add more SideEffects to TargetContract
                 TargetContract.SideEffect.Back
             }
         }
@@ -45,9 +47,7 @@ class MVITargetComponent(
             TargetContract.Intent.Refresh -> store.accept(TargetStore.Intent.Refresh)
             TargetContract.Intent.CancelGoal -> store.accept(TargetStore.Intent.CancelGoal)
             TargetContract.Intent.CreateChallenge -> {
-                // If we want to use navigation instead of store for this:
                 state.value.selectedGoal?.id?.let(navigateToChallenge)
-                // store.accept(TargetStore.Intent.CreateChallenge) 
             }
             TargetContract.Intent.CreateChildGoal -> {
                 state.value.selectedGoal?.let { currentGoal ->

@@ -5,9 +5,16 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.vampyreworld.w2t.domain.data.model.Goal
+import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
+import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.targetft.TargetContract
+import kotlinx.coroutines.launch
 
-class TargetStoreFactory(private val storeFactory: StoreFactory) {
+class TargetStoreFactory(
+    private val storeFactory: StoreFactory,
+    private val getGoalsUseCase: GetGoalsUseCase,
+    private val saveGoalUseCase: SaveGoalUseCase
+) {
     fun create(): TargetStore =
         object : TargetStore, Store<TargetStore.Intent, TargetContract.State, TargetStore.Label> by storeFactory.create(
             name = "TargetStore",
@@ -25,9 +32,7 @@ class TargetStoreFactory(private val storeFactory: StoreFactory) {
         override fun executeIntent(intent: TargetStore.Intent) {
             when (intent) {
                 TargetStore.Intent.Refresh -> {
-                    dispatch(Msg.Loading)
-                    // Simulate loading
-                    dispatch(Msg.Loaded(emptyList()))
+                    loadGoals()
                 }
                 TargetStore.Intent.CancelGoal -> {
                     // TODO: Handle CancelGoal
@@ -46,6 +51,15 @@ class TargetStoreFactory(private val storeFactory: StoreFactory) {
                 }
                 is TargetStore.Intent.ReplaceSubGoal -> {
                     // TODO: Handle ReplaceSubGoal
+                }
+            }
+        }
+
+        private fun loadGoals() {
+            scope.launch {
+                dispatch(Msg.Loading)
+                getGoalsUseCase().collect { goals ->
+                    dispatch(Msg.Loaded(goals))
                 }
             }
         }

@@ -1,5 +1,8 @@
 package com.vampyreworld.w2t.domain.data.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Challenges(
     val id: Long,
     val solvingBeforeGoalId: Long?,

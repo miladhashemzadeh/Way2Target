@@ -1,5 +1,8 @@
 package com.vampyreworld.w2t.domain.data.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Way(
     val id: Long,
     val goalId: Long,
@@ -7,6 +10,7 @@ data class Way(
     val steps: List<WayNode>?,
 )
 
+@Serializable
 enum class WayStatus {
     ACTIVE,
     COMPLETED,

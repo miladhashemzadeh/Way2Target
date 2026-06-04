@@ -1,11 +1,12 @@
 package com.vampyreworld.w2t.domain.usecase
 
 import com.vampyreworld.w2t.domain.data.model.UserMood
+import kotlinx.coroutines.flow.Flow
 
 interface AddMoodUseCase {
-    operator fun invoke(mood: UserMood)
+    suspend operator fun invoke(mood: UserMood)
 }
 
 interface GetMoodHistoryUseCase {
-    operator fun invoke(): List<UserMood>
+    operator fun invoke(): Flow<List<UserMood>>
 }

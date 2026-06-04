@@ -3,17 +3,15 @@ package com.vampyreworld.w2t.targetft.component
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
-import com.vampyreworld.w2t.domain.data.model.Challenges
-import com.vampyreworld.w2t.domain.data.model.Cost
-import com.vampyreworld.w2t.domain.data.model.Goal
+import com.vampyreworld.w2t.core.utils.componentScope
 import com.vampyreworld.w2t.domain.data.model.GoalTier
-import com.vampyreworld.w2t.domain.data.model.StabilityCondition
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.targetft.TargetContract
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 
 interface TargetComponent {
     val state: Value<TargetContract.State>
@@ -37,55 +35,41 @@ class DefaultTargetComponent(
     private val navigateToChallengeDetail: (goalId: Long, challengeId: Long) -> Unit = { _, _ -> }
 ) : TargetComponent, ComponentContext by componentContext {
 
-    private val _state = MutableValue(
-        TargetContract.State(
-            selectedGoal = goalId?.let { 
-                Goal(
-                    id = it,
-                    title = "Goal $it",
-                    tier = if (it == 1L) GoalTier.MASTER else if (it == 101L) GoalTier.MILESTONE else GoalTier.ACTION,
-                    childGoalIds = if (it == 1L) listOf(101, 102) else emptyList(),
-                    priority = if (it == 1L) 85 else 40
-                ) 
-            },
-            relatedGoals = if (goalId == 1L) listOf(
-                Goal(id = 101, title = "Milestone 101", upperGoalId = 1, tier = GoalTier.MILESTONE),
-                Goal(id = 102, title = "Milestone 102", upperGoalId = 1, tier = GoalTier.MILESTONE)
-            ) else emptyList(),
-            challenges = if (goalId != null) listOf(
-                Challenges(
-                    id = 501, 
-                    solvingBeforeGoalId = goalId, 
-                    title = "Technical Barrier", 
-                    desc = "Hard to implement X", 
-                    cost = Cost(10, 50, 100), 
-                    priority = 80, 
-                    isBarrier = true, 
-                    parentGoalId = goalId, 
-                    moodImpact = 10, 
-                    prosAfterSolve = null, 
-                    consAfterFailure = null,
-                    stabilityConditions = listOf(
-                        StabilityCondition(1, "Internet Access", "Stable connection required", true),
-                        StabilityCondition(2, "Energy Level", "High focus needed", false)
-                    )
-                )
-            ) else emptyList(),
-            initialTier = initialTier,
-            parentId = parentId
-        )
-    )
+    private val scope = componentScope()
+    private val _state = MutableValue(TargetContract.State(initialTier = initialTier, parentId = parentId))
     override val state: Value<TargetContract.State> = _state
 
     private val _sideEffects = MutableSharedFlow<TargetContract.SideEffect>()
     override val sideEffects: Flow<TargetContract.SideEffect> = _sideEffects.asSharedFlow()
 
+    init {
+        loadData()
+    }
+
+    private fun loadData() {
+        scope.launch {
+            _state.value = _state.value.copy(isLoading = true)
+            if (goalId != null) {
+                // In a real app, we'd have a GetGoalByIdUseCase
+                getGoalsUseCase().collect { goals ->
+                    val selectedGoal = goals.find { it.id == goalId }
+                    val relatedGoals = goals.filter { it.upperGoalId == goalId }
+                    _state.value = _state.value.copy(
+                        selectedGoal = selectedGoal,
+                        relatedGoals = relatedGoals,
+                        isLoading = false
+                    )
+                }
+            } else {
+                _state.value = _state.value.copy(isLoading = false)
+            }
+        }
+    }
+
     override fun onIntent(intent: TargetContract.Intent) {
         when (intent) {
             TargetContract.Intent.OnBackClicked -> onBack()
-            TargetContract.Intent.Refresh -> {
-                // Handle refresh
-            }
+            TargetContract.Intent.Refresh -> loadData()
             TargetContract.Intent.CancelGoal -> {
                 // Handle CancelGoal
             }

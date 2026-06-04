@@ -1,25 +1,26 @@
 package com.vampyreworld.w2t.solutionft.ui
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.solutionft.SolutionComponent
 import com.vampyreworld.w2t.solutionft.SolutionContract
+import com.vampyreworld.w2t.solutionft.presentation.screen.ListOfSolutionsScreen
 
 @Composable
 fun SolutionScreen(component: SolutionComponent) {
     val state by component.state.subscribeAsState()
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Button(onClick = { component.onIntent(SolutionContract.Intent.OnBackClicked) }) {
-            Text("Solution Screen - Go Back")
-        }
-    }
+    ListOfSolutionsScreen(
+        goalId = null, // In a more complete app, this might come from state
+        challengeId = null,
+        solutions = state.solutions,
+        onBack = { component.onIntent(SolutionContract.Intent.OnBackClicked) },
+        onAddSolution = { 
+            // In a real app, this would open a dialog or navigate to a specialized screen
+            // For now, let's just use the intent we have in component
+            component.onIntent(SolutionContract.Intent.OnSaveClicked) 
+        },
+        onSolutionClick = { /* Navigate to solution detail */ }
+    )
 }

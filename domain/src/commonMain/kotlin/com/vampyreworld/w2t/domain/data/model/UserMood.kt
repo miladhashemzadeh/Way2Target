@@ -1,6 +1,8 @@
 package com.vampyreworld.w2t.domain.data.model
 
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class UserMood(
     val timestamp: Long,
     val energyRate: Int,            // 0–100, or -1 if unknown
