@@ -61,6 +61,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.stdlib)
                 implementation(project(":domain"))
+                api(project(":data"))
 
                 api(libs.koin.core)
 

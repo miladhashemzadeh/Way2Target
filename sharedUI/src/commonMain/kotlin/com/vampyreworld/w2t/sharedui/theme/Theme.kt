@@ -369,14 +369,14 @@ private val darkAppColors = AppColorScheme(
 
 @Composable
 fun W2TTheme(
+    isDarkMode: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    val config = ThemeConfigs()
-    val colorScheme = when (config.isDarkMode) {
+    val colorScheme = when (isDarkMode) {
         true -> DarkColorScheme
         else -> LightColorScheme
     }
-    val extraColors = when (config.isDarkMode) {
+    val extraColors = when (isDarkMode) {
         true -> darkAppColors
         else -> lightAppColors
     }
