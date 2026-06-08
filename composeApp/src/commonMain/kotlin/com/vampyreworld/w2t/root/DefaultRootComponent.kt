@@ -24,6 +24,8 @@ import com.vampyreworld.w2t.targetft.presentation.component.DefaultTargetMasterC
 import com.vampyreworld.w2t.targetft.presentation.component.TargetMasterComponent
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
+import com.vampyreworld.w2t.domain.usecase.onboarding.IsOnboardingCompletedUseCase
+import com.vampyreworld.w2t.domain.usecase.onboarding.SetOnboardingCompletedUseCase
 import com.vampyreworld.w2t.domain.usecase.prefrences.GetThemeUseCase
 import com.vampyreworld.w2t.sharedui.arch.componentScope
 import kotlinx.coroutines.flow.launchIn
@@ -36,6 +38,8 @@ class DefaultRootComponent(
 ) : RootComponent, KoinComponent, ComponentContext by componentContext {
 
     private val getThemeUseCase: GetThemeUseCase = get()
+    private val isOnboardingCompletedUseCase: IsOnboardingCompletedUseCase = get()
+    private val setOnboardingCompletedUseCase: SetOnboardingCompletedUseCase = get()
 
     private val _isDarkMode = MutableValue(true)
     override val isDarkMode: Value<Boolean> = _isDarkMode
@@ -65,14 +69,23 @@ class DefaultRootComponent(
             is Screens.Splash -> RootComponent.Child.Splash(
                 DefaultSplashComponent(
                     componentContext = componentContext,
-                    onFinished = { navigation.replaceAll(Screens.OnBoarding) }
+                    onFinished = { 
+                        if (isOnboardingCompletedUseCase()) {
+                            navigation.replaceAll(Screens.Home)
+                        } else {
+                            navigation.replaceAll(Screens.OnBoarding)
+                        }
+                    }
                 )
             )
 
             is Screens.OnBoarding -> RootComponent.Child.Onboarding(
                 DefaultOnboardingComponent(
                     componentContext = componentContext,
-                    onFinish = { navigation.replaceAll(Screens.Home) }
+                    onFinish = { 
+                        setOnboardingCompletedUseCase(true)
+                        navigation.replaceAll(Screens.Home) 
+                    }
                 )
             )
 
