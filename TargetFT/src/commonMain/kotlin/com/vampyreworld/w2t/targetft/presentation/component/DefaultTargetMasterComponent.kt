@@ -11,6 +11,7 @@ import com.vampyreworld.w2t.targetft.presentation.state.TargetMasterState
 import com.vampyreworld.w2t.targetft.presentation.store.TargetMasterStore
 import com.vampyreworld.w2t.targetft.presentation.store.TargetMasterStoreFactory
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
+import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -18,11 +19,12 @@ class DefaultTargetMasterComponent(
     componentContext: ComponentContext,
     storeFactory: StoreFactory,
     getGoalsUseCase: GetGoalsUseCase,
+    deleteGoalUseCase: DeleteGoalUseCase,
     private val onOutput: (TargetMasterComponent.Label) -> Unit
 ) : TargetMasterComponent, ComponentContext by componentContext {
 
     private val store = instanceKeeper.getStore {
-        TargetMasterStoreFactory(storeFactory, getGoalsUseCase).create()
+        TargetMasterStoreFactory(storeFactory, getGoalsUseCase, deleteGoalUseCase).create()
     }
 
     override val state: Value<TargetMasterState> = store.asValue()
@@ -42,6 +44,7 @@ class DefaultTargetMasterComponent(
             TargetMasterIntent.OnAddGoalClick -> onOutput(TargetMasterComponent.Label.NavigateToDetail(null))
             is TargetMasterIntent.OnGoalClick -> onOutput(TargetMasterComponent.Label.NavigateToDetail(intent.goalId))
             TargetMasterIntent.Refresh -> store.accept(TargetMasterIntent.Refresh)
+            is TargetMasterIntent.DeleteGoal -> store.accept(intent)
         }
     }
 }

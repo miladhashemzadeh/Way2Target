@@ -18,6 +18,8 @@ val domainModule = module {
     // Goals
     factory<GetGoalsUseCase> { GetGoalsUseCaseImpl(get()) }
     factory<SaveGoalUseCase> { SaveGoalUseCaseImpl(get()) }
+    factory<DeleteGoalUseCase> { DeleteGoalUseCaseImpl(get()) }
+    factory<GetGoalByIdUseCase> { GetGoalByIdUseCaseImpl(get()) }
 
     // Mood
     factory<AddMoodUseCase> { AddMoodUseCaseImpl(get()) }

@@ -25,6 +25,7 @@ interface TargetContract {
         data object CancelGoal : Intent
         data object MakeDecision : Intent
         data object SetMood : Intent
+        data class OnSaveGoal(val title: String, val description: String, val tier: String) : Intent
         data class OnChallengeClick(val challengeId: Long) : Intent
         data class DeleteSubGoal(val goalId: Long) : Intent
         data class ReplaceSubGoal(val goalId: Long) : Intent

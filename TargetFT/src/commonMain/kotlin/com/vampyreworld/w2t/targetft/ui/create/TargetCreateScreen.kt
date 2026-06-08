@@ -66,8 +66,19 @@ fun TargetCreateScreen(
         Spacer(modifier = Modifier.weight(1f))
         
         Button(
-            onClick = { component.onIntent(TargetContract.Intent.OnBackClicked) },
-            modifier = Modifier.fillMaxWidth()
+            onClick = { 
+                if (title.isNotBlank()) {
+                    component.onIntent(
+                        TargetContract.Intent.OnSaveGoal(
+                            title = title,
+                            description = description,
+                            tier = selectedTier.name
+                        )
+                    )
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = title.isNotBlank()
         ) {
             Icon(Icons.Default.Done, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))

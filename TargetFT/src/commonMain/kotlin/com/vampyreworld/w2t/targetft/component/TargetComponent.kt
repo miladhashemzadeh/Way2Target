@@ -4,6 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.vampyreworld.w2t.core.utils.componentScope
+import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.domain.data.model.GoalTier
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
@@ -50,7 +51,6 @@ class DefaultTargetComponent(
         scope.launch {
             _state.value = _state.value.copy(isLoading = true)
             if (goalId != null) {
-                // In a real app, we'd have a GetGoalByIdUseCase
                 getGoalsUseCase().collect { goals ->
                     val selectedGoal = goals.find { it.id == goalId }
                     val relatedGoals = goals.filter { it.upperGoalId == goalId }
@@ -92,6 +92,9 @@ class DefaultTargetComponent(
             TargetContract.Intent.SetMood -> {
                 navigateToMood()
             }
+            is TargetContract.Intent.OnSaveGoal -> {
+                saveGoal(intent)
+            }
             is TargetContract.Intent.OnChallengeClick -> {
                 goalId?.let { navigateToChallengeDetail(it, intent.challengeId) }
             }
@@ -100,6 +103,28 @@ class DefaultTargetComponent(
             }
             is TargetContract.Intent.ReplaceSubGoal -> {
                 // Handle ReplaceSubGoal
+            }
+        }
+    }
+
+    private fun saveGoal(intent: TargetContract.Intent.OnSaveGoal) {
+        scope.launch {
+            _state.value = _state.value.copy(isLoading = true)
+            try {
+                val newGoal = Goal(
+                    id = 0, // Database will generate
+                    title = intent.title,
+                    description = intent.description,
+                    tier = GoalTier.valueOf(intent.tier),
+                    upperGoalId = parentId,
+                    priority = 50 // Default
+                )
+                saveGoalUseCase(newGoal)
+                onBack()
+            } catch (e: Exception) {
+                // Handle error
+            } finally {
+                _state.value = _state.value.copy(isLoading = false)
             }
         }
     }

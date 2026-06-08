@@ -19,7 +19,7 @@ import com.vampyreworld.w2t.prefrencesft.DefaultPrefrencesComponent
 import com.vampyreworld.w2t.schallengeft.DefaultSChallengeComponent
 import com.vampyreworld.w2t.solutionft.DefaultSolutionComponent
 import com.vampyreworld.w2t.splash.DefaultSplashComponent
-import com.vampyreworld.w2t.targetft.component.DefaultTargetComponent
+import com.vampyreworld.w2t.targetft.component.MVITargetComponent
 import com.vampyreworld.w2t.targetft.presentation.component.DefaultTargetMasterComponent
 import com.vampyreworld.w2t.targetft.presentation.component.TargetMasterComponent
 import com.arkivanov.decompose.value.MutableValue
@@ -80,6 +80,7 @@ class DefaultRootComponent(
                 DefaultHomeComponent(
                     componentContext = componentContext,
                     getGoalsUseCase = get(),
+                    deleteGoalUseCase = get(),
                     navigateToTarget = { id -> 
                         if (id == null) {
                             navigation.push(Screens.AddGoal(null, "MASTER"))
@@ -101,6 +102,7 @@ class DefaultRootComponent(
                     componentContext = componentContext,
                     storeFactory = get(),
                     getGoalsUseCase = get(),
+                    deleteGoalUseCase = get(),
                     onOutput = { label ->
                         when (label) {
                             TargetMasterComponent.Label.Back -> navigation.pop()
@@ -120,13 +122,15 @@ class DefaultRootComponent(
             )
 
             is Screens.AddGoal -> RootComponent.Child.Target(
-                DefaultTargetComponent(
+                MVITargetComponent(
                     componentContext = componentContext,
                     goalId = null,
                     initialTier = config.tier,
                     parentId = config.parentId,
+                    storeFactory = get(),
                     getGoalsUseCase = get(),
                     saveGoalUseCase = get(),
+                    deleteGoalUseCase = get(),
                     onBack = { navigation.pop() },
                     navigateToDecision = { id -> navigation.push(Screens.DecisionForTarget(id)) },
                     navigateToMood = { navigation.push(Screens.AddMood) },
@@ -143,13 +147,15 @@ class DefaultRootComponent(
             )
 
             is Screens.TargetDetail -> RootComponent.Child.Target(
-                DefaultTargetComponent(
+                MVITargetComponent(
                     componentContext = componentContext,
                     goalId = config.goalId,
                     initialTier = null,
                     parentId = null,
+                    storeFactory = get(),
                     getGoalsUseCase = get(),
                     saveGoalUseCase = get(),
+                    deleteGoalUseCase = get(),
                     onBack = { navigation.pop() },
                     navigateToDecision = { id -> navigation.push(Screens.DecisionForTarget(id)) },
                     navigateToMood = { navigation.push(Screens.AddMood) },
