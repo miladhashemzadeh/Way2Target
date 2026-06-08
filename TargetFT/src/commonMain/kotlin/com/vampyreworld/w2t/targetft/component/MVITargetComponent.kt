@@ -5,20 +5,27 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
+import com.vampyreworld.w2t.domain.data.model.GoalTier
+import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.sharedui.arch.asValue
 import com.vampyreworld.w2t.targetft.TargetContract
 import com.vampyreworld.w2t.targetft.store.TargetStore
+import com.vampyreworld.w2t.targetft.store.TargetStore.Intent.*
 import com.vampyreworld.w2t.targetft.store.TargetStoreFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class MVITargetComponent(
     componentContext: ComponentContext,
+    private val goalId: Long?,
+    private val initialTier: String? = null,
+    private val parentId: Long? = null,
     storeFactory: StoreFactory,
     getGoalsUseCase: GetGoalsUseCase,
     saveGoalUseCase: SaveGoalUseCase,
+    deleteGoalUseCase: DeleteGoalUseCase,
     private val onBack: () -> Unit,
     private val navigateToDecision: (Long) -> Unit = {},
     private val navigateToMood: () -> Unit = {},
@@ -28,7 +35,19 @@ class MVITargetComponent(
 ) : TargetComponent, ComponentContext by componentContext {
 
     private val store = instanceKeeper.getStore {
-        TargetStoreFactory(storeFactory, getGoalsUseCase, saveGoalUseCase).create()
+        TargetStoreFactory(
+            storeFactory,
+            getGoalsUseCase,
+            saveGoalUseCase,
+            deleteGoalUseCase,
+            goalId = goalId,
+            initialTier = initialTier,
+            parentId = parentId
+        ).create()
+    }
+
+    init {
+        store.accept(TargetStore.Intent.Refresh)
     }
 
     override val state: Value<TargetContract.State> = store.asValue()
@@ -36,6 +55,10 @@ class MVITargetComponent(
     override val sideEffects: Flow<TargetContract.SideEffect> = store.labels.map { label ->
         when (label) {
             is TargetStore.Label.Error -> {
+                // TODO: Show error message
+                TargetContract.SideEffect.Back
+            }
+            TargetStore.Label.Saved -> {
                 TargetContract.SideEffect.Back
             }
         }
@@ -52,9 +75,9 @@ class MVITargetComponent(
             TargetContract.Intent.CreateChildGoal -> {
                 state.value.selectedGoal?.let { currentGoal ->
                     val childTier = when (currentGoal.tier) {
-                        com.vampyreworld.w2t.domain.data.model.GoalTier.MASTER -> "MILESTONE"
-                        com.vampyreworld.w2t.domain.data.model.GoalTier.MILESTONE -> "ACTION"
-                        com.vampyreworld.w2t.domain.data.model.GoalTier.ACTION -> "ACTION"
+                        GoalTier.MASTER -> "MILESTONE"
+                        GoalTier.MILESTONE -> "ACTION"
+                        GoalTier.ACTION -> "ACTION"
                     }
                     navigateToChildTarget(currentGoal.id, childTier)
                 }
@@ -68,8 +91,9 @@ class MVITargetComponent(
                     navigateToChallengeDetail(goalId, intent.challengeId)
                 }
             }
-            is TargetContract.Intent.DeleteSubGoal -> store.accept(TargetStore.Intent.DeleteSubGoal(intent.goalId))
-            is TargetContract.Intent.ReplaceSubGoal -> store.accept(TargetStore.Intent.ReplaceSubGoal(intent.goalId))
+            is TargetContract.Intent.DeleteSubGoal -> store.accept(DeleteSubGoal(intent.goalId))
+            is TargetContract.Intent.ReplaceSubGoal -> store.accept(ReplaceSubGoal(intent.goalId))
+            is TargetContract.Intent.OnSaveGoal -> store.accept(SaveGoal(intent.title, intent.description, intent.tier))
         }
     }
 }

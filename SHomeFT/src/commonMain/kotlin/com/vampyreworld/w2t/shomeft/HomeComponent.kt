@@ -6,6 +6,7 @@ import com.arkivanov.decompose.value.Value
 import com.vampyreworld.w2t.core.utils.componentScope
 import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.domain.data.model.GoalTier
+import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -30,6 +31,7 @@ interface HomeComponent {
 class DefaultHomeComponent(
     componentContext: ComponentContext,
     private val getGoalsUseCase: GetGoalsUseCase,
+    private val deleteGoalUseCase: DeleteGoalUseCase,
     private val navigateToTarget: (Long?) -> Unit,
     private val navigateToMoodAdd: () -> Unit,
     private val navigateToSChallenge: (Long) -> Unit,
@@ -72,7 +74,9 @@ class DefaultHomeComponent(
                 navigateToTarget(intent.goalId)
             }
             is HomeContract.Intent.DeleteMasterGoal -> {
-                // Delete logic should call a DeleteGoalUseCase (needs implementation)
+                scope.launch {
+                    deleteGoalUseCase(intent.goalId)
+                }
             }
             is HomeContract.Intent.CreateChallengeForMasterGoal -> {
                 navigateToSChallenge(intent.goalId)

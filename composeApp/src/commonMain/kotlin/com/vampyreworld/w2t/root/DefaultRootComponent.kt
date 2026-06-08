@@ -19,11 +19,13 @@ import com.vampyreworld.w2t.prefrencesft.DefaultPrefrencesComponent
 import com.vampyreworld.w2t.schallengeft.DefaultSChallengeComponent
 import com.vampyreworld.w2t.solutionft.DefaultSolutionComponent
 import com.vampyreworld.w2t.splash.DefaultSplashComponent
-import com.vampyreworld.w2t.targetft.component.DefaultTargetComponent
+import com.vampyreworld.w2t.targetft.component.MVITargetComponent
 import com.vampyreworld.w2t.targetft.presentation.component.DefaultTargetMasterComponent
 import com.vampyreworld.w2t.targetft.presentation.component.TargetMasterComponent
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
+import com.vampyreworld.w2t.domain.usecase.onboarding.IsOnboardingCompletedUseCase
+import com.vampyreworld.w2t.domain.usecase.onboarding.SetOnboardingCompletedUseCase
 import com.vampyreworld.w2t.domain.usecase.prefrences.GetThemeUseCase
 import com.vampyreworld.w2t.sharedui.arch.componentScope
 import kotlinx.coroutines.flow.launchIn
@@ -36,6 +38,8 @@ class DefaultRootComponent(
 ) : RootComponent, KoinComponent, ComponentContext by componentContext {
 
     private val getThemeUseCase: GetThemeUseCase = get()
+    private val isOnboardingCompletedUseCase: IsOnboardingCompletedUseCase = get()
+    private val setOnboardingCompletedUseCase: SetOnboardingCompletedUseCase = get()
 
     private val _isDarkMode = MutableValue(true)
     override val isDarkMode: Value<Boolean> = _isDarkMode
@@ -65,14 +69,23 @@ class DefaultRootComponent(
             is Screens.Splash -> RootComponent.Child.Splash(
                 DefaultSplashComponent(
                     componentContext = componentContext,
-                    onFinished = { navigation.replaceAll(Screens.OnBoarding) }
+                    onFinished = { 
+                        if (isOnboardingCompletedUseCase()) {
+                            navigation.replaceAll(Screens.Home)
+                        } else {
+                            navigation.replaceAll(Screens.OnBoarding)
+                        }
+                    }
                 )
             )
 
             is Screens.OnBoarding -> RootComponent.Child.Onboarding(
                 DefaultOnboardingComponent(
                     componentContext = componentContext,
-                    onFinish = { navigation.replaceAll(Screens.Home) }
+                    onFinish = { 
+                        setOnboardingCompletedUseCase(true)
+                        navigation.replaceAll(Screens.Home) 
+                    }
                 )
             )
 
@@ -80,6 +93,7 @@ class DefaultRootComponent(
                 DefaultHomeComponent(
                     componentContext = componentContext,
                     getGoalsUseCase = get(),
+                    deleteGoalUseCase = get(),
                     navigateToTarget = { id -> 
                         if (id == null) {
                             navigation.push(Screens.AddGoal(null, "MASTER"))
@@ -101,6 +115,7 @@ class DefaultRootComponent(
                     componentContext = componentContext,
                     storeFactory = get(),
                     getGoalsUseCase = get(),
+                    deleteGoalUseCase = get(),
                     onOutput = { label ->
                         when (label) {
                             TargetMasterComponent.Label.Back -> navigation.pop()
@@ -120,13 +135,15 @@ class DefaultRootComponent(
             )
 
             is Screens.AddGoal -> RootComponent.Child.Target(
-                DefaultTargetComponent(
+                MVITargetComponent(
                     componentContext = componentContext,
                     goalId = null,
                     initialTier = config.tier,
                     parentId = config.parentId,
+                    storeFactory = get(),
                     getGoalsUseCase = get(),
                     saveGoalUseCase = get(),
+                    deleteGoalUseCase = get(),
                     onBack = { navigation.pop() },
                     navigateToDecision = { id -> navigation.push(Screens.DecisionForTarget(id)) },
                     navigateToMood = { navigation.push(Screens.AddMood) },
@@ -143,13 +160,15 @@ class DefaultRootComponent(
             )
 
             is Screens.TargetDetail -> RootComponent.Child.Target(
-                DefaultTargetComponent(
+                MVITargetComponent(
                     componentContext = componentContext,
                     goalId = config.goalId,
                     initialTier = null,
                     parentId = null,
+                    storeFactory = get(),
                     getGoalsUseCase = get(),
                     saveGoalUseCase = get(),
+                    deleteGoalUseCase = get(),
                     onBack = { navigation.pop() },
                     navigateToDecision = { id -> navigation.push(Screens.DecisionForTarget(id)) },
                     navigateToMood = { navigation.push(Screens.AddMood) },

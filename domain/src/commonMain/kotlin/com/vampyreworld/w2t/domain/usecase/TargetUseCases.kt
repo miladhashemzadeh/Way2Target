@@ -10,3 +10,11 @@ interface GetGoalsUseCase {
 interface SaveGoalUseCase {
     suspend operator fun invoke(goal: Goal)
 }
+
+interface DeleteGoalUseCase {
+    suspend operator fun invoke(id: Long)
+}
+
+interface GetGoalByIdUseCase {
+    operator fun invoke(id: Long): Flow<Goal?>
+}

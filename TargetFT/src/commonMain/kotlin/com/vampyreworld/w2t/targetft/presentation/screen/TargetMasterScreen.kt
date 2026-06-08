@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,7 +49,11 @@ fun TargetMasterScreen(component: TargetMasterComponent) {
             } else {
                 LazyColumn {
                     items(state.goals) { goal ->
-                        GoalItem(goal = goal, onClick = { component.onIntent(TargetMasterIntent.OnGoalClick(goal.id)) })
+                        GoalItem(
+                            goal = goal,
+                            onClick = { component.onIntent(TargetMasterIntent.OnGoalClick(goal.id)) },
+                            onDelete = { component.onIntent(TargetMasterIntent.DeleteGoal(goal.id)) }
+                        )
                     }
                 }
             }
@@ -57,13 +62,21 @@ fun TargetMasterScreen(component: TargetMasterComponent) {
 }
 
 @Composable
-fun GoalItem(goal: Goal, onClick: () -> Unit) {
+fun GoalItem(goal: Goal, onClick: () -> Unit, onDelete: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(8.dp).clickable(onClick = onClick)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Goal #${goal.id}", style = MaterialTheme.typography.titleMedium)
-            Text(text = "Tier: ${goal.tier}", style = MaterialTheme.typography.bodySmall)
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = goal.title.ifEmpty { "Goal #${goal.id}" }, style = MaterialTheme.typography.titleMedium)
+                Text(text = "Tier: ${goal.tier}", style = MaterialTheme.typography.bodySmall)
+            }
+            IconButton(onClick = onDelete) {
+                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
+            }
         }
     }
 }

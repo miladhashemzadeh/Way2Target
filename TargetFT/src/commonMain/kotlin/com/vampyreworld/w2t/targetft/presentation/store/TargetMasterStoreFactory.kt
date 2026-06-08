@@ -6,6 +6,7 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.vampyreworld.w2t.domain.data.model.Goal
+import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.targetft.presentation.intent.TargetMasterIntent
 import com.vampyreworld.w2t.targetft.presentation.state.TargetMasterState
@@ -14,7 +15,8 @@ import kotlinx.coroutines.launch
 
 class TargetMasterStoreFactory(
     private val storeFactory: StoreFactory,
-    private val getGoalsUseCase: GetGoalsUseCase
+    private val getGoalsUseCase: GetGoalsUseCase,
+    private val deleteGoalUseCase: DeleteGoalUseCase
 ) {
     fun create(): TargetMasterStore =
         object : TargetMasterStore, Store<TargetMasterIntent, TargetMasterState, TargetMasterStore.Label> by storeFactory.create(
@@ -41,7 +43,18 @@ class TargetMasterStoreFactory(
         override fun executeIntent(intent: TargetMasterIntent) {
             when (intent) {
                 TargetMasterIntent.Refresh -> loadGoals()
+                is TargetMasterIntent.DeleteGoal -> deleteGoal(intent.goalId)
                 else -> {} // Handle other intents or labels
+            }
+        }
+
+        private fun deleteGoal(goalId: Long) {
+            scope.launch {
+                try {
+                    deleteGoalUseCase(goalId)
+                } catch (e: Exception) {
+                    dispatch(Msg.Error(e.message ?: "Failed to delete goal"))
+                }
             }
         }
 

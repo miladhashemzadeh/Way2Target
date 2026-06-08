@@ -6,6 +6,8 @@ import com.vampyreworld.w2t.domain.usecase.mood.impl.*
 import com.vampyreworld.w2t.domain.usecase.target.impl.*
 import com.vampyreworld.w2t.domain.usecase.solution.impl.*
 import com.vampyreworld.w2t.domain.usecase.schallenge.impl.*
+import com.vampyreworld.w2t.domain.usecase.onboarding.*
+import com.vampyreworld.w2t.domain.usecase.onboarding.impl.*
 import com.vampyreworld.w2t.domain.usecase.prefrences.GetThemeUseCase
 import com.vampyreworld.w2t.domain.usecase.prefrences.SetThemeUseCase
 import org.koin.dsl.module
@@ -15,9 +17,15 @@ val domainModule = module {
     factory { GetThemeUseCase(get()) }
     factory { SetThemeUseCase(get()) }
 
+    // Onboarding
+    factory<IsOnboardingCompletedUseCase> { IsOnboardingCompletedUseCaseImpl(get()) }
+    factory<SetOnboardingCompletedUseCase> { SetOnboardingCompletedUseCaseImpl(get()) }
+
     // Goals
     factory<GetGoalsUseCase> { GetGoalsUseCaseImpl(get()) }
     factory<SaveGoalUseCase> { SaveGoalUseCaseImpl(get()) }
+    factory<DeleteGoalUseCase> { DeleteGoalUseCaseImpl(get()) }
+    factory<GetGoalByIdUseCase> { GetGoalByIdUseCaseImpl(get()) }
 
     // Mood
     factory<AddMoodUseCase> { AddMoodUseCaseImpl(get()) }
