@@ -96,6 +96,14 @@ data class AppColorScheme(
     val gradientBlue: Color,
     val blue: Color,
     val brightRed: Color,
+    val accent: Color,
+    val muted: Color,
+    val border: Color,
+    val moodHighEnergyStart: Color,
+    val moodHighEnergyEnd: Color,
+    val moodFocusedStart: Color,
+    val moodFocusedEnd: Color,
+    val challengeColor: Color,
 )
 
 val LightAppColors = AppColorScheme(
@@ -188,7 +196,15 @@ val LightAppColors = AppColorScheme(
     unspecified = Unspecified,
     gradientBlue = GradientBlue,
     blue = Blue,
-    brightRed = BrightRed
+    brightRed = BrightRed,
+    accent = OD_Accent,
+    muted = OD_Muted,
+    border = OD_Border,
+    moodHighEnergyStart = OD_Mood_HighEnergy_Start,
+    moodHighEnergyEnd = OD_Mood_HighEnergy_End,
+    moodFocusedStart = OD_Mood_Focused_Start,
+    moodFocusedEnd = OD_Mood_Focused_End,
+    challengeColor = OD_Challenge,
 )
 
 val DarkAppColors = AppColorScheme(
@@ -303,8 +319,15 @@ val DarkAppColors = AppColorScheme(
     gradientBlue = inversePrimaryDark,
 
     blue = customColor3Dark,
-
-    brightRed = error100
+    brightRed = error100,
+    accent = OD_Accent,
+    muted = OD_Muted,
+    border = OD_Border,
+    moodHighEnergyStart = OD_Mood_HighEnergy_Start,
+    moodHighEnergyEnd = OD_Mood_HighEnergy_End,
+    moodFocusedStart = OD_Mood_Focused_Start,
+    moodFocusedEnd = OD_Mood_Focused_End,
+    challengeColor = OD_Challenge,
 )
 val LocalAppColorScheme = staticCompositionLocalOf {
     DarkColorScheme
@@ -314,20 +337,20 @@ val LocalAppColorScheme = staticCompositionLocalOf {
 }
 
 val LightColorScheme = lightColorScheme(
-    primary = primary100,
+    primary = OD_Accent,
     secondary = Secondary,
-    tertiary = Primary60,
-    background = NaturalWhite100,
-    surface = white100,
-    onPrimary = white100,
-    onSecondary = white100,
-    onTertiary = White80,
-    onBackground = black100,
-    onSurface = black100,
+    tertiary = OD_Success,
+    background = OD_Bg,
+    surface = OD_Surface,
+    onPrimary = OD_Surface,
+    onSecondary = OD_Surface,
+    onTertiary = OD_Surface,
+    onBackground = OD_Fg,
+    onSurface = OD_Fg,
     error = error100,
     errorContainer = Error80,
     onError = white100,
-    surfaceVariant = white100
+    surfaceVariant = OD_Bg
 )
 
 val DarkColorScheme = darkColorScheme(

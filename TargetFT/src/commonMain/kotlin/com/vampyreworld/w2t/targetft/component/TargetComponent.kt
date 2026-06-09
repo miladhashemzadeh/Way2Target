@@ -69,13 +69,19 @@ class DefaultTargetComponent(
 
     override fun onIntent(intent: TargetContract.Intent) {
         when (intent) {
-            TargetContract.Intent.OnBackClicked -> onBack()
+            TargetContract.Intent.OnBackClicked -> {
+                if (_state.value.currentScreen != TargetContract.Screen.DETAIL) {
+                    _state.value = _state.value.copy(currentScreen = TargetContract.Screen.DETAIL)
+                } else {
+                    onBack()
+                }
+            }
             TargetContract.Intent.Refresh -> loadData()
             TargetContract.Intent.CancelGoal -> {
                 // Handle CancelGoal
             }
             TargetContract.Intent.CreateChallenge -> {
-                goalId?.let { navigateToChallenge(it) }
+                _state.value = _state.value.copy(currentScreen = TargetContract.Screen.CHALLENGE_CREATE)
             }
             TargetContract.Intent.CreateChildGoal -> {
                 state.value.selectedGoal?.let { currentGoal ->
@@ -93,8 +99,20 @@ class DefaultTargetComponent(
             TargetContract.Intent.SetMood -> {
                 navigateToMood()
             }
+            TargetContract.Intent.NavigateToChallengeList -> {
+                _state.value = _state.value.copy(currentScreen = TargetContract.Screen.CHALLENGE_LIST)
+            }
+            TargetContract.Intent.NavigateToAppraise -> {
+                _state.value = _state.value.copy(currentScreen = TargetContract.Screen.GOAL_APPRAISE)
+            }
+            TargetContract.Intent.NavigateToDefineSteps -> {
+                _state.value = _state.value.copy(currentScreen = TargetContract.Screen.DEFINE_STEPS)
+            }
             is TargetContract.Intent.OnSaveGoal -> {
                 saveGoal(intent)
+            }
+            is TargetContract.Intent.OnSaveChallenge -> {
+                // Handle OnSaveChallenge in DefaultTargetComponent
             }
             is TargetContract.Intent.OnChallengeClick -> {
                 goalId?.let { navigateToChallengeDetail(it, intent.challengeId) }

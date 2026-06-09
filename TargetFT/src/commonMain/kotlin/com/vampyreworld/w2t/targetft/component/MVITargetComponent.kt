@@ -9,6 +9,8 @@ import com.vampyreworld.w2t.domain.data.model.GoalTier
 import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
+import com.vampyreworld.w2t.domain.usecase.AddChallengeUseCase
+import com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase
 import com.vampyreworld.w2t.sharedui.arch.asValue
 import com.vampyreworld.w2t.targetft.TargetContract
 import com.vampyreworld.w2t.targetft.store.TargetStore
@@ -26,6 +28,8 @@ class MVITargetComponent(
     getGoalsUseCase: GetGoalsUseCase,
     saveGoalUseCase: SaveGoalUseCase,
     deleteGoalUseCase: DeleteGoalUseCase,
+    addChallengeUseCase: AddChallengeUseCase,
+    getChallengesUseCase: GetChallengesUseCase,
     private val onBack: () -> Unit,
     private val navigateToDecision: (Long) -> Unit = {},
     private val navigateToMood: () -> Unit = {},
@@ -41,6 +45,8 @@ class MVITargetComponent(
             getGoalsUseCase,
             saveGoalUseCase,
             deleteGoalUseCase,
+            addChallengeUseCase,
+            getChallengesUseCase,
             goalId = goalId,
             initialTier = initialTier,
             parentId = parentId
@@ -67,12 +73,19 @@ class MVITargetComponent(
 
     override fun onIntent(intent: TargetContract.Intent) {
         when (intent) {
-            TargetContract.Intent.OnBackClicked -> onBack()
+            TargetContract.Intent.OnBackClicked -> {
+                if (state.value.currentScreen != TargetContract.Screen.DETAIL) {
+                    store.accept(TargetStore.Intent.Back)
+                } else {
+                    onBack()
+                }
+            }
             TargetContract.Intent.Refresh -> store.accept(TargetStore.Intent.Refresh)
             TargetContract.Intent.CancelGoal -> store.accept(TargetStore.Intent.CancelGoal)
-            TargetContract.Intent.CreateChallenge -> {
-                state.value.selectedGoal?.id?.let(navigateToChallenge)
-            }
+            TargetContract.Intent.CreateChallenge -> store.accept(TargetStore.Intent.CreateChallenge)
+            TargetContract.Intent.NavigateToChallengeList -> store.accept(TargetStore.Intent.NavigateToChallengeList)
+            TargetContract.Intent.NavigateToAppraise -> store.accept(TargetStore.Intent.NavigateToAppraise)
+            TargetContract.Intent.NavigateToDefineSteps -> store.accept(TargetStore.Intent.NavigateToDefineSteps)
             TargetContract.Intent.CreateChildGoal -> {
                 state.value.selectedGoal?.let { currentGoal ->
                     val childTier = when (currentGoal.tier) {
@@ -96,6 +109,7 @@ class MVITargetComponent(
             is TargetContract.Intent.DeleteSubGoal -> store.accept(DeleteSubGoal(intent.goalId))
             is TargetContract.Intent.ReplaceSubGoal -> store.accept(ReplaceSubGoal(intent.goalId))
             is TargetContract.Intent.OnSaveGoal -> store.accept(SaveGoal(intent.title, intent.description, intent.tier))
+            is TargetContract.Intent.OnSaveChallenge -> store.accept(TargetStore.Intent.SaveChallenge(intent.title, intent.description, intent.goalId, intent.impact))
             is TargetContract.Intent.UpdateGoal -> store.accept(TargetStore.Intent.UpdateGoal(intent.goal))
         }
     }

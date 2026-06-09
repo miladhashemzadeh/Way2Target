@@ -10,8 +10,21 @@ interface TargetContract {
         val relatedGoals: List<Goal> = emptyList(),
         val challenges: List<Challenges> = emptyList(),
         val initialTier: String? = null,
-        val parentId: Long? = null
+        val parentId: Long? = null,
+        val currentScreen: Screen = Screen.DETAIL
     )
+
+    enum class Screen {
+        DETAIL,
+        CREATE_GOAL,
+        CHALLENGE_LIST,
+        CHALLENGE_CREATE,
+        CHALLENGE_DETAIL,
+        GOAL_APPRAISE,
+        CHALLENGE_APPRAISE,
+        DEFINE_STEPS,
+        SOLUTION_CREATE
+    }
 
     sealed interface SideEffect {
         data object Back : SideEffect
@@ -25,7 +38,11 @@ interface TargetContract {
         data object CancelGoal : Intent
         data object MakeDecision : Intent
         data object SetMood : Intent
+        data object NavigateToChallengeList : Intent
+        data object NavigateToAppraise : Intent
+        data object NavigateToDefineSteps : Intent
         data class OnSaveGoal(val title: String, val description: String, val tier: String) : Intent
+        data class OnSaveChallenge(val title: String, val description: String, val goalId: Long?, val impact: String) : Intent
         data class OnChallengeClick(val challengeId: Long) : Intent
         data class DeleteSubGoal(val goalId: Long) : Intent
         data class ReplaceSubGoal(val goalId: Long) : Intent
