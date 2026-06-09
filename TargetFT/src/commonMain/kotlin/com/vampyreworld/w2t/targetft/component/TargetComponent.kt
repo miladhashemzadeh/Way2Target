@@ -31,6 +31,7 @@ class DefaultTargetComponent(
     private val onBack: () -> Unit,
     private val navigateToDecision: (Long) -> Unit = {},
     private val navigateToMood: () -> Unit = {},
+    private val navigateToGoal: (Long) -> Unit = {},
     private val navigateToChildTarget: (parentId: Long, tier: String) -> Unit = { _, _ -> },
     private val navigateToChallenge: (goalId: Long) -> Unit = {},
     private val navigateToChallengeDetail: (goalId: Long, challengeId: Long) -> Unit = { _, _ -> }
@@ -98,11 +99,19 @@ class DefaultTargetComponent(
             is TargetContract.Intent.OnChallengeClick -> {
                 goalId?.let { navigateToChallengeDetail(it, intent.challengeId) }
             }
+            is TargetContract.Intent.OnGoalClick -> {
+                navigateToGoal(intent.goalId)
+            }
             is TargetContract.Intent.DeleteSubGoal -> {
                 // Handle DeleteSubGoal
             }
             is TargetContract.Intent.ReplaceSubGoal -> {
                 // Handle ReplaceSubGoal
+            }
+            is TargetContract.Intent.UpdateGoal -> {
+                scope.launch {
+                    saveGoalUseCase(intent.goal)
+                }
             }
         }
     }

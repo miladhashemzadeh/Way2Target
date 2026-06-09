@@ -29,5 +29,7 @@ interface TargetContract {
         data class OnChallengeClick(val challengeId: Long) : Intent
         data class DeleteSubGoal(val goalId: Long) : Intent
         data class ReplaceSubGoal(val goalId: Long) : Intent
+        data class OnGoalClick(val goalId: Long) : Intent
+        data class UpdateGoal(val goal: Goal) : Intent
     }
 }

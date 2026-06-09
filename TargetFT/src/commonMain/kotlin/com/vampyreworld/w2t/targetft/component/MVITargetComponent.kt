@@ -29,6 +29,7 @@ class MVITargetComponent(
     private val onBack: () -> Unit,
     private val navigateToDecision: (Long) -> Unit = {},
     private val navigateToMood: () -> Unit = {},
+    private val navigateToGoal: (Long) -> Unit = {},
     private val navigateToChildTarget: (parentId: Long, tier: String) -> Unit = { _, _ -> },
     private val navigateToChallenge: (goalId: Long) -> Unit = {},
     private val navigateToChallengeDetail: (goalId: Long, challengeId: Long) -> Unit = { _, _ -> }
@@ -91,9 +92,11 @@ class MVITargetComponent(
                     navigateToChallengeDetail(goalId, intent.challengeId)
                 }
             }
+            is TargetContract.Intent.OnGoalClick -> navigateToGoal(intent.goalId)
             is TargetContract.Intent.DeleteSubGoal -> store.accept(DeleteSubGoal(intent.goalId))
             is TargetContract.Intent.ReplaceSubGoal -> store.accept(ReplaceSubGoal(intent.goalId))
             is TargetContract.Intent.OnSaveGoal -> store.accept(SaveGoal(intent.title, intent.description, intent.tier))
+            is TargetContract.Intent.UpdateGoal -> store.accept(TargetStore.Intent.UpdateGoal(intent.goal))
         }
     }
 }

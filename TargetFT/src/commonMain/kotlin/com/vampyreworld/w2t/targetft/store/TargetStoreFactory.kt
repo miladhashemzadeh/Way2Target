@@ -65,6 +65,21 @@ class TargetStoreFactory(
                 is TargetStore.Intent.SaveGoal -> {
                     saveGoal(intent)
                 }
+                is TargetStore.Intent.UpdateGoal -> {
+                    updateGoal(intent.goal)
+                }
+            }
+        }
+
+        private fun updateGoal(goal: Goal) {
+            scope.launch {
+                dispatch(Msg.Loading)
+                try {
+                    saveGoalUseCase(goal)
+                    // Refresh will happen automatically if it's a Flow
+                } catch (e: Exception) {
+                    publish(TargetStore.Label.Error(e.message ?: "Failed to update goal"))
+                }
             }
         }
 

@@ -13,6 +13,7 @@ interface TargetStore : Store<TargetStore.Intent, TargetContract.State, TargetSt
         data class OnChallengeClick(val challengeId: Long) : Intent
         data class DeleteSubGoal(val goalId: Long) : Intent
         data class ReplaceSubGoal(val goalId: Long) : Intent
+        data class UpdateGoal(val goal: com.vampyreworld.w2t.domain.data.model.Goal) : Intent
     }
 
     // State is now TargetContract.State
