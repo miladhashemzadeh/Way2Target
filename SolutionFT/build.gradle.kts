@@ -67,6 +67,9 @@ kotlin {
                 implementation(project(":di"))
                 implementation(project(":domain"))
                 implementation(project(":core"))
+                implementation(libs.mvikotlin)
+                implementation(libs.mvikotlin.main)
+                implementation(libs.mvikotlin.extensions.coroutines)
 
 
             }

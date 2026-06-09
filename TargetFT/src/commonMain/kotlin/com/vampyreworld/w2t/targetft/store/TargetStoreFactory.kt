@@ -7,10 +7,6 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.domain.data.model.GoalStatus
 import com.vampyreworld.w2t.domain.data.model.GoalTier
-import com.vampyreworld.w2t.domain.data.model.Challenges
-import com.vampyreworld.w2t.domain.data.model.Cost
-import com.vampyreworld.w2t.domain.usecase.AddChallengeUseCase
-import com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase
 import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
@@ -22,8 +18,6 @@ class TargetStoreFactory(
     private val getGoalsUseCase: GetGoalsUseCase,
     private val saveGoalUseCase: SaveGoalUseCase,
     private val deleteGoalUseCase: DeleteGoalUseCase,
-    private val addChallengeUseCase: AddChallengeUseCase,
-    private val getChallengesUseCase: GetChallengesUseCase,
     private val goalId: Long? = null,
     private val initialTier: String? = null,
     private val parentId: Long? = null
@@ -41,7 +35,7 @@ class TargetStoreFactory(
 
     private sealed interface Msg {
         data object Loading : Msg
-        data class Loaded(val selectedGoal: Goal?, val relatedGoals: List<Goal>, val challenges: List<Challenges>) : Msg
+        data class Loaded(val selectedGoal: Goal?, val relatedGoals: List<Goal>) : Msg
         data class SetScreen(val screen: TargetContract.Screen) : Msg
     }
 
@@ -55,14 +49,13 @@ class TargetStoreFactory(
                     cancelGoal()
                 }
                 TargetStore.Intent.CreateChallenge -> {
-                    dispatch(Msg.SetScreen(TargetContract.Screen.CHALLENGE_CREATE))
+                    // Handled by component navigation
                 }
                 TargetStore.Intent.NavigateToChallengeList -> {
-                    dispatch(Msg.SetScreen(TargetContract.Screen.CHALLENGE_LIST))
+                    // Handled by component navigation
                 }
                 TargetStore.Intent.NavigateToAppraise -> {
-                    val screen = if (state().selectedGoal != null) TargetContract.Screen.GOAL_APPRAISE else TargetContract.Screen.DETAIL
-                    dispatch(Msg.SetScreen(screen))
+                    // Handled by component navigation
                 }
                 TargetStore.Intent.NavigateToDefineSteps -> {
                     dispatch(Msg.SetScreen(TargetContract.Screen.DEFINE_STEPS))
@@ -76,7 +69,7 @@ class TargetStoreFactory(
                     deleteGoal(intent.goalId)
                 }
                 is TargetStore.Intent.OnChallengeClick -> {
-                    // navigateToChallengeDetail handled by component, or we can handle it here
+                    // Handled by component navigation
                 }
                 is TargetStore.Intent.ReplaceSubGoal -> {
                 }
@@ -84,7 +77,7 @@ class TargetStoreFactory(
                     saveGoal(intent)
                 }
                 is TargetStore.Intent.SaveChallenge -> {
-                    saveChallenge(intent)
+                    // Handled by component navigation
                 }
                 is TargetStore.Intent.UpdateGoal -> {
                     updateGoal(intent.goal)
@@ -109,14 +102,7 @@ class TargetStoreFactory(
                 getGoalsUseCase().collect { goals ->
                     val selectedGoal = goals.find { it.id == goalId }
                     val relatedGoals = if (goalId != null) goals.filter { it.upperGoalId == goalId } else emptyList()
-                    
-                    if (goalId != null) {
-                        getChallengesUseCase(goalId).collect { challenges ->
-                            dispatch(Msg.Loaded(selectedGoal, relatedGoals, challenges))
-                        }
-                    } else {
-                        dispatch(Msg.Loaded(selectedGoal, relatedGoals, emptyList()))
-                    }
+                    dispatch(Msg.Loaded(selectedGoal, relatedGoals))
                 }
             }
         }
@@ -137,38 +123,6 @@ class TargetStoreFactory(
                     publish(TargetStore.Label.Saved)
                 } catch (e: Exception) {
                     publish(TargetStore.Label.Error(e.message ?: "Unknown error"))
-                }
-            }
-        }
-
-        private fun saveChallenge(intent: TargetStore.Intent.SaveChallenge) {
-            scope.launch {
-                dispatch(Msg.Loading)
-                try {
-                    val challenge = Challenges(
-                        id = 0,
-                        solvingBeforeGoalId = null,
-                        title = intent.title,
-                        desc = intent.description,
-                        cost = Cost(0, 0, 0),
-                        priority = when(intent.impact) {
-                            "High" -> 90
-                            "Medium" -> 50
-                            else -> 20
-                        },
-                        isBarrier = true,
-                        parentGoalId = intent.goalId ?: goalId,
-                        moodImpact = 0,
-                        prosAfterSolve = null,
-                        consAfterFailure = null
-                    )
-                    addChallengeUseCase(challenge)
-                    dispatch(Msg.SetScreen(TargetContract.Screen.DETAIL))
-                    loadData()
-                } catch (e: Exception) {
-                    publish(TargetStore.Label.Error(e.message ?: "Failed to save challenge"))
-                } finally {
-                    dispatch(Msg.Loaded(state().selectedGoal, state().relatedGoals, state().challenges))
                 }
             }
         }
@@ -206,8 +160,7 @@ class TargetStoreFactory(
                 is Msg.Loaded -> copy(
                     isLoading = false,
                     selectedGoal = msg.selectedGoal,
-                    relatedGoals = msg.relatedGoals,
-                    challenges = msg.challenges
+                    relatedGoals = msg.relatedGoals
                 )
                 is Msg.SetScreen -> copy(currentScreen = msg.screen)
             }

@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 import com.vampyreworld.w2t.sharedui.theme.color.OD_Accent
+import androidx.compose.ui.tooling.preview.Preview
+import com.vampyreworld.w2t.sharedui.theme.W2TTheme
 
 @Composable
 fun W2TCard(
@@ -657,6 +661,72 @@ fun W2TRemovableItem(
         )
         IconButton(onClick = onRemove, modifier = Modifier.size(24.dp)) {
             Text(text = "✕", fontSize = 16.sp, color = colors.muted)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun W2TCatalogPreview() {
+    W2TTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            W2THeader(title = "Header Title", subtitle = "Header Subtitle", avatarText = "JD")
+            
+            W2TCard {
+                W2TSectionTitle(text = "Section Title")
+                Text("This is a card content")
+                Spacer(modifier = Modifier.height(8.dp))
+                W2TProgressBar(progress = 0.6f)
+            }
+            
+            W2TMoodWidget(
+                title = "Mood Title",
+                description = "Mood Description goes here",
+                buttonText = "Action",
+                onButtonClick = {}
+            )
+            
+            W2TAiInsightsCard(
+                title = "AI Insight",
+                description = "AI suggests you do this and that.",
+                buttonText = "View Detail",
+                onButtonClick = {}
+            )
+            
+            W2TGoalItem(icon = "🎯", title = "Master Goal", progress = 0.4f, progressText = "40%")
+            
+            W2TActionItem(title = "Action Item", subtitle = "Subtext", time = "10:00 AM", checked = false, onCheckedChange = {})
+            
+            W2TChallengeCard(
+                title = "Sample Challenge",
+                goalTitle = "Linked Goal",
+                description = "Challenge description",
+                status = "Ongoing"
+            ) {
+                W2TSolutionItem(title = "Suggested Solution", source = "User")
+                W2TStrategyCard(description = "AI Strategy", onButtonClick = {})
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun W2TTreePreview() {
+    W2TTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            W2TTreeNode(icon = "🌟", title = "Master Goal", type = "master") {
+                W2TTreeNode(icon = "📍", title = "Milestone", type = "milestone") {
+                    W2TTreeNode(icon = "✅", title = "Action Task", type = "action", completed = true)
+                }
+            }
         }
     }
 }

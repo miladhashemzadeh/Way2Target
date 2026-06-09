@@ -34,7 +34,8 @@ class DefaultTargetComponent(
     private val navigateToGoal: (Long) -> Unit = {},
     private val navigateToChildTarget: (parentId: Long, tier: String) -> Unit = { _, _ -> },
     private val navigateToChallenge: (goalId: Long) -> Unit = {},
-    private val navigateToChallengeDetail: (goalId: Long, challengeId: Long) -> Unit = { _, _ -> }
+    private val navigateToChallengeDetail: (goalId: Long, challengeId: Long) -> Unit = { _, _ -> },
+    private val navigateToAppraise: (goalId: Long?, challengeId: Long?) -> Unit = { _, _ -> }
 ) : TargetComponent, ComponentContext by componentContext {
 
     private val scope = componentScope()
@@ -81,7 +82,7 @@ class DefaultTargetComponent(
                 // Handle CancelGoal
             }
             TargetContract.Intent.CreateChallenge -> {
-                _state.value = _state.value.copy(currentScreen = TargetContract.Screen.CHALLENGE_CREATE)
+                goalId?.let { navigateToChallenge(it) }
             }
             TargetContract.Intent.CreateChildGoal -> {
                 state.value.selectedGoal?.let { currentGoal ->
@@ -100,10 +101,10 @@ class DefaultTargetComponent(
                 navigateToMood()
             }
             TargetContract.Intent.NavigateToChallengeList -> {
-                _state.value = _state.value.copy(currentScreen = TargetContract.Screen.CHALLENGE_LIST)
+                goalId?.let { navigateToChallenge(it) }
             }
             TargetContract.Intent.NavigateToAppraise -> {
-                _state.value = _state.value.copy(currentScreen = TargetContract.Screen.GOAL_APPRAISE)
+                navigateToAppraise(goalId, null)
             }
             TargetContract.Intent.NavigateToDefineSteps -> {
                 _state.value = _state.value.copy(currentScreen = TargetContract.Screen.DEFINE_STEPS)
@@ -112,7 +113,7 @@ class DefaultTargetComponent(
                 saveGoal(intent)
             }
             is TargetContract.Intent.OnSaveChallenge -> {
-                // Handle OnSaveChallenge in DefaultTargetComponent
+                // Now handled by SChallengeFT
             }
             is TargetContract.Intent.OnChallengeClick -> {
                 goalId?.let { navigateToChallengeDetail(it, intent.challengeId) }

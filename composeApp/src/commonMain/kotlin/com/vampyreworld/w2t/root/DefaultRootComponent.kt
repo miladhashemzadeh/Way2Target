@@ -11,13 +11,14 @@ import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.vampyreworld.navigation.Screens
 import com.vampyreworld.w2t.aboutus.DefaultAboutUsComponent
+import com.vampyreworld.w2t.appraiseft.component.DefaultAppraiseComponent
 import com.vampyreworld.w2t.decissionmakingft.DefaultDecisionMakingComponent
 import com.vampyreworld.w2t.shomeft.DefaultHomeComponent
 import com.vampyreworld.w2t.moodaddft.DefaultMoodAddComponent
 import com.vampyreworld.w2t.onboarding.DefaultOnboardingComponent
 import com.vampyreworld.w2t.prefrencesft.DefaultPrefrencesComponent
-import com.vampyreworld.w2t.schallengeft.DefaultSChallengeComponent
-import com.vampyreworld.w2t.solutionft.DefaultSolutionComponent
+import com.vampyreworld.w2t.schallengeft.component.DefaultSChallengeComponent
+import com.vampyreworld.w2t.solutionft.component.DefaultSolutionComponent
 import com.vampyreworld.w2t.splash.DefaultSplashComponent
 import com.vampyreworld.w2t.targetft.component.MVITargetComponent
 import com.vampyreworld.w2t.targetft.presentation.component.DefaultTargetMasterComponent
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
 
 class DefaultRootComponent(
     componentContext: ComponentContext
@@ -144,8 +146,6 @@ class DefaultRootComponent(
                     getGoalsUseCase = get(),
                     saveGoalUseCase = get(),
                     deleteGoalUseCase = get(),
-                    addChallengeUseCase = get(),
-                    getChallengesUseCase = get(),
                     onBack = { navigation.pop() },
                     navigateToDecision = { id -> navigation.push(Screens.DecisionForTarget(id)) },
                     navigateToMood = { navigation.push(Screens.AddMood) },
@@ -157,6 +157,13 @@ class DefaultRootComponent(
                     },
                     navigateToChallengeDetail = { goalId, challengeId ->
                         navigation.push(Screens.DetailOfChallenge(goalId, challengeId))
+                    },
+                    navigateToAppraise = { goalId, challengeId ->
+                        if (challengeId != null && goalId != null) {
+                            navigation.push(Screens.AppraiseChallenge(goalId, challengeId))
+                        } else if (goalId != null) {
+                            navigation.push(Screens.AppraiseTarget(goalId))
+                        }
                     }
                 )
             )
@@ -171,8 +178,6 @@ class DefaultRootComponent(
                     getGoalsUseCase = get(),
                     saveGoalUseCase = get(),
                     deleteGoalUseCase = get(),
-                    addChallengeUseCase = get(),
-                    getChallengesUseCase = get(),
                     onBack = { navigation.pop() },
                     navigateToDecision = { id -> navigation.push(Screens.DecisionForTarget(id)) },
                     navigateToMood = { navigation.push(Screens.AddMood) },
@@ -184,6 +189,13 @@ class DefaultRootComponent(
                     },
                     navigateToChallengeDetail = { goalId, challengeId ->
                         navigation.push(Screens.DetailOfChallenge(goalId, challengeId))
+                    },
+                    navigateToAppraise = { goalId, challengeId ->
+                        if (challengeId != null && goalId != null) {
+                            navigation.push(Screens.AppraiseChallenge(goalId, challengeId))
+                        } else if (goalId != null) {
+                            navigation.push(Screens.AppraiseTarget(goalId))
+                        }
                     }
                 )
             )
@@ -191,11 +203,7 @@ class DefaultRootComponent(
             is Screens.ListOfChallenges -> RootComponent.Child.SChallenge(
                 DefaultSChallengeComponent(
                     componentContext = componentContext,
-                    goalId = config.goalId,
-                    challengeId = null,
-                    addChallengeUseCase = get(),
-                    getChallengesUseCase = get(),
-                    getChallengeByIdUseCase = get(),
+                    storeFactory = get { parametersOf(config.goalId, null) },
                     onBack = { navigation.pop() },
                     navigateToAddSolution = { challengeId -> 
                         navigation.push(Screens.AddSolution(null, challengeId)) 
@@ -206,10 +214,7 @@ class DefaultRootComponent(
             is Screens.ListOfSolutions -> RootComponent.Child.Solution(
                 DefaultSolutionComponent(
                     componentContext = componentContext,
-                    addSolutionUseCase = get(),
-                    getSolutionsUseCase = get(),
-                    goalId = null,
-                    challengeId = null,
+                    storeFactory = get { parametersOf(null, null) },
                     onBack = { navigation.pop() }
                 )
             )
@@ -222,9 +227,20 @@ class DefaultRootComponent(
                 )
             )
             
-            // AppraiseFT - Placeholder mapping
-            is Screens.AppraiseTarget -> RootComponent.Child.Splash(
-                DefaultSplashComponent(componentContext, { navigation.pop() })
+            is Screens.AppraiseTarget -> RootComponent.Child.Appraise(
+                DefaultAppraiseComponent(
+                    componentContext = componentContext,
+                    storeFactory = get { parametersOf(config.goalId, null) },
+                    onBack = { navigation.pop() }
+                )
+            )
+
+            is Screens.AppraiseChallenge -> RootComponent.Child.Appraise(
+                DefaultAppraiseComponent(
+                    componentContext = componentContext,
+                    storeFactory = get { parametersOf(config.goalId, config.challengeId) },
+                    onBack = { navigation.pop() }
+                )
             )
 
             is Screens.AddMood -> RootComponent.Child.MoodAdd(
@@ -239,11 +255,7 @@ class DefaultRootComponent(
             is Screens.AddChallenge -> RootComponent.Child.SChallenge(
                 DefaultSChallengeComponent(
                     componentContext = componentContext,
-                    goalId = config.goalId,
-                    challengeId = null,
-                    addChallengeUseCase = get(),
-                    getChallengesUseCase = get(),
-                    getChallengeByIdUseCase = get(),
+                    storeFactory = get { parametersOf(config.goalId, null) },
                     onBack = { navigation.pop() },
                     navigateToAddSolution = { challengeId -> 
                         navigation.push(Screens.AddSolution(null, challengeId)) 
@@ -254,11 +266,7 @@ class DefaultRootComponent(
             is Screens.DetailOfChallenge -> RootComponent.Child.SChallenge(
                 DefaultSChallengeComponent(
                     componentContext = componentContext,
-                    goalId = config.goalId,
-                    challengeId = config.challengeId,
-                    addChallengeUseCase = get(),
-                    getChallengesUseCase = get(),
-                    getChallengeByIdUseCase = get(),
+                    storeFactory = get { parametersOf(config.goalId, config.challengeId) },
                     onBack = { navigation.pop() },
                     navigateToAddSolution = { challengeId -> 
                         navigation.push(Screens.AddSolution(null, challengeId)) 
@@ -270,10 +278,7 @@ class DefaultRootComponent(
             is Screens.AddSolution -> RootComponent.Child.Solution(
                 DefaultSolutionComponent(
                     componentContext = componentContext,
-                    addSolutionUseCase = get(),
-                    getSolutionsUseCase = get(),
-                    goalId = config.goalId,
-                    challengeId = config.challengeId,
+                    storeFactory = get { parametersOf(config.goalId, config.challengeId) },
                     onBack = { navigation.pop() }
                 )
             )

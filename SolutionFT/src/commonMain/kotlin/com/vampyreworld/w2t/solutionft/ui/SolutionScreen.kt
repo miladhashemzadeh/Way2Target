@@ -3,8 +3,8 @@ package com.vampyreworld.w2t.solutionft.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.vampyreworld.w2t.solutionft.SolutionComponent
 import com.vampyreworld.w2t.solutionft.SolutionContract
+import com.vampyreworld.w2t.solutionft.component.SolutionComponent
 import com.vampyreworld.w2t.solutionft.presentation.screen.ListOfSolutionsScreen
 
 @Composable

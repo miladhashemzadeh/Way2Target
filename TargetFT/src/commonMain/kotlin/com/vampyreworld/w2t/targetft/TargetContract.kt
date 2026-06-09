@@ -1,6 +1,5 @@
 package com.vampyreworld.w2t.targetft
 
-import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.data.model.Goal
 
 interface TargetContract {
@@ -8,7 +7,6 @@ interface TargetContract {
         val isLoading: Boolean = false,
         val selectedGoal: Goal? = null,
         val relatedGoals: List<Goal> = emptyList(),
-        val challenges: List<Challenges> = emptyList(),
         val initialTier: String? = null,
         val parentId: Long? = null,
         val currentScreen: Screen = Screen.DETAIL
@@ -17,13 +15,7 @@ interface TargetContract {
     enum class Screen {
         DETAIL,
         CREATE_GOAL,
-        CHALLENGE_LIST,
-        CHALLENGE_CREATE,
-        CHALLENGE_DETAIL,
-        GOAL_APPRAISE,
-        CHALLENGE_APPRAISE,
-        DEFINE_STEPS,
-        SOLUTION_CREATE
+        DEFINE_STEPS
     }
 
     sealed interface SideEffect {

@@ -11,6 +11,7 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.aboutus.ui.AboutUsScreen
+import com.vampyreworld.w2t.appraiseft.ui.AppraiseScreen
 import com.vampyreworld.w2t.decissionmakingft.ui.DecisionMakingScreen
 import com.vampyreworld.w2t.shomeft.ui.HomeScreen
 import com.vampyreworld.w2t.moodaddft.ui.MoodAddScreen
@@ -48,6 +49,7 @@ fun App(root: RootComponent) {
                     is RootComponent.Child.Solution -> SolutionScreen(child.component)
                     is RootComponent.Child.Preferences -> PrefrencesScreen(child.component)
                     is RootComponent.Child.AboutUs -> AboutUsScreen(child.component)
+                    is RootComponent.Child.Appraise -> AppraiseScreen(child.component)
                 }
             }
         }

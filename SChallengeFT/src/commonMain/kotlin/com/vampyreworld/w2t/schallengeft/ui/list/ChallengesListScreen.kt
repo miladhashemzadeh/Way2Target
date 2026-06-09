@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.data.model.Cost
-import com.vampyreworld.w2t.schallengeft.SChallengeComponent
 import com.vampyreworld.w2t.schallengeft.SChallengeContract
+import com.vampyreworld.w2t.schallengeft.component.SChallengeComponent
 import com.vampyreworld.w2t.schallengeft.ui.components.ChallengeCard
 
 @Composable

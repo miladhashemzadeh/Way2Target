@@ -12,12 +12,7 @@ import com.vampyreworld.w2t.targetft.TargetContract
 import com.vampyreworld.w2t.targetft.component.TargetComponent
 import com.vampyreworld.w2t.targetft.ui.create.TargetCreateScreen
 import com.vampyreworld.w2t.targetft.ui.detail.TargetDetailScreen
-import com.vampyreworld.w2t.targetft.ui.challenge.ChallengeCreateScreen
-import com.vampyreworld.w2t.targetft.ui.challenge.ChallengesListScreen
-import com.vampyreworld.w2t.targetft.ui.appraise.GoalAppraiseScreen
-import com.vampyreworld.w2t.targetft.ui.appraise.ChallengeAppraiseScreen
 import com.vampyreworld.w2t.targetft.ui.create.GoalStepsCreateScreen
-import com.vampyreworld.w2t.targetft.ui.challenge.SolutionCreateScreen
 
 @Composable
 fun TargetScreen(component: TargetComponent) {
@@ -31,32 +26,14 @@ fun TargetScreen(component: TargetComponent) {
                     if (goal == null && state.initialTier != null) {
                         TargetCreateScreen(component, padding)
                     } else if (goal != null) {
-                        TargetDetailScreen(goal, state.relatedGoals, state.challenges, component, padding)
+                        TargetDetailScreen(goal, state.relatedGoals, component, padding)
                     }
                 }
                 TargetContract.Screen.CREATE_GOAL -> {
                     TargetCreateScreen(component, padding)
                 }
-                TargetContract.Screen.CHALLENGE_LIST -> {
-                    ChallengesListScreen(component, state.challenges, state.relatedGoals, padding)
-                }
-                TargetContract.Screen.CHALLENGE_CREATE -> {
-                    ChallengeCreateScreen(component, state.relatedGoals, padding)
-                }
-                TargetContract.Screen.CHALLENGE_DETAIL -> {
-                    // ChallengeDetailScreen(component, padding)
-                }
-                TargetContract.Screen.GOAL_APPRAISE -> {
-                    goal?.let { GoalAppraiseScreen(component, it, padding) }
-                }
-                TargetContract.Screen.CHALLENGE_APPRAISE -> {
-                    state.challenges.firstOrNull()?.let { ChallengeAppraiseScreen(component, it, padding) }
-                }
                 TargetContract.Screen.DEFINE_STEPS -> {
                     goal?.let { GoalStepsCreateScreen(component, it, padding) }
-                }
-                TargetContract.Screen.SOLUTION_CREATE -> {
-                    state.challenges.firstOrNull()?.let { SolutionCreateScreen(component, it, padding) }
                 }
             }
 

@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.domain.data.model.GoalStatus
 import com.vampyreworld.w2t.domain.data.model.GoalTier
@@ -29,7 +28,6 @@ import com.vampyreworld.w2t.targetft.component.TargetComponent
 fun TargetDetailScreen(
     goal: Goal,
     relatedGoals: List<Goal>,
-    challenges: List<Challenges>,
     component: TargetComponent,
     padding: PaddingValues
 ) {
@@ -142,26 +140,6 @@ fun TargetDetailScreen(
             }
         }
 
-        if (challenges.isNotEmpty()) {
-            item {
-                W2TCard {
-                    W2TSectionTitle("Active Challenges")
-                    challenges.forEach { challenge ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Surface(color = colors.challengeColor, shape = CircleShape) {
-                                Text("Ongoing", modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), style = MaterialTheme.typography.labelSmall, color = Color.White, fontWeight = FontWeight.Bold)
-                            }
-                            Text(challenge.title, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium))
-                            Text(text = "›", color = colors.muted, fontSize = 20.sp)
-                        }
-                    }
-                }
-            }
-        }
-
         item {
             W2TAiInsightsCard(
                 title = "AI Insights",
@@ -174,14 +152,14 @@ fun TargetDetailScreen(
         item {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Button(
-                    onClick = { component.onIntent(TargetContract.Intent.CreateChallenge) },
+                    onClick = { component.onIntent(TargetContract.Intent.NavigateToChallengeList) },
                     modifier = Modifier.weight(1f).height(56.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
                     shape = RoundedCornerShape(28.dp)
                 ) {
                     Icon(Icons.Default.FlashOn, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Challenge")
+                    Text("Challenges")
                 }
                 
                 if (goal.tier != GoalTier.ACTION) {
