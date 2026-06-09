@@ -1,5 +1,7 @@
 package com.vampyreworld.w2t.di
 
+import com.vampyreworld.navigation.AppRouterImpl
+import com.vampyreworld.navigation.Router
 import com.vampreworld.w2t.data.di.dataModule as settingsModule
 import com.vampyreworld.w2t.di.dataModule as databaseModule
 import com.vampyreworld.w2t.domain.di.domainModule
@@ -13,8 +15,13 @@ import com.vampyreworld.w2t.prefrencesft.prefrencesModule
 import com.vampyreworld.w2t.shomeft.sHomeModule
 import org.koin.dsl.module
 
+val navigationModule = module {
+    single<Router> { AppRouterImpl() }
+}
+
 val featureModules = module {
     includes(
+        navigationModule,
         settingsModule,
         databaseModule,
         domainModule,
@@ -28,6 +35,7 @@ val featureModules = module {
         appraiseModule,
     )
 }
+
 
 val allAppModules = listOf(
     appModule,

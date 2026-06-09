@@ -18,7 +18,8 @@ class DefaultSChallengeComponent(
     componentContext: ComponentContext,
     storeFactory: SChallengeStoreFactory,
     private val onBack: () -> Unit,
-    private val navigateToAddSolution: (challengeId: Long) -> Unit = {}
+    private val navigateToAddSolution: (challengeId: Long) -> Unit = {},
+    private val navigateToDecision: (challengeId: Long) -> Unit = {}
 ) : SChallengeComponent, ComponentContext by componentContext {
 
     private val store = instanceKeeper.getStore { storeFactory.create() }
@@ -63,7 +64,9 @@ class DefaultSChallengeComponent(
                 // ...
             }
             SChallengeContract.Intent.OnTakeAiHelp -> {}
-            SChallengeContract.Intent.OnMakeDecision -> {}
+            SChallengeContract.Intent.OnMakeDecision -> {
+                state.value.selectedChallenge?.id?.let { navigateToDecision(it) }
+            }
             SChallengeContract.Intent.OnAddSolution -> {
                 state.value.selectedChallenge?.id?.let { navigateToAddSolution(it) }
             }

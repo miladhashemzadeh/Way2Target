@@ -25,6 +25,7 @@ import com.vampyreworld.w2t.targetft.presentation.component.DefaultTargetMasterC
 import com.vampyreworld.w2t.targetft.presentation.component.TargetMasterComponent
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
+import com.vampyreworld.navigation.Router
 import com.vampyreworld.w2t.domain.usecase.onboarding.IsOnboardingCompletedUseCase
 import com.vampyreworld.w2t.domain.usecase.onboarding.SetOnboardingCompletedUseCase
 import com.vampyreworld.w2t.domain.usecase.prefrences.GetThemeUseCase
@@ -42,9 +43,12 @@ class DefaultRootComponent(
     private val getThemeUseCase: GetThemeUseCase = get()
     private val isOnboardingCompletedUseCase: IsOnboardingCompletedUseCase = get()
     private val setOnboardingCompletedUseCase: SetOnboardingCompletedUseCase = get()
+    private val router: Router = get()
 
     private val _isDarkMode = MutableValue(true)
     override val isDarkMode: Value<Boolean> = _isDarkMode
+
+    private val navigation = StackNavigation<Screens>()
 
     init {
         getThemeUseCase()
@@ -52,9 +56,29 @@ class DefaultRootComponent(
                 _isDarkMode.update { isDark }
             }
             .launchIn(componentScope())
-    }
 
-    private val navigation = StackNavigation<Screens>()
+        router.collector
+            .onEach { destination ->
+                @OptIn(DelicateDecomposeApi::class)
+                when (destination) {
+                    is Screens.PopBackStack -> navigation.pop()
+                    is Screens.ClearBackStack -> navigation.replaceAll(destination.target)
+                    is Screens.OpenAndClearBackstack -> {
+                        navigation.replaceAll(destination.backDestination, destination.target)
+                    }
+                    is Screens.KeepFirstBackStackAndClearOthers -> {
+                        // Custom stack manipulation: keep only popUpToTarget and push target
+                        // Decompose's navigate is used for this
+                        // navigation.navigate { it.filter { config -> config == destination.popUpToTarget } + destination.target }
+                        // For simplicity, if popUpToTarget is not found, it might clear everything.
+                        // Here we just use replaceAll if we want to clear everything and go to target
+                        navigation.replaceAll(destination.target)
+                    }
+                    else -> navigation.push(destination)
+                }
+            }
+            .launchIn(componentScope())
+    }
 
     override val childStack: Value<ChildStack<*, RootComponent.Child>> =
         childStack(
@@ -206,7 +230,38 @@ class DefaultRootComponent(
                     storeFactory = get { parametersOf(config.goalId, null) },
                     onBack = { navigation.pop() },
                     navigateToAddSolution = { challengeId -> 
-                        navigation.push(Screens.AddSolution(null, challengeId)) 
+                        navigation.push(Screens.AddSolution(config.goalId, challengeId)) 
+                    },
+                    navigateToDecision = { challengeId ->
+                        navigation.push(Screens.DecisionForChallenge(config.goalId, challengeId))
+                    }
+                )
+            )
+
+            is Screens.AddChallenge -> RootComponent.Child.SChallenge(
+                DefaultSChallengeComponent(
+                    componentContext = componentContext,
+                    storeFactory = get { parametersOf(config.goalId, null) },
+                    onBack = { navigation.pop() },
+                    navigateToAddSolution = { challengeId -> 
+                        navigation.push(Screens.AddSolution(config.goalId, challengeId)) 
+                    },
+                    navigateToDecision = { challengeId ->
+                        navigation.push(Screens.DecisionForChallenge(config.goalId, challengeId))
+                    }
+                )
+            )
+
+            is Screens.DetailOfChallenge -> RootComponent.Child.SChallenge(
+                DefaultSChallengeComponent(
+                    componentContext = componentContext,
+                    storeFactory = get { parametersOf(config.goalId, config.challengeId) },
+                    onBack = { navigation.pop() },
+                    navigateToAddSolution = { challengeId -> 
+                        navigation.push(Screens.AddSolution(config.goalId, challengeId)) 
+                    },
+                    navigateToDecision = { challengeId ->
+                        navigation.push(Screens.DecisionForChallenge(config.goalId, challengeId))
                     }
                 )
             )
@@ -214,12 +269,28 @@ class DefaultRootComponent(
             is Screens.ListOfSolutions -> RootComponent.Child.Solution(
                 DefaultSolutionComponent(
                     componentContext = componentContext,
-                    storeFactory = get { parametersOf(null, null) },
+                    storeFactory = get { parametersOf(config.goalId, config.challengeId) },
+                    onBack = { navigation.pop() }
+                )
+            )
+
+            is Screens.AddSolution -> RootComponent.Child.Solution(
+                DefaultSolutionComponent(
+                    componentContext = componentContext,
+                    storeFactory = get { parametersOf(config.goalId, config.challengeId) },
                     onBack = { navigation.pop() }
                 )
             )
 
             is Screens.DecisionForTarget -> RootComponent.Child.DecisionMaking(
+                DefaultDecisionMakingComponent(
+                    componentContext = componentContext,
+                    saveDecisionUseCase = get(),
+                    onBack = { navigation.pop() }
+                )
+            )
+
+            is Screens.DecisionForChallenge -> RootComponent.Child.DecisionMaking(
                 DefaultDecisionMakingComponent(
                     componentContext = componentContext,
                     saveDecisionUseCase = get(),
@@ -252,37 +323,6 @@ class DefaultRootComponent(
                 )
             )
 
-            is Screens.AddChallenge -> RootComponent.Child.SChallenge(
-                DefaultSChallengeComponent(
-                    componentContext = componentContext,
-                    storeFactory = get { parametersOf(config.goalId, null) },
-                    onBack = { navigation.pop() },
-                    navigateToAddSolution = { challengeId -> 
-                        navigation.push(Screens.AddSolution(null, challengeId)) 
-                    }
-                )
-            )
-
-            is Screens.DetailOfChallenge -> RootComponent.Child.SChallenge(
-                DefaultSChallengeComponent(
-                    componentContext = componentContext,
-                    storeFactory = get { parametersOf(config.goalId, config.challengeId) },
-                    onBack = { navigation.pop() },
-                    navigateToAddSolution = { challengeId -> 
-                        navigation.push(Screens.AddSolution(null, challengeId)) 
-                    }
-                )
-            )
-
-
-            is Screens.AddSolution -> RootComponent.Child.Solution(
-                DefaultSolutionComponent(
-                    componentContext = componentContext,
-                    storeFactory = get { parametersOf(config.goalId, config.challengeId) },
-                    onBack = { navigation.pop() }
-                )
-            )
-
             is Screens.Preferences -> RootComponent.Child.Preferences(
                 DefaultPrefrencesComponent(
                     componentContext = componentContext,
@@ -299,10 +339,14 @@ class DefaultRootComponent(
                 )
             )
 
-            else -> RootComponent.Child.Splash(
+            // Handling the "command" screens by returning a Splash (though ideally they shouldn't reach here)
+            is Screens.PopBackStack,
+            is Screens.ClearBackStack,
+            is Screens.KeepFirstBackStackAndClearOthers,
+            is Screens.OpenAndClearBackstack -> RootComponent.Child.Splash(
                 DefaultSplashComponent(
                     componentContext = componentContext,
-                    onFinished = { navigation.replaceAll(Screens.Home) }
+                    onFinished = { navigation.pop() }
                 )
             )
         }
