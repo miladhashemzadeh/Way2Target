@@ -57,6 +57,9 @@ class DefaultSChallengeComponent(
                     onBack()
                 }
             }
+            is SChallengeContract.Intent.OnChallengeClick -> {
+                store.accept(SChallengeStore.Intent.OnChallengeClick(intent.challengeId))
+            }
             is SChallengeContract.Intent.OnAddChallenge -> {
                 store.accept(SChallengeStore.Intent.AddChallenge(intent.challenge))
             }

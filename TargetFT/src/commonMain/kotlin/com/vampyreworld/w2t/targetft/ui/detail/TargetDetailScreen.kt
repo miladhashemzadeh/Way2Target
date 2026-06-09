@@ -103,10 +103,10 @@ fun TargetDetailScreen(
                     W2TSectionTitle(sectionTitle)
                     
                     if (goal.tier == GoalTier.MASTER) {
-                        W2TTreeNode(icon = "🎯", title = "Master Goal: ${goal.title}", type = "master") {
-                            relatedGoals.filter { it.tier == GoalTier.MILESTONE }.forEach { milestone ->
-                                W2TTreeNode(icon = "✨", title = "Milestone: ${milestone.title}", type = "milestone") {
-                                    relatedGoals.filter { it.upperGoalId == milestone.id }.forEach { action ->
+                        W2TTreeNode(icon = "🎯", title = "Master Goal: ${goal.title}", type = "master", onClick = { component.onIntent(TargetContract.Intent.OnGoalClick(goal.id)) }) {
+                            relatedGoals.filter { it.tier == GoalTier.MILESTONE && it.upperGoalId == goal.id }.forEach { milestone ->
+                                W2TTreeNode(icon = "✨", title = "Milestone: ${milestone.title}", type = "milestone", onClick = { component.onIntent(TargetContract.Intent.OnGoalClick(milestone.id)) }) {
+                                    relatedGoals.filter { it.tier == GoalTier.ACTION && it.upperGoalId == milestone.id }.forEach { action ->
                                         W2TTreeNode(
                                             icon = "", title = action.title, type = "action",
                                             completed = action.status == GoalStatus.COMPLETED,
@@ -114,7 +114,8 @@ fun TargetDetailScreen(
                                                 component.onIntent(TargetContract.Intent.UpdateGoal(
                                                     action.copy(status = if (isChecked) GoalStatus.COMPLETED else GoalStatus.ACTIVE)
                                                 ))
-                                            }
+                                            },
+                                            onClick = { component.onIntent(TargetContract.Intent.OnGoalClick(action.id)) }
                                         )
                                     }
                                 }
@@ -122,7 +123,7 @@ fun TargetDetailScreen(
                         }
                     } else {
                         // Milestone view: Flat list of actions
-                        relatedGoals.filter { it.tier == GoalTier.ACTION }.forEach { action ->
+                        relatedGoals.filter { it.tier == GoalTier.ACTION && it.upperGoalId == goal.id }.forEach { action ->
                             W2TActionItem(
                                 title = action.title,
                                 subtitle = goal.title,
@@ -132,7 +133,8 @@ fun TargetDetailScreen(
                                     component.onIntent(TargetContract.Intent.UpdateGoal(
                                         action.copy(status = if (isChecked) GoalStatus.COMPLETED else GoalStatus.ACTIVE)
                                     ))
-                                }
+                                },
+                                onClick = { component.onIntent(TargetContract.Intent.OnGoalClick(action.id)) }
                             )
                         }
                     }

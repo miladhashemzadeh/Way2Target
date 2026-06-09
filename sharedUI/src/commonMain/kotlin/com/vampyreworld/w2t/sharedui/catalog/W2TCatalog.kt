@@ -229,12 +229,14 @@ fun W2TActionItem(
     time: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
 ) {
     val colors = LocalAppColorScheme.current
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -319,6 +321,7 @@ fun W2TTreeNode(
     type: String, // "master", "milestone", "action"
     completed: Boolean = false,
     onCheckedChange: ((Boolean) -> Unit)? = null,
+    onClick: (() -> Unit)? = null,
     content: (@Composable ColumnScope.() -> Unit)? = null
 ) {
     val colors = LocalAppColorScheme.current
@@ -350,6 +353,7 @@ fun W2TTreeNode(
                     .weight(1f)
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.surface)
+                    .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {

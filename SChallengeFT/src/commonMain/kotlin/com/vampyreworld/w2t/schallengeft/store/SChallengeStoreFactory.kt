@@ -22,7 +22,7 @@ class SChallengeStoreFactory(
     fun create(): SChallengeStore =
         object : SChallengeStore, Store<SChallengeStore.Intent, SChallengeContract.State, SChallengeStore.Label> by storeFactory.create(
             name = "SChallengeStore",
-            initialState = SChallengeContract.State(),
+            initialState = SChallengeContract.State(goalId = goalId),
             executorFactory = ::ExecutorImpl,
             reducer = ReducerImpl
         ) {}
@@ -36,20 +36,32 @@ class SChallengeStoreFactory(
         override fun executeIntent(intent: SChallengeStore.Intent) {
             when (intent) {
                 SChallengeStore.Intent.Refresh -> loadData()
+                is SChallengeStore.Intent.OnChallengeClick -> loadChallenge(intent.challengeId)
                 is SChallengeStore.Intent.AddChallenge -> addChallenge(intent.challenge)
                 is SChallengeStore.Intent.UpdateStabilityCondition -> updateStabilityCondition(intent)
+                else -> {}
+            }
+        }
+
+        private fun loadChallenge(id: Long) {
+            scope.launch {
+                dispatch(Msg.Loading)
+                getChallengeByIdUseCase(id).collect { challenge ->
+                    dispatch(Msg.Loaded(state().challenges, challenge))
+                }
             }
         }
 
         private fun loadData() {
             scope.launch {
                 dispatch(Msg.Loading)
+                val currentGoalId = goalId ?: state().goalId
                 if (challengeId != null) {
                     getChallengeByIdUseCase(challengeId).collect { challenge ->
                         dispatch(Msg.Loaded(emptyList(), challenge))
                     }
-                } else if (goalId != null) {
-                    getChallengesUseCase(goalId).collect { challenges ->
+                } else if (currentGoalId != null) {
+                    getChallengesUseCase(currentGoalId).collect { challenges ->
                         dispatch(Msg.Loaded(challenges, null))
                     }
                 } else {

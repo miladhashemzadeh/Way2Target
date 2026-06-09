@@ -101,7 +101,8 @@ class TargetStoreFactory(
                 dispatch(Msg.Loading)
                 getGoalsUseCase().collect { goals ->
                     val selectedGoal = goals.find { it.id == goalId }
-                    val relatedGoals = if (goalId != null) goals.filter { it.upperGoalId == goalId } else emptyList()
+                    // Load all goals if we are in detail view, so we can show the tree
+                    val relatedGoals = if (goalId != null) goals else emptyList()
                     dispatch(Msg.Loaded(selectedGoal, relatedGoals))
                 }
             }

@@ -16,6 +16,9 @@ import com.vampyreworld.w2t.targetft.store.TargetStore.Intent.*
 import com.vampyreworld.w2t.targetft.store.TargetStoreFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.launchIn
+import com.vampyreworld.w2t.core.utils.componentScope
 
 class MVITargetComponent(
     componentContext: ComponentContext,
@@ -50,6 +53,15 @@ class MVITargetComponent(
 
     init {
         store.accept(TargetStore.Intent.Refresh)
+        
+        store.labels.onEach { label ->
+            when (label) {
+                TargetStore.Label.Saved -> onBack()
+                is TargetStore.Label.Error -> {
+                    // Handle error
+                }
+            }
+        }.launchIn(componentScope())
     }
 
     override val state: Value<TargetContract.State> = store.asValue()

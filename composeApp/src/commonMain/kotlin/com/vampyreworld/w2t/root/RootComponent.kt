@@ -9,7 +9,7 @@ import com.vampyreworld.w2t.shomeft.HomeComponent
 import com.vampyreworld.w2t.moodaddft.MoodAddComponent
 import com.vampyreworld.w2t.onboarding.OnboardingComponent
 import com.vampyreworld.w2t.prefrencesft.PrefrencesComponent
-import com.vampyreworld.w2t.schallengeft.component.SChallengeComponent
+import com.vampyreworld.w2t.schallengeft.SChallengeComponent
 import com.vampyreworld.w2t.solutionft.component.SolutionComponent
 import com.vampyreworld.w2t.splash.SplashComponent
 import com.vampyreworld.w2t.targetft.component.TargetComponent

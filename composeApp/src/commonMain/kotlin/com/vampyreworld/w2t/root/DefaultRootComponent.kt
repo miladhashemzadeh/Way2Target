@@ -17,7 +17,7 @@ import com.vampyreworld.w2t.shomeft.DefaultHomeComponent
 import com.vampyreworld.w2t.moodaddft.DefaultMoodAddComponent
 import com.vampyreworld.w2t.onboarding.DefaultOnboardingComponent
 import com.vampyreworld.w2t.prefrencesft.DefaultPrefrencesComponent
-import com.vampyreworld.w2t.schallengeft.component.DefaultSChallengeComponent
+import com.vampyreworld.w2t.schallengeft.DefaultSChallengeComponent
 import com.vampyreworld.w2t.solutionft.component.DefaultSolutionComponent
 import com.vampyreworld.w2t.splash.DefaultSplashComponent
 import com.vampyreworld.w2t.targetft.component.MVITargetComponent

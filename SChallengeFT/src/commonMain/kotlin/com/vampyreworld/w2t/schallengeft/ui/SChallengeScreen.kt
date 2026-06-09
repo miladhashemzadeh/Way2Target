@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.schallengeft.SChallengeContract
-import com.vampyreworld.w2t.schallengeft.component.SChallengeComponent
+import com.vampyreworld.w2t.schallengeft.SChallengeComponent
 import com.vampyreworld.w2t.schallengeft.ui.detail.ChallengeDetailScreen
 import com.vampyreworld.w2t.schallengeft.ui.list.ChallengesListScreen
 

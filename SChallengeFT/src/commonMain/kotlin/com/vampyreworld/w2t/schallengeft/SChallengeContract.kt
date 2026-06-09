@@ -5,6 +5,7 @@ import com.vampyreworld.w2t.domain.data.model.Solution
 
 interface SChallengeContract {
     data class State(
+        val goalId: Long? = null,
         val isLoading: Boolean = false,
         val challenges: List<Challenges> = emptyList(),
         val selectedChallenge: Challenges? = null,
@@ -17,6 +18,7 @@ interface SChallengeContract {
 
     sealed interface Intent {
         data object OnBackClicked : Intent
+        data class OnChallengeClick(val challengeId: Long) : Intent
         data class OnAddChallenge(val challenge: Challenges) : Intent
         data class OnStatusChange(val status: String) : Intent
         data object OnTakeAiHelp : Intent

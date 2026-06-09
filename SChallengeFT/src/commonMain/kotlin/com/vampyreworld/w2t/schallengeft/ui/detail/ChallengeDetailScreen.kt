@@ -15,7 +15,7 @@ import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.data.model.Solution
 import com.vampyreworld.w2t.domain.data.model.StabilityCondition
 import com.vampyreworld.w2t.schallengeft.SChallengeContract
-import com.vampyreworld.w2t.schallengeft.component.SChallengeComponent
+import com.vampyreworld.w2t.schallengeft.SChallengeComponent
 
 @Composable
 fun ChallengeDetailScreen(

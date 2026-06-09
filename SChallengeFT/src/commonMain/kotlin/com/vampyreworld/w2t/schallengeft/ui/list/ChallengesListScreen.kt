@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.data.model.Cost
 import com.vampyreworld.w2t.schallengeft.SChallengeContract
-import com.vampyreworld.w2t.schallengeft.component.SChallengeComponent
+import com.vampyreworld.w2t.schallengeft.SChallengeComponent
 import com.vampyreworld.w2t.schallengeft.ui.components.ChallengeCard
 
 @Composable
@@ -38,8 +38,7 @@ fun ChallengesListScreen(
                 ChallengeCard(
                     challenge = challenge,
                     onClick = { 
-                        // If we had a SelectChallenge intent:
-                        // component.onIntent(SChallengeContract.Intent.SelectChallenge(challenge))
+                        component.onIntent(SChallengeContract.Intent.OnChallengeClick(challenge.id))
                     }
                 )
             }
@@ -73,7 +72,7 @@ fun ChallengesListScreen(
                     cost = Cost(10, 10, 0),
                     priority = 50,
                     isBarrier = false,
-                    parentGoalId = null,
+                    parentGoalId = state.goalId ?: 0L,
                     moodImpact = 0,
                     prosAfterSolve = null,
                     consAfterFailure = null,
