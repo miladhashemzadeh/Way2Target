@@ -13,7 +13,9 @@ import com.vampyreworld.w2t.schallengeft.SChallengeComponent
 import com.vampyreworld.w2t.schallengeft.ui.create.ChallengeCreateComponent
 import com.vampyreworld.w2t.solutionft.component.SolutionComponent
 import com.vampyreworld.w2t.splash.SplashComponent
-import com.vampyreworld.w2t.targetft.component.TargetComponent
+import com.vampyreworld.w2t.targetft.master.MasterComponent
+import com.vampyreworld.w2t.targetft.milestone.MilestoneComponent
+import com.vampyreworld.w2t.targetft.action.ActionComponent
 import com.vampyreworld.w2t.targetft.presentation.component.TargetMasterComponent
 
 interface RootComponent {
@@ -24,7 +26,9 @@ interface RootComponent {
         data class Splash(val component: SplashComponent) : Child()
         data class Onboarding(val component: OnboardingComponent) : Child()
         data class Home(val component: HomeComponent) : Child()
-        data class Target(val component: TargetComponent) : Child()
+        data class Master(val component: MasterComponent) : Child()
+        data class Milestone(val component: MilestoneComponent) : Child()
+        data class Action(val component: ActionComponent) : Child()
         data class TargetMaster(val component: TargetMasterComponent) : Child()
         data class MoodAdd(val component: MoodAddComponent) : Child()
         data class SChallenge(val component: SChallengeComponent) : Child()

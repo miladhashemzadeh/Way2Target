@@ -14,11 +14,11 @@ import androidx.compose.ui.unit.dp
 import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
-import com.vampyreworld.w2t.targetft.component.TargetComponent
+import com.vampyreworld.w2t.targetft.master.MasterComponent
 
 @Composable
 fun ChallengeAppraiseScreen(
-    component: TargetComponent,
+    component: MasterComponent,
     challenge: Challenges,
     padding: PaddingValues
 ) {

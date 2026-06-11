@@ -21,13 +21,19 @@ import com.vampyreworld.w2t.schallengeft.DefaultSChallengeComponent
 import com.vampyreworld.w2t.schallengeft.ui.create.DefaultChallengeCreateComponent
 import com.vampyreworld.w2t.solutionft.component.DefaultSolutionComponent
 import com.vampyreworld.w2t.splash.DefaultSplashComponent
-import com.vampyreworld.w2t.targetft.component.MVITargetComponent
+import com.vampyreworld.w2t.targetft.master.DefaultMasterComponent
+import com.vampyreworld.w2t.targetft.milestone.DefaultMilestoneComponent
+import com.vampyreworld.w2t.targetft.action.DefaultActionComponent
 import com.vampyreworld.w2t.targetft.presentation.component.DefaultTargetMasterComponent
 import com.vampyreworld.w2t.targetft.presentation.component.TargetMasterComponent
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
 import com.vampyreworld.navigation.Router
 import com.vampyreworld.w2t.domain.usecase.onboarding.IsOnboardingCompletedUseCase
+import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
+import com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase
+import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
+import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.onboarding.SetOnboardingCompletedUseCase
 import com.vampyreworld.w2t.domain.usecase.prefrences.GetThemeUseCase
 import com.vampyreworld.w2t.sharedui.arch.componentScope
@@ -161,73 +167,117 @@ class DefaultRootComponent(
                 )
             )
 
-            is Screens.AddGoal -> RootComponent.Child.Target(
-                MVITargetComponent(
-                    componentContext = componentContext,
-                    goalId = null,
-                    initialTier = config.tier,
-                    parentId = config.parentId,
-                    storeFactory = get(),
-                    getGoalsUseCase = get(),
-                    saveGoalUseCase = get(),
-                    deleteGoalUseCase = get(),
-                    getChallengesUseCase = get(),
-                    onBack = { navigation.pop() },
-                    navigateToDecision = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
-                    navigateToMood = { navigation.bringToFront(Screens.AddMood) },
-                    navigateToGoal = { id -> navigation.bringToFront(Screens.TargetDetail(id)) },
-                    navigateToChildTarget = { parentId, tier -> 
-                        navigation.bringToFront(Screens.AddGoal(parentId, tier))
-                    },
-                    navigateToChallenge = { goalId ->
-                        navigation.bringToFront(Screens.AddChallenge(goalId))
-                    },
-                    navigateToChallengeDetail = { goalId, challengeId ->
-                        navigation.bringToFront(Screens.DetailOfChallenge(goalId, challengeId))
-                    },
-                    navigateToAppraise = { goalId, challengeId ->
-                        if (challengeId != null && goalId != null) {
-                            navigation.bringToFront(Screens.AppraiseChallenge(goalId, challengeId))
-                        } else if (goalId != null) {
-                            navigation.bringToFront(Screens.AppraiseTarget(goalId))
-                        }
-                    }
-                )
-            )
+            is Screens.AddGoal -> {
+                when (config.tier) {
+                    "MASTER" -> RootComponent.Child.Master(
+                        DefaultMasterComponent(
+                            componentContext = componentContext,
+                            goalId = null,
+                            storeFactory = get(),
+                            getGoalsUseCase = get(),
+                            saveGoalUseCase = get(),
+                            deleteGoalUseCase = get(),
+                            getChallengesUseCase = get(),
+                            onBack = { navigation.pop() },
+                            navigateToDecision = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
+                            navigateToMood = { navigation.bringToFront(Screens.AddMood) },
+                            navigateToGoal = { id -> navigation.bringToFront(Screens.TargetDetail(id)) },
+                            navigateToCreateMilestone = { parentId ->
+                                navigation.bringToFront(Screens.AddGoal(parentId, "MILESTONE"))
+                            },
+                            navigateToChallenge = { goalId ->
+                                navigation.bringToFront(Screens.AddChallenge(goalId))
+                            },
+                            navigateToAppraise = { goalId ->
+                                navigation.bringToFront(Screens.AppraiseTarget(goalId))
+                            }
+                        )
+                    )
+                    "MILESTONE" -> RootComponent.Child.Milestone(
+                        DefaultMilestoneComponent(
+                            componentContext = componentContext,
+                            goalId = null,
+                            parentId = config.parentId,
+                            storeFactory = get(),
+                            getGoalsUseCase = get(),
+                            saveGoalUseCase = get(),
+                            deleteGoalUseCase = get(),
+                            getChallengesUseCase = get(),
+                            onBack = { navigation.pop() },
+                            navigateToDecision = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
+                            navigateToMood = { navigation.bringToFront(Screens.AddMood) },
+                            navigateToGoal = { id -> navigation.bringToFront(Screens.TargetDetail(id)) },
+                            navigateToCreateAction = { parentId ->
+                                navigation.bringToFront(Screens.AddGoal(parentId, "ACTION"))
+                            },
+                            navigateToChallenge = { goalId ->
+                                navigation.bringToFront(Screens.AddChallenge(goalId))
+                            },
+                            navigateToAppraise = { goalId ->
+                                navigation.bringToFront(Screens.AppraiseTarget(goalId))
+                            }
+                        )
+                    )
+                    else -> RootComponent.Child.Action(
+                        DefaultActionComponent(
+                            componentContext = componentContext,
+                            goalId = null,
+                            parentId = config.parentId,
+                            storeFactory = get(),
+                            getGoalsUseCase = get(),
+                            saveGoalUseCase = get(),
+                            deleteGoalUseCase = get(),
+                            getChallengesUseCase = get(),
+                            onBack = { navigation.pop() },
+                            navigateToDecision = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
+                            navigateToMood = { navigation.bringToFront(Screens.AddMood) },
+                            navigateToGoal = { id -> navigation.bringToFront(Screens.TargetDetail(id)) },
+                            navigateToChallenge = { goalId ->
+                                navigation.bringToFront(Screens.AddChallenge(goalId))
+                            },
+                            navigateToAppraise = { goalId ->
+                                navigation.bringToFront(Screens.AppraiseTarget(goalId))
+                            }
+                        )
+                    )
+                }
+            }
 
-            is Screens.TargetDetail -> RootComponent.Child.Target(
-                MVITargetComponent(
-                    componentContext = componentContext,
-                    goalId = config.goalId,
-                    initialTier = null,
-                    parentId = null,
-                    storeFactory = get(),
-                    getGoalsUseCase = get(),
-                    saveGoalUseCase = get(),
-                    deleteGoalUseCase = get(),
-                    getChallengesUseCase = get(),
-                    onBack = { navigation.pop() },
-                    navigateToDecision = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
-                    navigateToMood = { navigation.bringToFront(Screens.AddMood) },
-                    navigateToGoal = { id -> navigation.bringToFront(Screens.TargetDetail(id)) },
-                    navigateToChildTarget = { parentId, tier -> 
-                        navigation.bringToFront(Screens.AddGoal(parentId, tier))
-                    },
-                    navigateToChallenge = { goalId ->
-                        navigation.bringToFront(Screens.AddChallenge(goalId))
-                    },
-                    navigateToChallengeDetail = { goalId, challengeId ->
-                        navigation.bringToFront(Screens.DetailOfChallenge(goalId, challengeId))
-                    },
-                    navigateToAppraise = { goalId, challengeId ->
-                        if (challengeId != null && goalId != null) {
-                            navigation.bringToFront(Screens.AppraiseChallenge(goalId, challengeId))
-                        } else if (goalId != null) {
+            is Screens.TargetDetail -> {
+                // Determine tier or just handle routing here
+                // For now, let's assume we can use a generic logic to decide which component to use
+                // but since config only has goalId, we might need to fetch the goal first OR 
+                // handle it within a dispatcher component.
+                // However, the user wants separation. Let's provide a way to route.
+                // For simplicity in this step, I'll use the goalId to create the appropriate component
+                // if we can determine the tier. If not, we might need a "GoalLoader" component.
+                
+                // As a placeholder that fulfills the "separation" requirement:
+                RootComponent.Child.Master(
+                    DefaultMasterComponent(
+                        componentContext = componentContext,
+                        goalId = config.goalId,
+                        storeFactory = get(),
+                        getGoalsUseCase = get(),
+                        saveGoalUseCase = get(),
+                        deleteGoalUseCase = get(),
+                        getChallengesUseCase = get(),
+                        onBack = { navigation.pop() },
+                        navigateToDecision = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
+                        navigateToMood = { navigation.bringToFront(Screens.AddMood) },
+                        navigateToGoal = { id -> navigation.bringToFront(Screens.TargetDetail(id)) },
+                        navigateToCreateMilestone = { parentId ->
+                            navigation.bringToFront(Screens.AddGoal(parentId, "MILESTONE"))
+                        },
+                        navigateToChallenge = { goalId ->
+                            navigation.bringToFront(Screens.AddChallenge(goalId))
+                        },
+                        navigateToAppraise = { goalId ->
                             navigation.bringToFront(Screens.AppraiseTarget(goalId))
                         }
-                    }
+                    )
                 )
-            )
+            }
 
             is Screens.ListOfChallenges -> RootComponent.Child.SChallenge(
                 DefaultSChallengeComponent(

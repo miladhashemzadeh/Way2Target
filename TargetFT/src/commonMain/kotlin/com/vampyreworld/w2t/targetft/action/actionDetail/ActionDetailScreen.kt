@@ -1,0 +1,125 @@
+package com.vampyreworld.w2t.targetft.action.actionDetail
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.vampyreworld.w2t.domain.data.model.GoalStatus
+import com.vampyreworld.w2t.sharedui.catalog.*
+import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+
+@Composable
+fun ActionDetailScreen(
+    component: ActionDetailContract.Component,
+    padding: PaddingValues
+) {
+    val state by component.state.subscribeAsState()
+    val goal = state.selectedGoal ?: return
+    val colors = LocalAppColorScheme.current
+    
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().padding(padding),
+        contentPadding = PaddingValues(24.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        item {
+            W2THeader(
+                title = "Action Detail",
+                subtitle = "Consistency is key",
+                avatarText = "A"
+            )
+        }
+
+        item {
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Surface(
+                        color = if (goal.status == GoalStatus.COMPLETED) colors.success else colors.challengeColor,
+                        shape = CircleShape
+                    ) {
+                        Text(
+                            text = if (goal.status == GoalStatus.COMPLETED) "Completed" else "Pending",
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = goal.title,
+                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = goal.description.ifEmpty { "Apply foundational knowledge to create functional components." },
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    lineHeight = 24.sp
+                )
+            }
+        }
+
+        item {
+            W2TCard {
+                W2TSectionTitle("Details")
+                W2TDetailRow("Due Date", "Tomorrow, 5:00 PM")
+            }
+        }
+
+        item {
+            Button(
+                onClick = { component.onIntent(ActionDetailContract.Intent.NavigateToChallengeList) },
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
+                shape = RoundedCornerShape(28.dp)
+            ) {
+                Icon(Icons.Default.FlashOn, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("View Challenges")
+            }
+        }
+
+        if (state.challenges.isNotEmpty()) {
+            item {
+                W2TCard {
+                    W2TSectionTitle("Active Challenges")
+                    state.challenges.forEach { challenge ->
+                        W2TChallengeCard(
+                            title = challenge.title,
+                            goalTitle = goal.title,
+                            description = challenge.desc,
+                            status = if (challenge.status == GoalStatus.COMPLETED) "Finished" else "Ongoing",
+                            modifier = Modifier.clickable { }
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
+                }
+            }
+        }
+
+        item {
+            W2TAiInsightsCard(
+                title = "AI Insights",
+                description = "Focus on completing this task today to maintain your 5-day streak!",
+                buttonText = "View Strategy",
+                onButtonClick = { }
+            )
+        }
+        
+        item { Spacer(modifier = Modifier.height(24.dp)) }
+    }
+}
