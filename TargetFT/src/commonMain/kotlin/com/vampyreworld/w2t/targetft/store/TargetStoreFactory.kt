@@ -9,6 +9,8 @@ import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.targetft.TargetContract
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class TargetStoreFactory(
@@ -43,6 +45,8 @@ class TargetStoreFactory(
     }
 
     private inner class ExecutorImpl : CoroutineExecutor<TargetStore.Intent, Nothing, TargetContract.State, Msg, TargetStore.Label>() {
+        private var loadJob: Job? = null
+
         override fun executeIntent(intent: TargetStore.Intent) {
             when (intent) {
                 TargetStore.Intent.Refresh -> {
@@ -100,18 +104,23 @@ class TargetStoreFactory(
         }
 
         private fun loadData() {
-            scope.launch {
+            loadJob?.cancel()
+            loadJob = scope.launch {
                 dispatch(Msg.Loading)
-                getGoalsUseCase().collect { goals ->
-                    val selectedGoal = goals.find { it.id == goalId }
-                    val relatedGoals = if (goalId != null) goals else emptyList()
-                    
-                    if (goalId != null) {
-                        getChallengesUseCase(goalId).collect { challenges ->
-                            dispatch(Msg.Loaded(selectedGoal, relatedGoals, challenges))
-                        }
-                    } else {
-                        dispatch(Msg.Loaded(selectedGoal, relatedGoals, emptyList()))
+                if (goalId != null) {
+                    combine(
+                        getGoalsUseCase(),
+                        getChallengesUseCase(goalId)
+                    ) { goals, challenges ->
+                        val selectedGoal = goals.find { it.id == goalId }
+                        Msg.Loaded(selectedGoal, goals, challenges)
+                    }.collect { msg ->
+                        dispatch(msg)
+                    }
+                } else {
+                    getGoalsUseCase().collect { goals ->
+                        val selectedGoal = goals.find { it.id == goalId }
+                        dispatch(Msg.Loaded(selectedGoal, goals, emptyList()))
                     }
                 }
             }

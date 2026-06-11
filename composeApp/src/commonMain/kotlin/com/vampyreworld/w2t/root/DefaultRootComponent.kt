@@ -4,9 +4,9 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.DelicateDecomposeApi
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
 import com.vampyreworld.navigation.Screens
@@ -75,7 +75,7 @@ class DefaultRootComponent(
                         // Here we just use replaceAll if we want to clear everything and go to target
                         navigation.replaceAll(destination.target)
                     }
-                    else -> navigation.push(destination)
+                    else -> navigation.bringToFront(destination)
                 }
             }
             .launchIn(componentScope())
@@ -123,17 +123,17 @@ class DefaultRootComponent(
                     deleteGoalUseCase = get(),
                     navigateToTarget = { id -> 
                         if (id == null) {
-                            navigation.push(Screens.AddGoal(null, "MASTER"))
+                            navigation.bringToFront(Screens.AddGoal(null, "MASTER"))
                         } else {
-                            navigation.push(Screens.TargetDetail(id))
+                            navigation.bringToFront(Screens.TargetDetail(id))
                         }
                     },
-                    navigateToMoodAdd = { navigation.push(Screens.AddMood) },
-                    navigateToSChallenge = { id -> navigation.push(Screens.ListOfChallenges(id)) },
-                    navigateToDecisionMaking = { id -> navigation.push(Screens.DecisionForTarget(id)) },
-                    navigateToSolution = { navigation.push(Screens.AddSolution(null, null)) },
-                    navigateToPreferences = { navigation.push(Screens.Preferences) },
-                    navigateToAboutUs = { navigation.push(Screens.AboutUs) }
+                    navigateToMoodAdd = { navigation.bringToFront(Screens.AddMood) },
+                    navigateToSChallenge = { id -> navigation.bringToFront(Screens.ListOfChallenges(id)) },
+                    navigateToDecisionMaking = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
+                    navigateToSolution = { navigation.bringToFront(Screens.AddSolution(null, null)) },
+                    navigateToPreferences = { navigation.bringToFront(Screens.Preferences) },
+                    navigateToAboutUs = { navigation.bringToFront(Screens.AboutUs) }
                 )
             )
 
@@ -149,13 +149,13 @@ class DefaultRootComponent(
                             is TargetMasterComponent.Label.NavigateToDetail -> {
                                 val goalId = label.goalId
                                 if (goalId == null) {
-                                    navigation.push(Screens.AddGoal(null, "MASTER"))
+                                    navigation.bringToFront(Screens.AddGoal(null, "MASTER"))
                                 } else {
-                                    navigation.push(Screens.TargetDetail(goalId))
+                                    navigation.bringToFront(Screens.TargetDetail(goalId))
                                 }
                             }
                             TargetMasterComponent.Label.NavigateToAddMilestone -> 
-                                navigation.push(Screens.AddGoal(null, "MILESTONE"))
+                                navigation.bringToFront(Screens.AddGoal(null, "MILESTONE"))
                         }
                     }
                 )
@@ -173,22 +173,23 @@ class DefaultRootComponent(
                     deleteGoalUseCase = get(),
                     getChallengesUseCase = get(),
                     onBack = { navigation.pop() },
-                    navigateToDecision = { id -> navigation.push(Screens.DecisionForTarget(id)) },
-                    navigateToMood = { navigation.push(Screens.AddMood) },
+                    navigateToDecision = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
+                    navigateToMood = { navigation.bringToFront(Screens.AddMood) },
+                    navigateToGoal = { id -> navigation.bringToFront(Screens.TargetDetail(id)) },
                     navigateToChildTarget = { parentId, tier -> 
-                        navigation.push(Screens.AddGoal(parentId, tier))
+                        navigation.bringToFront(Screens.AddGoal(parentId, tier))
                     },
                     navigateToChallenge = { goalId ->
-                        navigation.push(Screens.AddChallenge(goalId))
+                        navigation.bringToFront(Screens.AddChallenge(goalId))
                     },
                     navigateToChallengeDetail = { goalId, challengeId ->
-                        navigation.push(Screens.DetailOfChallenge(goalId, challengeId))
+                        navigation.bringToFront(Screens.DetailOfChallenge(goalId, challengeId))
                     },
                     navigateToAppraise = { goalId, challengeId ->
                         if (challengeId != null && goalId != null) {
-                            navigation.push(Screens.AppraiseChallenge(goalId, challengeId))
+                            navigation.bringToFront(Screens.AppraiseChallenge(goalId, challengeId))
                         } else if (goalId != null) {
-                            navigation.push(Screens.AppraiseTarget(goalId))
+                            navigation.bringToFront(Screens.AppraiseTarget(goalId))
                         }
                     }
                 )
@@ -206,22 +207,23 @@ class DefaultRootComponent(
                     deleteGoalUseCase = get(),
                     getChallengesUseCase = get(),
                     onBack = { navigation.pop() },
-                    navigateToDecision = { id -> navigation.push(Screens.DecisionForTarget(id)) },
-                    navigateToMood = { navigation.push(Screens.AddMood) },
+                    navigateToDecision = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
+                    navigateToMood = { navigation.bringToFront(Screens.AddMood) },
+                    navigateToGoal = { id -> navigation.bringToFront(Screens.TargetDetail(id)) },
                     navigateToChildTarget = { parentId, tier -> 
-                        navigation.push(Screens.AddGoal(parentId, tier))
+                        navigation.bringToFront(Screens.AddGoal(parentId, tier))
                     },
                     navigateToChallenge = { goalId ->
-                        navigation.push(Screens.AddChallenge(goalId))
+                        navigation.bringToFront(Screens.AddChallenge(goalId))
                     },
                     navigateToChallengeDetail = { goalId, challengeId ->
-                        navigation.push(Screens.DetailOfChallenge(goalId, challengeId))
+                        navigation.bringToFront(Screens.DetailOfChallenge(goalId, challengeId))
                     },
                     navigateToAppraise = { goalId, challengeId ->
                         if (challengeId != null && goalId != null) {
-                            navigation.push(Screens.AppraiseChallenge(goalId, challengeId))
+                            navigation.bringToFront(Screens.AppraiseChallenge(goalId, challengeId))
                         } else if (goalId != null) {
-                            navigation.push(Screens.AppraiseTarget(goalId))
+                            navigation.bringToFront(Screens.AppraiseTarget(goalId))
                         }
                     }
                 )
@@ -233,10 +235,10 @@ class DefaultRootComponent(
                     storeFactory = get { parametersOf(config.goalId, null) },
                     onBack = { navigation.pop() },
                     navigateToAddSolution = { challengeId -> 
-                        navigation.push(Screens.AddSolution(config.goalId, challengeId)) 
+                        navigation.bringToFront(Screens.AddSolution(config.goalId, challengeId)) 
                     },
                     navigateToDecision = { challengeId ->
-                        navigation.push(Screens.DecisionForChallenge(config.goalId, challengeId))
+                        navigation.bringToFront(Screens.DecisionForChallenge(config.goalId, challengeId))
                     }
                 )
             )
@@ -257,10 +259,10 @@ class DefaultRootComponent(
                     storeFactory = get { parametersOf(config.goalId, config.challengeId) },
                     onBack = { navigation.pop() },
                     navigateToAddSolution = { challengeId -> 
-                        navigation.push(Screens.AddSolution(config.goalId, challengeId)) 
+                        navigation.bringToFront(Screens.AddSolution(config.goalId, challengeId)) 
                     },
                     navigateToDecision = { challengeId ->
-                        navigation.push(Screens.DecisionForChallenge(config.goalId, challengeId))
+                        navigation.bringToFront(Screens.DecisionForChallenge(config.goalId, challengeId))
                     }
                 )
             )
