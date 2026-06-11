@@ -23,6 +23,10 @@ sealed interface Goal {
     val description: String
     val priority: Int       // 0–100; higher = more important
     val status: GoalStatus
+    val tier: GoalTier
+    val upperGoalId: Long?
+
+    fun withStatus(status: GoalStatus): Goal
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -48,7 +52,11 @@ data class MasterGoal(
     val isLifeGoal: Boolean = false,
     val milestoneIds: List<Long> = emptyList(),
     val walkedMilestoneId: Long? = null,
-) : Goal
+) : Goal {
+    override val tier: GoalTier = GoalTier.MASTER
+    override val upperGoalId: Long? = null
+    override fun withStatus(status: GoalStatus): Goal = copy(status = status)
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Tier 2 — Milestone Goal
@@ -80,7 +88,11 @@ data class MilestoneGoal(
     val isSkill: Boolean = false,
     val wayIds: List<Long> = emptyList(),
     val walkedWayId: Long? = null,
-) : Goal
+) : Goal {
+    override val tier: GoalTier = GoalTier.MILESTONE
+    override val upperGoalId: Long? get() = masterGoalId
+    override fun withStatus(status: GoalStatus): Goal = copy(status = status)
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Tier 3 — Action Goal
@@ -112,7 +124,11 @@ data class ActionGoal(
     val cost: Cost? = null,
     val notificationEnabled: Boolean = false,
     val completionCriteria: String = "",
-) : Goal
+) : Goal {
+    override val tier: GoalTier = GoalTier.ACTION
+    override val upperGoalId: Long? get() = milestoneGoalId
+    override fun withStatus(status: GoalStatus): Goal = copy(status = status)
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared enums
@@ -130,4 +146,11 @@ enum class GoalStatus {
     COMPLETED,
     CANCELLED,
     ON_HOLD
+}
+
+@Serializable
+enum class GoalTier {
+    MASTER,
+    MILESTONE,
+    ACTION
 }

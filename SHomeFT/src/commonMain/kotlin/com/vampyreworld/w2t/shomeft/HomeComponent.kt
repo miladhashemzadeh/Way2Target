@@ -5,7 +5,7 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.vampyreworld.w2t.core.utils.componentScope
 import com.vampyreworld.w2t.domain.data.model.Goal
-import com.vampyreworld.w2t.domain.data.model.GoalTier
+import com.vampyreworld.w2t.domain.data.model.MasterGoal
 import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import kotlinx.coroutines.flow.Flow
@@ -56,7 +56,7 @@ class DefaultHomeComponent(
         scope.launch {
             _state.value = _state.value.copy(isLoading = true)
             getGoalsUseCase().collect { goals ->
-                val masterGoals = goals.filter { it.tier == GoalTier.MASTER }
+                val masterGoals = goals.filterIsInstance<MasterGoal>()
                 _state.value = _state.value.copy(masterGoals = masterGoals, isLoading = false)
             }
         }

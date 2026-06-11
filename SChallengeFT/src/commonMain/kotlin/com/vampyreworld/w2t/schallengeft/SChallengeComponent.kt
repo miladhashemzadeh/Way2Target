@@ -67,9 +67,6 @@ class DefaultSChallengeComponent(
             is SChallengeContract.Intent.OnAddChallenge -> {
                 store.accept(SChallengeStore.Intent.AddChallenge(intent.challenge))
             }
-            is SChallengeContract.Intent.OnStatusChange -> {
-                // Handle status change
-            }
             SChallengeContract.Intent.OnTakeAiHelp -> {}
             SChallengeContract.Intent.OnMakeDecision -> {
                 state.value.selectedChallenge?.id?.let { navigateToDecision(it) }

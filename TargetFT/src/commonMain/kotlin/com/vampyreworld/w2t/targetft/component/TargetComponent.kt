@@ -4,8 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.vampyreworld.w2t.core.utils.componentScope
-import com.vampyreworld.w2t.domain.data.model.Goal
-import com.vampyreworld.w2t.domain.data.model.GoalTier
+import com.vampyreworld.w2t.domain.data.model.*
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.targetft.TargetContract
@@ -139,14 +138,32 @@ class DefaultTargetComponent(
         scope.launch {
             _state.value = _state.value.copy(isLoading = true)
             try {
-                val newGoal = Goal(
-                    id = 0, // Database will generate
-                    title = intent.title,
-                    description = intent.description,
-                    tier = GoalTier.valueOf(intent.tier),
-                    upperGoalId = parentId,
-                    priority = 50 // Default
-                )
+                val tier = GoalTier.valueOf(intent.tier)
+                val newGoal = when (tier) {
+                    GoalTier.MASTER -> MasterGoal(
+                        id = 0,
+                        title = intent.title,
+                        description = intent.description,
+                        priority = 50,
+                        status = GoalStatus.ACTIVE
+                    )
+                    GoalTier.MILESTONE -> MilestoneGoal(
+                        id = 0,
+                        title = intent.title,
+                        description = intent.description,
+                        priority = 50,
+                        status = GoalStatus.ACTIVE,
+                        masterGoalId = parentId ?: 0L
+                    )
+                    GoalTier.ACTION -> ActionGoal(
+                        id = 0,
+                        title = intent.title,
+                        description = intent.description,
+                        priority = 50,
+                        status = GoalStatus.ACTIVE,
+                        milestoneGoalId = parentId ?: 0L
+                    )
+                }
                 saveGoalUseCase(newGoal)
                 onBack()
             } catch (e: Exception) {

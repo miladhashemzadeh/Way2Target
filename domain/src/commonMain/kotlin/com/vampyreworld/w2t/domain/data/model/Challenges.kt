@@ -34,6 +34,7 @@ data class Challenges(
     val mustSolveBeforeGoalId: Long? = null,
     val cost: Cost,
     val priority: Int,
+    val status: GoalStatus = GoalStatus.ACTIVE,
     val isBarrier: Boolean,
     val moodImpact: Int = 0,
     val candidateSolutionIds: List<Long> = emptyList(),

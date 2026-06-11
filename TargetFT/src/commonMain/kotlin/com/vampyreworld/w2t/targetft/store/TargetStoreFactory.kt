@@ -4,9 +4,7 @@ import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
-import com.vampyreworld.w2t.domain.data.model.Goal
-import com.vampyreworld.w2t.domain.data.model.GoalStatus
-import com.vampyreworld.w2t.domain.data.model.GoalTier
+import com.vampyreworld.w2t.domain.data.model.*
 import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
@@ -112,14 +110,32 @@ class TargetStoreFactory(
             scope.launch {
                 dispatch(Msg.Loading)
                 try {
-                    val newGoal = Goal(
-                        id = 0,
-                        title = intent.title,
-                        description = intent.description,
-                        tier = GoalTier.valueOf(intent.tier),
-                        upperGoalId = state().parentId,
-                        priority = 50
-                    )
+                    val tier = GoalTier.valueOf(intent.tier)
+                    val newGoal = when (tier) {
+                        GoalTier.MASTER -> MasterGoal(
+                            id = 0,
+                            title = intent.title,
+                            description = intent.description,
+                            priority = 50,
+                            status = GoalStatus.ACTIVE
+                        )
+                        GoalTier.MILESTONE -> MilestoneGoal(
+                            id = 0,
+                            title = intent.title,
+                            description = intent.description,
+                            priority = 50,
+                            status = GoalStatus.ACTIVE,
+                            masterGoalId = state().parentId ?: 0L
+                        )
+                        GoalTier.ACTION -> ActionGoal(
+                            id = 0,
+                            title = intent.title,
+                            description = intent.description,
+                            priority = 50,
+                            status = GoalStatus.ACTIVE,
+                            milestoneGoalId = state().parentId ?: 0L
+                        )
+                    }
                     saveGoalUseCase(newGoal)
                     publish(TargetStore.Label.Saved)
                 } catch (e: Exception) {
@@ -133,7 +149,7 @@ class TargetStoreFactory(
             scope.launch {
                 dispatch(Msg.Loading)
                 try {
-                    saveGoalUseCase(currentGoal.copy(status = GoalStatus.CANCELLED))
+                    saveGoalUseCase(currentGoal.withStatus(GoalStatus.CANCELLED))
                     publish(TargetStore.Label.Saved) // Or a specific label for cancellation
                 } catch (e: Exception) {
                     publish(TargetStore.Label.Error(e.message ?: "Failed to cancel goal"))

@@ -21,7 +21,6 @@ interface SChallengeContract {
         data object OnBackClicked : Intent
         data class OnChallengeClick(val challengeId: Long) : Intent
         data class OnAddChallenge(val challenge: Challenges) : Intent
-        data class OnStatusChange(val status: String) : Intent
         data object OnTakeAiHelp : Intent
         data object OnMakeDecision : Intent
         data object OnAddSolution : Intent

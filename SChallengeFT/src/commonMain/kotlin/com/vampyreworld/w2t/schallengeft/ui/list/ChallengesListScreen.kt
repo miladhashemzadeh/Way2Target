@@ -66,7 +66,6 @@ fun ChallengesListScreen(
             onConfirm = { title, desc ->
                 val newChallenge = Challenges(
                     id = 0,
-                    solvingBeforeGoalId = null,
                     title = title,
                     desc = desc,
                     cost = Cost(10, 10, 0),
@@ -74,8 +73,6 @@ fun ChallengesListScreen(
                     isBarrier = false,
                     parentGoalId = state.goalId ?: 0L,
                     moodImpact = 0,
-                    prosAfterSolve = null,
-                    consAfterFailure = null,
                     stabilityConditions = emptyList()
                 )
                 component.onIntent(SChallengeContract.Intent.OnAddChallenge(newChallenge))

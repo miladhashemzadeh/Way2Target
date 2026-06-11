@@ -84,7 +84,7 @@ fun GoalAppraiseScreen(
         ) {
             Button(
                 onClick = { 
-                    component.onIntent(TargetContract.Intent.UpdateGoal(goal.copy(status = GoalStatus.COMPLETED)))
+                    component.onIntent(TargetContract.Intent.UpdateGoal(goal.withStatus(GoalStatus.COMPLETED)))
                 },
                 modifier = Modifier.weight(1f).height(56.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = colors.success),
@@ -94,7 +94,7 @@ fun GoalAppraiseScreen(
             }
             Button(
                 onClick = { 
-                    component.onIntent(TargetContract.Intent.UpdateGoal(goal.copy(status = GoalStatus.CANCELLED)))
+                    component.onIntent(TargetContract.Intent.UpdateGoal(goal.withStatus(GoalStatus.CANCELLED)))
                 },
                 modifier = Modifier.weight(1f).height(56.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = colors.muted),

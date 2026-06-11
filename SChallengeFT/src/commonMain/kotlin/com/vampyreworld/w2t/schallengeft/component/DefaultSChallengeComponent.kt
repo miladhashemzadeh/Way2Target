@@ -59,9 +59,6 @@ class DefaultSChallengeComponent(
             is SChallengeContract.Intent.OnAddChallenge -> {
                 store.accept(SChallengeStore.Intent.AddChallenge(intent.challenge))
             }
-            is SChallengeContract.Intent.OnStatusChange -> {
-                store.accept(SChallengeStore.Intent.OnStatusChange(intent.status))
-            }
             SChallengeContract.Intent.OnTakeAiHelp -> {
                 store.accept(SChallengeStore.Intent.OnTakeAiHelp)
             }

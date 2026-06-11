@@ -63,7 +63,6 @@ fun ChallengeCardPreview() {
         ChallengeCard(
             challenge = Challenges(
                 id = 1,
-                solvingBeforeGoalId = null,
                 title = "Sample Challenge",
                 desc = "Description",
                 cost = Cost(10, 10, 0),
@@ -71,8 +70,6 @@ fun ChallengeCardPreview() {
                 isBarrier = true,
                 parentGoalId = null,
                 moodImpact = 0,
-                prosAfterSolve = null,
-                consAfterFailure = null
             ),
             onClick = {}
         )

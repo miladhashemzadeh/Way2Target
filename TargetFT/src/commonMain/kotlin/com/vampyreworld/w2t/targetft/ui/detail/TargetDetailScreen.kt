@@ -2,7 +2,6 @@ package com.vampyreworld.w2t.targetft.ui.detail
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -16,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vampyreworld.w2t.domain.data.model.ActionGoal
 import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.domain.data.model.GoalStatus
 import com.vampyreworld.w2t.domain.data.model.GoalTier
@@ -46,7 +46,7 @@ fun TargetDetailScreen(
             )
         }
 
-        if (goal.tier == GoalTier.ACTION) {
+        if (goal is ActionGoal) {
             item {
                 ActionDetailHeader(goal, relatedGoals, colors)
             }
@@ -112,7 +112,7 @@ fun TargetDetailScreen(
                                             completed = action.status == GoalStatus.COMPLETED,
                                             onCheckedChange = { isChecked ->
                                                 component.onIntent(TargetContract.Intent.UpdateGoal(
-                                                    action.copy(status = if (isChecked) GoalStatus.COMPLETED else GoalStatus.ACTIVE)
+                                                    action.withStatus(if (isChecked) GoalStatus.COMPLETED else GoalStatus.ACTIVE)
                                                 ))
                                             },
                                             onClick = { component.onIntent(TargetContract.Intent.OnGoalClick(action.id)) }
@@ -131,7 +131,7 @@ fun TargetDetailScreen(
                                 checked = action.status == GoalStatus.COMPLETED,
                                 onCheckedChange = { isChecked ->
                                     component.onIntent(TargetContract.Intent.UpdateGoal(
-                                        action.copy(status = if (isChecked) GoalStatus.COMPLETED else GoalStatus.ACTIVE)
+                                        action.withStatus(if (isChecked) GoalStatus.COMPLETED else GoalStatus.ACTIVE)
                                     ))
                                 },
                                 onClick = { component.onIntent(TargetContract.Intent.OnGoalClick(action.id)) }

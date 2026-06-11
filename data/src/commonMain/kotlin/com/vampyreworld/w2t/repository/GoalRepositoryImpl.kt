@@ -3,19 +3,14 @@ package com.vampyreworld.w2t.repository
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import com.vampyreworld.w2t.database.GoalEntity
 import com.vampyreworld.w2t.database.W2TDatabase
-import com.vampyreworld.w2t.domain.data.model.Goal
-import com.vampyreworld.w2t.domain.data.model.GoalStatus
-import com.vampyreworld.w2t.domain.data.model.GoalTier
-import com.vampyreworld.w2t.domain.data.model.SchedulingInfo
+import com.vampyreworld.w2t.domain.data.model.*
 import com.vampyreworld.w2t.domain.repository.GoalRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 class GoalRepositoryImpl(
     private val database: W2TDatabase
@@ -24,73 +19,153 @@ class GoalRepositoryImpl(
     private val queries = database.w2TDatabaseQueries
 
     override fun getGoals(): Flow<List<Goal>> {
-        return queries.selectAllGoals()
-            .asFlow()
-            .mapToList(Dispatchers.IO)
-            .map { entities -> entities.map { it.toDomain() } }
+        val masters = queries.selectAllMasterGoals().asFlow().mapToList(Dispatchers.IO)
+        val milestones = queries.selectAllMilestoneGoals().asFlow().mapToList(Dispatchers.IO)
+        val actions = queries.selectAllActionGoals().asFlow().mapToList(Dispatchers.IO)
+
+        return combine(masters, milestones, actions) { m, mi, a ->
+            m.map { it.toDomain() } + mi.map { it.toDomain() } + a.map { it.toDomain() }
+        }
     }
 
     override fun getGoalById(id: Long): Flow<Goal?> {
-        return queries.selectGoalById(id)
-            .asFlow()
-            .mapToOneOrNull(Dispatchers.IO)
-            .map { it?.toDomain() }
+        val master = queries.selectMasterGoalById(id).asFlow().mapToOneOrNull(Dispatchers.IO)
+        val milestone = queries.selectMilestoneGoalById(id).asFlow().mapToOneOrNull(Dispatchers.IO)
+        val action = queries.selectActionGoalById(id).asFlow().mapToOneOrNull(Dispatchers.IO)
+
+        return combine(master, milestone, action) { m, mi, a ->
+            m?.toDomain() ?: mi?.toDomain() ?: a?.toDomain()
+        }
     }
 
     override suspend fun saveGoal(goal: Goal) {
-        if (goal.id == 0L) {
-            queries.insertGoal(
-                title = goal.title,
-                description = goal.description,
-                upperGoalId = goal.upperGoalId,
-                childGoalIds = Json.encodeToString(goal.childGoalIds),
-                tier = goal.tier.name,
-                isSkill = if (goal.isSkill) 1L else 0L,
-                wayIds = Json.encodeToString(goal.wayIds),
-                walkedWayId = goal.walkedWayId,
-                priority = goal.priority.toLong(),
-                status = goal.status.name,
-                scheduling = goal.scheduling?.let { Json.encodeToString(it) },
-                notificationEnabled = if (goal.notificationEnabled) 1L else 0L
-            )
-        } else {
-            queries.updateGoal(
-                id = goal.id,
-                title = goal.title,
-                description = goal.description,
-                upperGoalId = goal.upperGoalId,
-                childGoalIds = Json.encodeToString(goal.childGoalIds),
-                tier = goal.tier.name,
-                isSkill = if (goal.isSkill) 1L else 0L,
-                wayIds = Json.encodeToString(goal.wayIds),
-                walkedWayId = goal.walkedWayId,
-                priority = goal.priority.toLong(),
-                status = goal.status.name,
-                scheduling = goal.scheduling?.let { Json.encodeToString(it) },
-                notificationEnabled = if (goal.notificationEnabled) 1L else 0L
-            )
+        when (goal) {
+            is MasterGoal -> {
+                if (goal.id == 0L) {
+                    queries.insertMasterGoal(
+                        title = goal.title,
+                        description = goal.description,
+                        priority = goal.priority,
+                        status = goal.status,
+                        isLifeGoal = goal.isLifeGoal,
+                        milestoneIds = goal.milestoneIds,
+                        walkedMilestoneId = goal.walkedMilestoneId
+                    )
+                } else {
+                    queries.updateMasterGoal(
+                        id = goal.id,
+                        title = goal.title,
+                        description = goal.description,
+                        priority = goal.priority,
+                        status = goal.status,
+                        isLifeGoal = goal.isLifeGoal,
+                        milestoneIds = goal.milestoneIds,
+                        walkedMilestoneId = goal.walkedMilestoneId
+                    )
+                }
+            }
+            is MilestoneGoal -> {
+                if (goal.id == 0L) {
+                    queries.insertMilestoneGoal(
+                        title = goal.title,
+                        description = goal.description,
+                        priority = goal.priority,
+                        status = goal.status,
+                        masterGoalId = goal.masterGoalId,
+                        actionIds = goal.actionIds,
+                        walkedActionId = goal.walkedActionId,
+                        isSkill = goal.isSkill,
+                        wayIds = goal.wayIds,
+                        walkedWayId = goal.walkedWayId
+                    )
+                } else {
+                    queries.updateMilestoneGoal(
+                        id = goal.id,
+                        title = goal.title,
+                        description = goal.description,
+                        priority = goal.priority,
+                        status = goal.status,
+                        masterGoalId = goal.masterGoalId,
+                        actionIds = goal.actionIds,
+                        walkedActionId = goal.walkedActionId,
+                        isSkill = goal.isSkill,
+                        wayIds = goal.wayIds,
+                        walkedWayId = goal.walkedWayId
+                    )
+                }
+            }
+            is ActionGoal -> {
+                if (goal.id == 0L) {
+                    queries.insertActionGoal(
+                        title = goal.title,
+                        description = goal.description,
+                        priority = goal.priority,
+                        status = goal.status,
+                        milestoneGoalId = goal.milestoneGoalId,
+                        schedule = goal.schedule,
+                        cost = goal.cost,
+                        notificationEnabled = goal.notificationEnabled,
+                        completionCriteria = goal.completionCriteria
+                    )
+                } else {
+                    queries.updateActionGoal(
+                        id = goal.id,
+                        title = goal.title,
+                        description = goal.description,
+                        priority = goal.priority,
+                        status = goal.status,
+                        milestoneGoalId = goal.milestoneGoalId,
+                        schedule = goal.schedule,
+                        cost = goal.cost,
+                        notificationEnabled = goal.notificationEnabled,
+                        completionCriteria = goal.completionCriteria
+                    )
+                }
+            }
         }
     }
 
     override suspend fun deleteGoal(id: Long) {
-        queries.deleteGoal(id)
+        queries.deleteMasterGoal(id)
+        queries.deleteMilestoneGoal(id)
+        queries.deleteActionGoal(id)
     }
 
-    private fun GoalEntity.toDomain(): Goal {
-        return Goal(
-            id = id,
-            title = title,
-            description = description,
-            upperGoalId = upperGoalId,
-            childGoalIds = Json.decodeFromString(childGoalIds),
-            tier = GoalTier.valueOf(tier),
-            isSkill = isSkill == 1L,
-            wayIds = Json.decodeFromString(wayIds),
-            walkedWayId = walkedWayId,
-            priority = priority.toInt(),
-            status = GoalStatus.valueOf(status),
-            scheduling = scheduling?.let { Json.decodeFromString(it) },
-            notificationEnabled = notificationEnabled == 1L
-        )
-    }
+    private fun com.vampyreworld.w2t.database.MasterGoalEntity.toDomain(): MasterGoal = MasterGoal(
+        id = id,
+        title = title,
+        description = description,
+        priority = priority,
+        status = status,
+        isLifeGoal = isLifeGoal,
+        milestoneIds = milestoneIds,
+        walkedMilestoneId = walkedMilestoneId
+    )
+
+    private fun com.vampyreworld.w2t.database.MilestoneGoalEntity.toDomain(): MilestoneGoal = MilestoneGoal(
+        id = id,
+        title = title,
+        description = description,
+        priority = priority,
+        status = status,
+        masterGoalId = masterGoalId,
+        actionIds = actionIds,
+        walkedActionId = walkedActionId,
+        isSkill = isSkill,
+        wayIds = wayIds,
+        walkedWayId = walkedWayId
+    )
+
+    private fun com.vampyreworld.w2t.database.ActionGoalEntity.toDomain(): ActionGoal = ActionGoal(
+        id = id,
+        title = title,
+        description = description,
+        priority = priority,
+        status = status,
+        milestoneGoalId = milestoneGoalId,
+        schedule = schedule,
+        cost = cost,
+        notificationEnabled = notificationEnabled,
+        completionCriteria = completionCriteria
+    )
 }
