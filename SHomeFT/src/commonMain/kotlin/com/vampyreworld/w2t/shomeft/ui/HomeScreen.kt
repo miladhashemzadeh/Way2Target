@@ -1,127 +1,136 @@
 package com.vampyreworld.w2t.shomeft.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.domain.data.model.Goal
+import com.vampyreworld.w2t.sharedui.catalog.*
+import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 import com.vampyreworld.w2t.shomeft.HomeComponent
 import com.vampyreworld.w2t.shomeft.HomeContract
-import com.vampyreworld.w2t.shomeft.ui.components.MasterGoalCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(component: HomeComponent) {
     val state by component.state.subscribeAsState()
+    val colors = LocalAppColorScheme.current
     var showDeleteSheet by remember { mutableStateOf<Goal?>(null) }
     var deleteGoalName by remember { mutableStateOf("") }
 
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Way2Target") },
-                actions = {
-                    IconButton(onClick = { component.onIntent(HomeContract.Intent.OnProfileClick) }) {
-                        Icon(Icons.Default.Person, contentDescription = "Profile")
-                    }
-                }
-            )
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            W2TBottomNavigation(component)
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
+            FloatingActionButton(
                 onClick = { component.onIntent(HomeContract.Intent.CreateMasterGoal) },
-                icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                text = { Text("New Master Goal") },
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+                containerColor = colors.accent,
+                contentColor = Color.White,
+                shape = CircleShape,
+                modifier = Modifier.padding(bottom = 16.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(32.dp))
+            }
         }
     ) { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(bottom = 80.dp, start = 16.dp, end = 16.dp, top = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxSize().padding(padding).background(MaterialTheme.colorScheme.background),
+            contentPadding = PaddingValues(24.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             item {
-                Column {
-                    Text(
-                        text = "Hello, ${state.userName}",
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                    Text(
-                        text = "Track your long-term goals and stay focused.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            
-            item {
-                Text(
-                    text = "Your Master Goals",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(top = 8.dp)
+                W2THeader(
+                    title = "Good morning, ${state.userName}!",
+                    subtitle = "Ready to crush your goals?",
+                    avatarText = state.userName.take(1).uppercase()
                 )
             }
 
-            if (state.masterGoals.isEmpty()) {
-                item {
-                    Text(
-                        "No master goals yet. Start by creating one!",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(vertical = 32.dp)
-                    )
-                }
-            } else {
-                items(state.masterGoals) { goal ->
-                    MasterGoalCard(
-                        goal = goal,
-                        onClick = { component.onIntent(HomeContract.Intent.OnMasterGoalClick(goal.id)) },
-                        onDelete = { showDeleteSheet = goal },
-                        onChallenge = { component.onIntent(HomeContract.Intent.CreateChallengeForMasterGoal(goal.id)) }
-                    )
-                }
-            }
-            
             item {
-                Spacer(modifier = Modifier.height(32.dp))
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("Quick Access", style = MaterialTheme.typography.titleMedium)
+                W2TMoodWidget(
+                    title = "How are you feeling?",
+                    description = "Quick check to optimize your decision-making.",
+                    buttonText = "Check Mood",
+                    onButtonClick = { component.onIntent(HomeContract.Intent.OnCheckMoodClick) }
+                )
             }
-            
+
             item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    OutlinedButton(
-                        onClick = { component.onNavigateToMoodAdd() },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Add Mood")
-                    }
-                    OutlinedButton(
-                        onClick = { component.onNavigateToPreferences() },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Settings")
+                W2TCard {
+                    W2TSectionTitle("Your Master Goals")
+                    if (state.masterGoals.isEmpty()) {
+                        Text(
+                            "No master goals yet. Start by creating one!",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = colors.muted,
+                            modifier = Modifier.padding(vertical = 16.dp)
+                        )
+                    } else {
+                        state.masterGoals.forEach { goal ->
+                            W2TGoalItem(
+                                icon = "🎯",
+                                title = goal.title,
+                                progress = 0.7f, // Mock progress for now
+                                progressText = "70% Complete",
+                                onClick = { component.onIntent(HomeContract.Intent.OnMasterGoalClick(goal.id)) }
+                            )
+                        }
                     }
                 }
             }
 
-            // Adding extra space at the end to ensure FAB doesn't hide content
             item {
-                Spacer(modifier = Modifier.height(32.dp))
+                W2TCard {
+                    W2TSectionTitle("Today's Actions")
+                    if (state.todayActions.isEmpty()) {
+                        Text(
+                            "No actions for today. Take some rest!",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = colors.muted,
+                            modifier = Modifier.padding(vertical = 16.dp)
+                        )
+                    } else {
+                        state.todayActions.forEach { action ->
+                            W2TActionItem(
+                                title = action.title,
+                                subtitle = "From your milestones",
+                                time = "10:00 AM",
+                                checked = false,
+                                onCheckedChange = { isChecked ->
+                                    component.onIntent(HomeContract.Intent.OnActionCheck(action.id, isChecked))
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+            item {
+                W2TAiInsightsCard(
+                    title = "AI Insights",
+                    description = "Your current progress suggests focusing on practical projects for faster skill acquisition.",
+                    buttonText = "View Strategy",
+                    onButtonClick = { }
+                )
+            }
+
+            // Adding extra space at the end
+            item {
+                Spacer(modifier = Modifier.height(40.dp))
             }
         }
 
@@ -165,5 +174,59 @@ fun HomeScreen(component: HomeComponent) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun W2TBottomNavigation(component: HomeComponent) {
+    val colors = LocalAppColorScheme.current
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.surface,
+        tonalElevation = 8.dp,
+        modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+    ) {
+        NavigationBarItem(
+            selected = true,
+            onClick = { },
+            icon = { Icon(Icons.Default.Home, contentDescription = null) },
+            label = { Text("Home") },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = colors.accent,
+                selectedTextColor = colors.accent,
+                unselectedIconColor = colors.muted,
+                unselectedTextColor = colors.muted,
+                indicatorColor = colors.accent.copy(alpha = 0.1f)
+            )
+        )
+        NavigationBarItem(
+            selected = false,
+            onClick = { component.onNavigateToTarget() },
+            icon = { Icon(Icons.Default.CenterFocusStrong, contentDescription = null) },
+            label = { Text("Goals") },
+            colors = NavigationBarItemDefaults.colors(
+                unselectedIconColor = colors.muted,
+                unselectedTextColor = colors.muted
+            )
+        )
+        NavigationBarItem(
+            selected = false,
+            onClick = { component.onNavigateToSChallenge() },
+            icon = { Icon(Icons.Default.Flag, contentDescription = null) },
+            label = { Text("Challenges") },
+            colors = NavigationBarItemDefaults.colors(
+                unselectedIconColor = colors.muted,
+                unselectedTextColor = colors.muted
+            )
+        )
+        NavigationBarItem(
+            selected = false,
+            onClick = { component.onNavigateToPreferences() },
+            icon = { Icon(Icons.Default.Settings, contentDescription = null) },
+            label = { Text("Settings") },
+            colors = NavigationBarItemDefaults.colors(
+                unselectedIconColor = colors.muted,
+                unselectedTextColor = colors.muted
+            )
+        )
     }
 }

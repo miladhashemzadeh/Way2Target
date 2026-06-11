@@ -27,22 +27,20 @@ class UserMoodRepositoryImpl(
     override suspend fun saveUserMood(userMood: UserMood) {
         queries.insertUserMood(
             timestamp = userMood.timestamp,
-            energyRate = userMood.energyRate.toLong(),
-            creativityRate = userMood.creativityRate.toLong(),
-            focusRate = userMood.focusRate.toLong(),
-            socialRate = userMood.socialRate.toLong(),
-            selfControlRate = userMood.selfControlRate.toLong()
+            energyRate = userMood.energyRate,
+            creativityRate = userMood.creativityRate,
+            focusRate = userMood.focusRate,
+            socialRate = userMood.socialRate,
+            selfControlRate = userMood.selfControlRate
         )
     }
 
-    private fun UserMoodEntity.toDomain(): UserMood {
-        return UserMood(
-            timestamp = timestamp,
-            energyRate = energyRate.toInt(),
-            creativityRate = creativityRate.toInt(),
-            focusRate = focusRate.toInt(),
-            socialRate = socialRate.toInt(),
-            selfControlRate = selfControlRate.toInt()
-        )
-    }
+    private fun UserMoodEntity.toDomain(): UserMood = UserMood(
+        timestamp = timestamp,
+        energyRate = energyRate,
+        creativityRate = creativityRate,
+        focusRate = focusRate,
+        socialRate = socialRate,
+        selfControlRate = selfControlRate
+    )
 }

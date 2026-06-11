@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,20 +18,29 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.prefrencesft.PrefrencesComponent
 import com.vampyreworld.w2t.prefrencesft.PrefrencesContract
+import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 
 @Composable
 fun PrefrencesScreen(component: PrefrencesComponent) {
     val state by component.state.subscribeAsState()
+    val colors = LocalAppColorScheme.current
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Settings")
+        Text(
+            text = "Settings",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
         Spacer(modifier = Modifier.height(16.dp))
         
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Dark Mode")
+            Text(
+                text = "Dark Mode",
+                color = MaterialTheme.colorScheme.onBackground
+            )
             Spacer(modifier = Modifier.weight(1f))
             Switch(
                 checked = state.isDarkMode,

@@ -14,8 +14,8 @@ import androidx.compose.ui.unit.dp
 import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.data.model.Solution
 import com.vampyreworld.w2t.domain.data.model.StabilityCondition
-import com.vampyreworld.w2t.schallengeft.SChallengeComponent
 import com.vampyreworld.w2t.schallengeft.SChallengeContract
+import com.vampyreworld.w2t.schallengeft.SChallengeComponent
 
 @Composable
 fun ChallengeDetailScreen(
@@ -58,10 +58,6 @@ fun ChallengeDetailScreen(
             items(solutions) { solution ->
                 SolutionItem(solution)
             }
-        }
-
-        item {
-            StatusChangeSection(component)
         }
     }
 }
@@ -151,28 +147,5 @@ private fun StabilityConditionItem(condition: StabilityCondition, component: SCh
                 Text(condition.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-    }
-}
-
-@Composable
-private fun StatusChangeSection(component: SChallengeComponent) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("Update Status", style = MaterialTheme.typography.titleMedium)
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            StatusButton("Done", MaterialTheme.colorScheme.primary) { component.onIntent(SChallengeContract.Intent.OnStatusChange("Finished")) }
-            StatusButton("Fail", MaterialTheme.colorScheme.error) { component.onIntent(SChallengeContract.Intent.OnStatusChange("Failed")) }
-            StatusButton("Stop", MaterialTheme.colorScheme.outline) { component.onIntent(SChallengeContract.Intent.OnStatusChange("Cancelled")) }
-        }
-    }
-}
-
-@Composable
-private fun RowScope.StatusButton(label: String, color: androidx.compose.ui.graphics.Color, onClick: () -> Unit) {
-    OutlinedButton(
-        onClick = onClick,
-        modifier = Modifier.weight(1f),
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = color)
-    ) {
-        Text(label, style = MaterialTheme.typography.labelSmall)
     }
 }

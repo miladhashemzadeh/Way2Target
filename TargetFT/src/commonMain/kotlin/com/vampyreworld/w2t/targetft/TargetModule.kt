@@ -7,6 +7,7 @@ import org.koin.dsl.module
 
 val targetModule = module {
     single<StoreFactory> { DefaultStoreFactory() }
-    // Use cases are provided by domainModule which uses GoalRepository from dataModule
+    
+    // Legacy support
     factory { TargetMasterStoreFactory(get(), get(), get()) }
 }

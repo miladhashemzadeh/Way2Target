@@ -9,7 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import com.vampyreworld.w2t.domain.data.model.Challenges
+import com.vampyreworld.w2t.domain.data.model.Cost
 
 @Composable
 fun ChallengeCard(
@@ -51,5 +53,25 @@ fun ChallengeCard(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun ChallengeCardPreview() {
+    MaterialTheme {
+        ChallengeCard(
+            challenge = Challenges(
+                id = 1,
+                title = "Sample Challenge",
+                desc = "Description",
+                cost = Cost(10, 10, 0),
+                priority = 50,
+                isBarrier = true,
+                parentGoalId = null,
+                moodImpact = 0,
+            ),
+            onClick = {}
+        )
     }
 }

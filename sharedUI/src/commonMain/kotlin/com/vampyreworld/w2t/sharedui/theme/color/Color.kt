@@ -6,8 +6,8 @@ import androidx.compose.ui.graphics.Color
 // BASE COLORS (DEFINED DIRECTLY)
 // ======================================================
 
-val primary100 = Color(0x1e88E5FF)
-val Secondary = Color(0x35d687FF)
+val primary100 = Color(0xFF1E88E5)
+val Secondary = Color(0xFF35D687)
 
 val Primary80 = primary100.copy(alpha = .8f)
 val Primary60 = primary100.copy(alpha = .6f)
@@ -159,6 +159,24 @@ val BrightRed = error100
 
 val Blue = Color(0xFF2E628C)
 
+
+// ======================================================
+// OPEN DESIGN COLORS
+// ======================================================
+
+val OD_Bg = Color(0xFFF7F9FA)
+val OD_Surface = Color(0xFFFFFFFF)
+val OD_Fg = Color(0xFF12181F)
+val OD_Muted = Color(0xFF747A8A)
+val OD_Border = Color(0xFFE2E4E9)
+val OD_Accent = Color(0xFF540092)
+val OD_Success = Color(0xFF008C4E)
+val OD_Challenge = Color(0xFFE47500)
+
+val OD_Mood_HighEnergy_Start = Color(0xFF5FB8FF)
+val OD_Mood_HighEnergy_End = Color(0xFFCDB4F9)
+val OD_Mood_Focused_Start = Color(0xFF00B981)
+val OD_Mood_Focused_End = Color(0xFF00C1B0)
 
 val surfaceContainerDark = Color(0xFF1D2024)
 val surfaceContainerHighDark = Color(0xFF272A2F)

@@ -78,7 +78,9 @@ class DefaultSolutionComponent(
                 )
                 addSolutionUseCase(newSolution)
                 _state.value = _state.value.copy(solutionText = "", isLoading = false)
+                onBack()
             } catch (e: Exception) {
+                _sideEffects.emit(SolutionContract.SideEffect.ShowError(e.message ?: "Failed to save solution"))
                 _state.value = _state.value.copy(isLoading = false)
             }
         }

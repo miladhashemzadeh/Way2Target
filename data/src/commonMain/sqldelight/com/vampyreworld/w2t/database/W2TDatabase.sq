@@ -1,107 +1,227 @@
-CREATE TABLE GoalEntity (
+import com.vampyreworld.w2t.domain.data.model.GoalStatus;
+import com.vampyreworld.w2t.domain.data.model.WayStatus;
+import com.vampyreworld.w2t.domain.data.model.RelationType;
+import com.vampyreworld.w2t.domain.data.model.SolutionType;
+import com.vampyreworld.w2t.domain.data.model.SolutionResult;
+import com.vampyreworld.w2t.domain.data.model.ActionSchedule;
+import com.vampyreworld.w2t.domain.data.model.Cost;
+import com.vampyreworld.w2t.domain.data.model.DecisionContext;
+
+-- Goal Hierarchy
+CREATE TABLE MasterGoalEntity (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
-    upperGoalId INTEGER,
-    childGoalIds TEXT NOT NULL,
-    tier TEXT NOT NULL,
-    isSkill INTEGER NOT NULL,
-    wayIds TEXT NOT NULL,
-    walkedWayId INTEGER,
-    priority INTEGER NOT NULL,
-    status TEXT NOT NULL,
-    scheduling TEXT,
-    notificationEnabled INTEGER NOT NULL
+    priority INTEGER AS kotlin.Int NOT NULL,
+    status TEXT AS GoalStatus NOT NULL,
+    isLifeGoal INTEGER AS kotlin.Boolean NOT NULL,
+    milestoneIds TEXT AS kotlin.collections.List<kotlin.Long> NOT NULL,
+    walkedMilestoneId INTEGER
 );
 
-CREATE TABLE WayEntity (
+CREATE TABLE MilestoneGoalEntity (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    goalId INTEGER NOT NULL,
-    status TEXT NOT NULL,
-    steps TEXT
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    priority INTEGER AS kotlin.Int NOT NULL,
+    status TEXT AS GoalStatus NOT NULL,
+    masterGoalId INTEGER NOT NULL,
+    actionIds TEXT AS kotlin.collections.List<kotlin.Long> NOT NULL,
+    walkedActionId INTEGER,
+    isSkill INTEGER AS kotlin.Boolean NOT NULL,
+    wayIds TEXT AS kotlin.collections.List<kotlin.Long> NOT NULL,
+    walkedWayId INTEGER
+);
+
+CREATE TABLE ActionGoalEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    priority INTEGER AS kotlin.Int NOT NULL,
+    status TEXT AS GoalStatus NOT NULL,
+    milestoneGoalId INTEGER NOT NULL,
+    schedule TEXT AS ActionSchedule,
+    cost TEXT AS Cost,
+    notificationEnabled INTEGER AS kotlin.Boolean NOT NULL,
+    completionCriteria TEXT NOT NULL
+);
+
+-- Challenges and Solutions
+CREATE TABLE ChallengeEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    status TEXT AS GoalStatus NOT NULL DEFAULT 'ACTIVE',
+    parentGoalId INTEGER,
+    mustSolveBeforeGoalId INTEGER,
+    cost TEXT AS Cost NOT NULL,
+    priority INTEGER AS kotlin.Int NOT NULL,
+    isBarrier INTEGER AS kotlin.Boolean NOT NULL,
+    moodImpact INTEGER AS kotlin.Int NOT NULL,
+    candidateSolutionIds TEXT AS kotlin.collections.List<kotlin.Long> NOT NULL,
+    appliedSolutionIds TEXT AS kotlin.collections.List<kotlin.Long> NOT NULL,
+    failedSolutionIds TEXT AS kotlin.collections.List<kotlin.Long> NOT NULL,
+    prosAfterSolveId INTEGER,
+    consAfterFailureId INTEGER
+);
+
+CREATE TABLE StabilityConditionEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    challengeId INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    isMaintained INTEGER AS kotlin.Boolean NOT NULL
 );
 
 CREATE TABLE SolutionEntity (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
-    solutionType TEXT NOT NULL,
-    cost TEXT NOT NULL,
-    aidStrength INTEGER NOT NULL,
-    result TEXT NOT NULL
+    solutionType TEXT AS SolutionType NOT NULL,
+    cost TEXT AS Cost NOT NULL,
+    aidStrength INTEGER AS kotlin.Int NOT NULL,
+    result TEXT AS SolutionResult NOT NULL
 );
 
+-- Ways
+CREATE TABLE WayEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    goalId INTEGER NOT NULL,
+    status TEXT AS WayStatus NOT NULL
+);
+
+CREATE TABLE WayStepEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    wayId INTEGER NOT NULL,
+    nodeId INTEGER NOT NULL,
+    nodeType TEXT NOT NULL, -- 'CHALLENGE' or 'SOLUTION'
+    position INTEGER AS kotlin.Int NOT NULL
+);
+
+-- Decisions and Mood
 CREATE TABLE DecisionEntity (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    context TEXT NOT NULL,
+    context TEXT AS DecisionContext NOT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
-    cost TEXT NOT NULL,
-    userRate INTEGER NOT NULL,
-    aiScore INTEGER NOT NULL
-);
-
-CREATE TABLE ChallengesEntity (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    solvingBeforeGoalId INTEGER,
-    title TEXT NOT NULL,
-    description TEXT NOT NULL,
-    cost TEXT NOT NULL,
-    priority INTEGER NOT NULL,
-    isBarrier INTEGER NOT NULL,
-    parentGoalId INTEGER,
-    preferredSolutions TEXT NOT NULL,
-    helpsToSolution TEXT NOT NULL,
-    failedDecisions TEXT NOT NULL,
-    moodImpact INTEGER NOT NULL,
-    prosAfterSolve INTEGER,
-    consAfterFailure INTEGER,
-    stabilityConditions TEXT
+    cost TEXT AS Cost NOT NULL,
+    userRate INTEGER AS kotlin.Int NOT NULL,
+    aiScore INTEGER AS kotlin.Int NOT NULL
 );
 
 CREATE TABLE UserMoodEntity (
     timestamp INTEGER PRIMARY KEY,
-    energyRate INTEGER NOT NULL,
-    creativityRate INTEGER NOT NULL,
-    focusRate INTEGER NOT NULL,
-    socialRate INTEGER NOT NULL,
-    selfControlRate INTEGER NOT NULL
+    energyRate INTEGER AS kotlin.Int NOT NULL,
+    creativityRate INTEGER AS kotlin.Int NOT NULL,
+    focusRate INTEGER AS kotlin.Int NOT NULL,
+    socialRate INTEGER AS kotlin.Int NOT NULL,
+    selfControlRate INTEGER AS kotlin.Int NOT NULL
 );
 
--- Queries for Goal
-insertGoal:
-INSERT INTO GoalEntity (title, description, upperGoalId, childGoalIds, tier, isSkill, wayIds, walkedWayId, priority, status, scheduling, notificationEnabled)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+-- Relations
+CREATE TABLE GoalRelationEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fromGoalId INTEGER NOT NULL,
+    toGoalId INTEGER NOT NULL,
+    type TEXT AS RelationType NOT NULL,
+    note TEXT NOT NULL,
+    strength INTEGER AS kotlin.Int NOT NULL
+);
 
-updateGoal:
-UPDATE GoalEntity SET title = ?, description = ?, upperGoalId = ?, childGoalIds = ?, tier = ?, isSkill = ?, wayIds = ?, walkedWayId = ?, priority = ?, status = ?, scheduling = ?, notificationEnabled = ?
+-- MasterGoal Queries
+insertMasterGoal:
+INSERT INTO MasterGoalEntity (title, description, priority, status, isLifeGoal, milestoneIds, walkedMilestoneId)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+updateMasterGoal:
+UPDATE MasterGoalEntity SET title = ?, description = ?, priority = ?, status = ?, isLifeGoal = ?, milestoneIds = ?, walkedMilestoneId = ?
 WHERE id = ?;
 
-deleteGoal:
-DELETE FROM GoalEntity WHERE id = ?;
+deleteMasterGoal:
+DELETE FROM MasterGoalEntity WHERE id = ?;
 
-selectAllGoals:
-SELECT * FROM GoalEntity;
+selectAllMasterGoals:
+SELECT * FROM MasterGoalEntity;
 
-selectGoalById:
-SELECT * FROM GoalEntity WHERE id = ?;
+selectMasterGoalById:
+SELECT * FROM MasterGoalEntity WHERE id = ?;
 
--- Queries for Way
-insertWay:
-INSERT INTO WayEntity (goalId, status, steps)
-VALUES (?, ?, ?);
+-- MilestoneGoal Queries
+insertMilestoneGoal:
+INSERT INTO MilestoneGoalEntity (title, description, priority, status, masterGoalId, actionIds, walkedActionId, isSkill, wayIds, walkedWayId)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
-updateWay:
-UPDATE WayEntity SET goalId = ?, status = ?, steps = ?
+updateMilestoneGoal:
+UPDATE MilestoneGoalEntity SET title = ?, description = ?, priority = ?, status = ?, masterGoalId = ?, actionIds = ?, walkedActionId = ?, isSkill = ?, wayIds = ?, walkedWayId = ?
 WHERE id = ?;
 
-selectAllWays:
-SELECT * FROM WayEntity;
+deleteMilestoneGoal:
+DELETE FROM MilestoneGoalEntity WHERE id = ?;
 
-selectWayById:
-SELECT * FROM WayEntity WHERE id = ?;
+selectAllMilestoneGoals:
+SELECT * FROM MilestoneGoalEntity;
 
--- Queries for Solution
+selectMilestoneGoalById:
+SELECT * FROM MilestoneGoalEntity WHERE id = ?;
+
+-- ActionGoal Queries
+insertActionGoal:
+INSERT INTO ActionGoalEntity (title, description, priority, status, milestoneGoalId, schedule, cost, notificationEnabled, completionCriteria)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateActionGoal:
+UPDATE ActionGoalEntity SET title = ?, description = ?, priority = ?, status = ?, milestoneGoalId = ?, schedule = ?, cost = ?, notificationEnabled = ?, completionCriteria = ?
+WHERE id = ?;
+
+deleteActionGoal:
+DELETE FROM ActionGoalEntity WHERE id = ?;
+
+selectAllActionGoals:
+SELECT * FROM ActionGoalEntity;
+
+selectActionGoalById:
+SELECT * FROM ActionGoalEntity WHERE id = ?;
+
+-- Challenge Queries
+insertChallenge:
+INSERT INTO ChallengeEntity (title, description, status, parentGoalId, mustSolveBeforeGoalId, cost, priority, isBarrier, moodImpact, candidateSolutionIds, appliedSolutionIds, failedSolutionIds, prosAfterSolveId, consAfterFailureId)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateChallenge:
+UPDATE ChallengeEntity SET title = ?, description = ?, status = ?, parentGoalId = ?, mustSolveBeforeGoalId = ?, cost = ?, priority = ?, isBarrier = ?, moodImpact = ?, candidateSolutionIds = ?, appliedSolutionIds = ?, failedSolutionIds = ?, prosAfterSolveId = ?, consAfterFailureId = ?
+WHERE id = ?;
+
+deleteChallenge:
+DELETE FROM ChallengeEntity WHERE id = ?;
+
+selectAllChallenges:
+SELECT * FROM ChallengeEntity;
+
+selectChallengeById:
+SELECT * FROM ChallengeEntity WHERE id = ?;
+
+selectChallengesByParentGoalId:
+SELECT * FROM ChallengeEntity WHERE parentGoalId = ?;
+
+-- StabilityCondition Queries
+insertStabilityCondition:
+INSERT INTO StabilityConditionEntity (challengeId, title, description, isMaintained)
+VALUES (?, ?, ?, ?);
+
+updateStabilityCondition:
+UPDATE StabilityConditionEntity SET challengeId = ?, title = ?, description = ?, isMaintained = ?
+WHERE id = ?;
+
+deleteStabilityCondition:
+DELETE FROM StabilityConditionEntity WHERE id = ?;
+
+deleteStabilityConditionsByChallengeId:
+DELETE FROM StabilityConditionEntity WHERE challengeId = ?;
+
+selectStabilityConditionsByChallengeId:
+SELECT * FROM StabilityConditionEntity WHERE challengeId = ?;
+
+-- Solution Queries
 insertSolution:
 INSERT INTO SolutionEntity (title, description, solutionType, cost, aidStrength, result)
 VALUES (?, ?, ?, ?, ?, ?);
@@ -119,7 +239,36 @@ SELECT * FROM SolutionEntity;
 selectSolutionById:
 SELECT * FROM SolutionEntity WHERE id = ?;
 
--- Queries for Decision
+-- Way Queries
+insertWay:
+INSERT INTO WayEntity (goalId, status)
+VALUES (?, ?);
+
+updateWay:
+UPDATE WayEntity SET goalId = ?, status = ?
+WHERE id = ?;
+
+deleteWay:
+DELETE FROM WayEntity WHERE id = ?;
+
+selectAllWays:
+SELECT * FROM WayEntity;
+
+selectWayById:
+SELECT * FROM WayEntity WHERE id = ?;
+
+-- WayStep Queries
+insertWayStep:
+INSERT INTO WayStepEntity (wayId, nodeId, nodeType, position)
+VALUES (?, ?, ?, ?);
+
+deleteWayStepsByWayId:
+DELETE FROM WayStepEntity WHERE wayId = ?;
+
+selectWayStepsByWayId:
+SELECT * FROM WayStepEntity WHERE wayId = ? ORDER BY position ASC;
+
+-- Decision Queries
 insertDecision:
 INSERT INTO DecisionEntity (context, title, description, cost, userRate, aiScore)
 VALUES (?, ?, ?, ?, ?, ?);
@@ -137,28 +286,25 @@ SELECT * FROM DecisionEntity;
 selectDecisionById:
 SELECT * FROM DecisionEntity WHERE id = ?;
 
--- Queries for Challenges
-insertChallenge:
-INSERT INTO ChallengesEntity (solvingBeforeGoalId, title, description, cost, priority, isBarrier, parentGoalId, preferredSolutions, helpsToSolution, failedDecisions, moodImpact, prosAfterSolve, consAfterFailure, stabilityConditions)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-
-updateChallenge:
-UPDATE ChallengesEntity SET solvingBeforeGoalId = ?, title = ?, description = ?, cost = ?, priority = ?, isBarrier = ?, parentGoalId = ?, preferredSolutions = ?, helpsToSolution = ?, failedDecisions = ?, moodImpact = ?, prosAfterSolve = ?, consAfterFailure = ?, stabilityConditions = ?
-WHERE id = ?;
-
-deleteChallenge:
-DELETE FROM ChallengesEntity WHERE id = ?;
-
-selectAllChallenges:
-SELECT * FROM ChallengesEntity;
-
-selectChallengeById:
-SELECT * FROM ChallengesEntity WHERE id = ?;
-
--- Queries for UserMood
+-- UserMood Queries
 insertUserMood:
 INSERT INTO UserMoodEntity (timestamp, energyRate, creativityRate, focusRate, socialRate, selfControlRate)
 VALUES (?, ?, ?, ?, ?, ?);
 
 selectAllUserMoods:
 SELECT * FROM UserMoodEntity ORDER BY timestamp DESC;
+
+-- GoalRelation Queries
+insertGoalRelation:
+INSERT INTO GoalRelationEntity (fromGoalId, toGoalId, type, note, strength)
+VALUES (?, ?, ?, ?, ?);
+
+updateGoalRelation:
+UPDATE GoalRelationEntity SET fromGoalId = ?, toGoalId = ?, type = ?, note = ?, strength = ?
+WHERE id = ?;
+
+deleteGoalRelation:
+DELETE FROM GoalRelationEntity WHERE id = ?;
+
+selectAllGoalRelations:
+SELECT * FROM GoalRelationEntity;

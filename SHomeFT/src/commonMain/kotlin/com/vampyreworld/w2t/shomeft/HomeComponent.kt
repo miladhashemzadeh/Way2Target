@@ -5,7 +5,7 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.vampyreworld.w2t.core.utils.componentScope
 import com.vampyreworld.w2t.domain.data.model.Goal
-import com.vampyreworld.w2t.domain.data.model.GoalTier
+import com.vampyreworld.w2t.domain.data.model.MasterGoal
 import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import kotlinx.coroutines.flow.Flow
@@ -34,7 +34,7 @@ class DefaultHomeComponent(
     private val deleteGoalUseCase: DeleteGoalUseCase,
     private val navigateToTarget: (Long?) -> Unit,
     private val navigateToMoodAdd: () -> Unit,
-    private val navigateToSChallenge: (Long) -> Unit,
+    private val navigateToSChallenge: (Long?) -> Unit,
     private val navigateToDecisionMaking: (Long) -> Unit,
     private val navigateToSolution: () -> Unit,
     private val navigateToPreferences: () -> Unit,
@@ -56,7 +56,7 @@ class DefaultHomeComponent(
         scope.launch {
             _state.value = _state.value.copy(isLoading = true)
             getGoalsUseCase().collect { goals ->
-                val masterGoals = goals.filter { it.tier == GoalTier.MASTER }
+                val masterGoals = goals.filterIsInstance<MasterGoal>()
                 _state.value = _state.value.copy(masterGoals = masterGoals, isLoading = false)
             }
         }
@@ -70,6 +70,9 @@ class DefaultHomeComponent(
             HomeContract.Intent.CreateMasterGoal -> {
                 navigateToTarget(null)
             }
+            HomeContract.Intent.OnCheckMoodClick -> {
+                navigateToMoodAdd()
+            }
             is HomeContract.Intent.OnMasterGoalClick -> {
                 navigateToTarget(intent.goalId)
             }
@@ -81,12 +84,18 @@ class DefaultHomeComponent(
             is HomeContract.Intent.CreateChallengeForMasterGoal -> {
                 navigateToSChallenge(intent.goalId)
             }
+            is HomeContract.Intent.OnActionCheck -> {
+                // Handle Action Check
+            }
+            is HomeContract.Intent.OnViewStrategyClick -> {
+                // Handle View Strategy
+            }
         }
     }
 
     override fun onNavigateToTarget() = navigateToTarget(null)
     override fun onNavigateToMoodAdd() = navigateToMoodAdd()
-    override fun onNavigateToSChallenge() = navigateToSChallenge(0L)
+    override fun onNavigateToSChallenge() = navigateToSChallenge(null)
     override fun onNavigateToDecisionMaking() = navigateToDecisionMaking(0L)
     override fun onNavigateToSolution() = navigateToSolution()
     override fun onNavigateToPreferences() = navigateToPreferences()

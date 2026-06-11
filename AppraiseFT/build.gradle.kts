@@ -28,9 +28,7 @@ kotlin {
                 implementation(project(":sharedUI"))
                 implementation(project(":di"))
                 implementation(project(":domain"))
-                implementation(libs.mvikotlin)
-                implementation(libs.mvikotlin.main)
-                implementation(libs.mvikotlin.extensions.coroutines)
+                implementation(project(":core"))
             }
         }
         androidMain {

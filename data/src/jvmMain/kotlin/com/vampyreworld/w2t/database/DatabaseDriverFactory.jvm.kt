@@ -6,7 +6,7 @@ import java.io.File
 
 actual class DatabaseDriverFactory {
     actual fun createDriver(): SqlDriver {
-        val databasePath = File(System.getProperty("user.home"), "w2t.db")
+        val databasePath = File(System.getProperty("user.home"), "way2target.db")
         val driver: SqlDriver = JdbcSqliteDriver(url = "jdbc:sqlite:${databasePath.absolutePath}")
         if (!databasePath.exists()) {
             W2TDatabase.Schema.create(driver)

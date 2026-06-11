@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
@@ -64,6 +65,7 @@ kotlin {
                 implementation(libs.kotlin.stdlib)
                 implementation(libs.decompose)
                 implementation(libs.decompose.extensions.compose)
+                implementation(libs.kotlinx.serialization.json)
                 implementation(libs.compose.material3)
                 implementation(compose.materialIconsExtended)
                 implementation(libs.compose.runtime)

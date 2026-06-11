@@ -3,16 +3,14 @@ package com.vampyreworld.w2t.repository
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import com.vampyreworld.w2t.database.ChallengesEntity
+import com.vampyreworld.w2t.database.ChallengeEntity
 import com.vampyreworld.w2t.database.W2TDatabase
 import com.vampyreworld.w2t.domain.data.model.Challenges
+import com.vampyreworld.w2t.domain.data.model.StabilityCondition
 import com.vampyreworld.w2t.domain.repository.ChallengeRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.flow.*
 
 class ChallengeRepositoryImpl(
     private val database: W2TDatabase
@@ -20,80 +18,121 @@ class ChallengeRepositoryImpl(
 
     private val queries = database.w2TDatabaseQueries
 
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     override fun getChallenges(goalId: Long): Flow<List<Challenges>> {
-        return queries.selectAllChallenges()
-            .asFlow()
-            .mapToList(Dispatchers.IO)
-            .map { entities -> entities.filter { it.parentGoalId == goalId }.map { it.toDomain() } }
+        val baseFlow = if (goalId == 0L) {
+            queries.selectAllChallenges()
+        } else {
+            queries.selectChallengesByParentGoalId(goalId)
+        }.asFlow().mapToList(Dispatchers.IO)
+
+        return baseFlow.flatMapLatest { entities ->
+            if (entities.isEmpty()) return@flatMapLatest flowOf(emptyList())
+            combine(entities.map { entity ->
+                queries.selectStabilityConditionsByChallengeId(entity.id)
+                    .asFlow()
+                    .mapToList(Dispatchers.IO)
+                    .map { conditions ->
+                        entity.toDomain(conditions.map { it.toDomain() })
+                    }
+            }) { it.toList() }
+        }
     }
 
     override fun getChallengeById(id: Long): Flow<Challenges?> {
-        return queries.selectChallengeById(id)
-            .asFlow()
-            .mapToOneOrNull(Dispatchers.IO)
-            .map { it?.toDomain() }
+        val challengeFlow = queries.selectChallengeById(id).asFlow().mapToOneOrNull(Dispatchers.IO)
+        val conditionsFlow = queries.selectStabilityConditionsByChallengeId(id).asFlow().mapToList(Dispatchers.IO)
+
+        return combine(challengeFlow, conditionsFlow) { challenge, conditions ->
+            challenge?.toDomain(conditions.map { it.toDomain() })
+        }
     }
 
     override suspend fun saveChallenge(challenge: Challenges) {
-        if (challenge.id == 0L) {
-            queries.insertChallenge(
-                solvingBeforeGoalId = challenge.solvingBeforeGoalId,
-                title = challenge.title,
-                description = challenge.desc,
-                cost = Json.encodeToString(challenge.cost),
-                priority = challenge.priority.toLong(),
-                isBarrier = if (challenge.isBarrier) 1L else 0L,
-                parentGoalId = challenge.parentGoalId,
-                preferredSolutions = Json.encodeToString(challenge.preferredSolutions),
-                helpsToSolution = Json.encodeToString(challenge.helpsToSolution),
-                failedDecisions = Json.encodeToString(challenge.failedDecisions),
-                moodImpact = challenge.moodImpact.toLong(),
-                prosAfterSolve = challenge.prosAfterSolve,
-                consAfterFailure = challenge.consAfterFailure,
-                stabilityConditions = Json.encodeToString(challenge.stabilityConditions)
-            )
-        } else {
-            queries.updateChallenge(
-                id = challenge.id,
-                solvingBeforeGoalId = challenge.solvingBeforeGoalId,
-                title = challenge.title,
-                description = challenge.desc,
-                cost = Json.encodeToString(challenge.cost),
-                priority = challenge.priority.toLong(),
-                isBarrier = if (challenge.isBarrier) 1L else 0L,
-                parentGoalId = challenge.parentGoalId,
-                preferredSolutions = Json.encodeToString(challenge.preferredSolutions),
-                helpsToSolution = Json.encodeToString(challenge.helpsToSolution),
-                failedDecisions = Json.encodeToString(challenge.failedDecisions),
-                moodImpact = challenge.moodImpact.toLong(),
-                prosAfterSolve = challenge.prosAfterSolve,
-                consAfterFailure = challenge.consAfterFailure,
-                stabilityConditions = Json.encodeToString(challenge.stabilityConditions)
-            )
+        database.transaction {
+            if (challenge.id == 0L) {
+                queries.insertChallenge(
+                    title = challenge.title,
+                    description = challenge.desc,
+                    status = challenge.status,
+                    parentGoalId = challenge.parentGoalId,
+                    mustSolveBeforeGoalId = challenge.mustSolveBeforeGoalId,
+                    cost = challenge.cost,
+                    priority = challenge.priority,
+                    isBarrier = challenge.isBarrier,
+                    moodImpact = challenge.moodImpact,
+                    candidateSolutionIds = challenge.candidateSolutionIds,
+                    appliedSolutionIds = challenge.appliedSolutionIds,
+                    failedSolutionIds = challenge.failedSolutionIds,
+                    prosAfterSolveId = challenge.prosAfterSolveId,
+                    consAfterFailureId = challenge.consAfterFailureId
+                )
+                // Note: To insert conditions for a NEW challenge, we'd need the generated ID.
+                // SqlDelight's insert doesn't return ID by default unless we use a query that does.
+                // Assuming for now challenge.id is used or this is an update flow.
+            } else {
+                queries.updateChallenge(
+                    id = challenge.id,
+                    title = challenge.title,
+                    description = challenge.desc,
+                    status = challenge.status,
+                    parentGoalId = challenge.parentGoalId,
+                    mustSolveBeforeGoalId = challenge.mustSolveBeforeGoalId,
+                    cost = challenge.cost,
+                    priority = challenge.priority,
+                    isBarrier = challenge.isBarrier,
+                    moodImpact = challenge.moodImpact,
+                    candidateSolutionIds = challenge.candidateSolutionIds,
+                    appliedSolutionIds = challenge.appliedSolutionIds,
+                    failedSolutionIds = challenge.failedSolutionIds,
+                    prosAfterSolveId = challenge.prosAfterSolveId,
+                    consAfterFailureId = challenge.consAfterFailureId
+                )
+
+                // Sync stability conditions
+                queries.deleteStabilityConditionsByChallengeId(challenge.id)
+                challenge.stabilityConditions.forEach { condition ->
+                    queries.insertStabilityCondition(
+                        challengeId = challenge.id,
+                        title = condition.title,
+                        description = condition.description,
+                        isMaintained = condition.isMaintained
+                    )
+                }
+            }
         }
     }
 
     override suspend fun deleteChallenge(id: Long) {
-        queries.deleteChallenge(id)
+        database.transaction {
+            queries.deleteStabilityConditionsByChallengeId(id)
+            queries.deleteChallenge(id)
+        }
     }
 
-    private fun ChallengesEntity.toDomain(): Challenges {
-        return Challenges(
-            id = id,
-            solvingBeforeGoalId = solvingBeforeGoalId,
-            title = title,
-            desc = description,
-            cost = Json.decodeFromString(cost),
-            priority = priority.toInt(),
-            isBarrier = isBarrier == 1L,
-            parentGoalId = parentGoalId,
-            preferredSolutions = Json.decodeFromString(preferredSolutions),
-            helpsToSolution = Json.decodeFromString(helpsToSolution),
-            failedDecisions = Json.decodeFromString(failedDecisions),
-            moodImpact = moodImpact.toInt(),
-            prosAfterSolve = prosAfterSolve,
-            consAfterFailure = consAfterFailure,
-            stabilityConditions = stabilityConditions?.let { Json.decodeFromString(it) } ?: emptyList()
-        )
-    }
+    private fun ChallengeEntity.toDomain(stabilityConditions: List<StabilityCondition>): Challenges = Challenges(
+        id = id,
+        title = title,
+        desc = description,
+        parentGoalId = parentGoalId,
+        mustSolveBeforeGoalId = mustSolveBeforeGoalId,
+        status = status,
+        cost = cost,
+        priority = priority,
+        isBarrier = isBarrier,
+        moodImpact = moodImpact,
+        candidateSolutionIds = candidateSolutionIds,
+        appliedSolutionIds = appliedSolutionIds,
+        failedSolutionIds = failedSolutionIds,
+        prosAfterSolveId = prosAfterSolveId,
+        consAfterFailureId = consAfterFailureId,
+        stabilityConditions = stabilityConditions
+    )
+
+    private fun com.vampyreworld.w2t.database.StabilityConditionEntity.toDomain(): StabilityCondition = StabilityCondition(
+        id = id,
+        title = title,
+        description = description,
+        isMaintained = isMaintained
+    )
 }

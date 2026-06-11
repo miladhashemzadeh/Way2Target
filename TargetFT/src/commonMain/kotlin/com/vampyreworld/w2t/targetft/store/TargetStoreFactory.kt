@@ -4,13 +4,13 @@ import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
-import com.vampyreworld.w2t.domain.data.model.Goal
-import com.vampyreworld.w2t.domain.data.model.GoalStatus
-import com.vampyreworld.w2t.domain.data.model.GoalTier
+import com.vampyreworld.w2t.domain.data.model.*
 import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.targetft.TargetContract
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class TargetStoreFactory(
@@ -18,6 +18,7 @@ class TargetStoreFactory(
     private val getGoalsUseCase: GetGoalsUseCase,
     private val saveGoalUseCase: SaveGoalUseCase,
     private val deleteGoalUseCase: DeleteGoalUseCase,
+    private val getChallengesUseCase: com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase,
     private val goalId: Long? = null,
     private val initialTier: String? = null,
     private val parentId: Long? = null
@@ -35,46 +36,92 @@ class TargetStoreFactory(
 
     private sealed interface Msg {
         data object Loading : Msg
-        data class Loaded(val selectedGoal: Goal?, val relatedGoals: List<Goal>) : Msg
+        data class Loaded(
+            val selectedGoal: Goal?, 
+            val relatedGoals: List<Goal>,
+            val challenges: List<com.vampyreworld.w2t.domain.data.model.Challenges>
+        ) : Msg
+        data class SetScreen(val screen: TargetContract.Screen) : Msg
     }
 
     private inner class ExecutorImpl : CoroutineExecutor<TargetStore.Intent, Nothing, TargetContract.State, Msg, TargetStore.Label>() {
+        private var loadJob: Job? = null
+
         override fun executeIntent(intent: TargetStore.Intent) {
             when (intent) {
                 TargetStore.Intent.Refresh -> {
-                    loadGoals()
+                    loadData()
                 }
                 TargetStore.Intent.CancelGoal -> {
                     cancelGoal()
                 }
                 TargetStore.Intent.CreateChallenge -> {
-                    // Handled by Component (Navigation)
+                    // Handled by component navigation
                 }
-                TargetStore.Intent.CreateMilestone -> {
-                    // Handled by Component (Navigation)
+                TargetStore.Intent.NavigateToChallengeList -> {
+                    // Handled by component navigation
+                }
+                TargetStore.Intent.NavigateToAppraise -> {
+                    // Handled by component navigation
+                }
+                TargetStore.Intent.NavigateToDefineSteps -> {
+                    dispatch(Msg.SetScreen(TargetContract.Screen.DEFINE_STEPS))
+                }
+                TargetStore.Intent.Back -> {
+                    if (state().currentScreen != TargetContract.Screen.DETAIL) {
+                        dispatch(Msg.SetScreen(TargetContract.Screen.DETAIL))
+                    }
                 }
                 is TargetStore.Intent.DeleteSubGoal -> {
                     deleteGoal(intent.goalId)
                 }
                 is TargetStore.Intent.OnChallengeClick -> {
-                    // Handled by Component (Navigation)
+                    // Handled by component navigation
                 }
                 is TargetStore.Intent.ReplaceSubGoal -> {
-                    // TODO: Handle ReplaceSubGoal
                 }
                 is TargetStore.Intent.SaveGoal -> {
                     saveGoal(intent)
                 }
+                is TargetStore.Intent.SaveChallenge -> {
+                    // Handled by component navigation
+                }
+                is TargetStore.Intent.UpdateGoal -> {
+                    updateGoal(intent.goal)
+                }
             }
         }
 
-        private fun loadGoals() {
+        private fun updateGoal(goal: Goal) {
             scope.launch {
                 dispatch(Msg.Loading)
-                getGoalsUseCase().collect { goals ->
-                    val selectedGoal = goals.find { it.id == goalId }
-                    val relatedGoals = goals.filter { it.upperGoalId == goalId }
-                    dispatch(Msg.Loaded(selectedGoal, relatedGoals))
+                try {
+                    saveGoalUseCase(goal)
+                } catch (e: Exception) {
+                    publish(TargetStore.Label.Error(e.message ?: "Failed to update goal"))
+                }
+            }
+        }
+
+        private fun loadData() {
+            loadJob?.cancel()
+            loadJob = scope.launch {
+                dispatch(Msg.Loading)
+                if (goalId != null) {
+                    combine(
+                        getGoalsUseCase(),
+                        getChallengesUseCase(goalId)
+                    ) { goals, challenges ->
+                        val selectedGoal = goals.find { it.id == goalId }
+                        Msg.Loaded(selectedGoal, goals, challenges)
+                    }.collect { msg ->
+                        dispatch(msg)
+                    }
+                } else {
+                    getGoalsUseCase().collect { goals ->
+                        val selectedGoal = goals.find { it.id == goalId }
+                        dispatch(Msg.Loaded(selectedGoal, goals, emptyList()))
+                    }
                 }
             }
         }
@@ -83,14 +130,32 @@ class TargetStoreFactory(
             scope.launch {
                 dispatch(Msg.Loading)
                 try {
-                    val newGoal = Goal(
-                        id = 0, // Database will generate
-                        title = intent.title,
-                        description = intent.description,
-                        tier = GoalTier.valueOf(intent.tier),
-                        upperGoalId = state().parentId,
-                        priority = 50 // Default
-                    )
+                    val tier = GoalTier.valueOf(intent.tier)
+                    val newGoal = when (tier) {
+                        GoalTier.MASTER -> MasterGoal(
+                            id = 0,
+                            title = intent.title,
+                            description = intent.description,
+                            priority = 50,
+                            status = GoalStatus.ACTIVE
+                        )
+                        GoalTier.MILESTONE -> MilestoneGoal(
+                            id = 0,
+                            title = intent.title,
+                            description = intent.description,
+                            priority = 50,
+                            status = GoalStatus.ACTIVE,
+                            masterGoalId = state().parentId ?: 0L
+                        )
+                        GoalTier.ACTION -> ActionGoal(
+                            id = 0,
+                            title = intent.title,
+                            description = intent.description,
+                            priority = 50,
+                            status = GoalStatus.ACTIVE,
+                            milestoneGoalId = state().parentId ?: 0L
+                        )
+                    }
                     saveGoalUseCase(newGoal)
                     publish(TargetStore.Label.Saved)
                 } catch (e: Exception) {
@@ -104,7 +169,7 @@ class TargetStoreFactory(
             scope.launch {
                 dispatch(Msg.Loading)
                 try {
-                    saveGoalUseCase(currentGoal.copy(status = GoalStatus.CANCELLED))
+                    saveGoalUseCase(currentGoal.withStatus(GoalStatus.CANCELLED))
                     publish(TargetStore.Label.Saved) // Or a specific label for cancellation
                 } catch (e: Exception) {
                     publish(TargetStore.Label.Error(e.message ?: "Failed to cancel goal"))
@@ -132,8 +197,10 @@ class TargetStoreFactory(
                 is Msg.Loaded -> copy(
                     isLoading = false,
                     selectedGoal = msg.selectedGoal,
-                    relatedGoals = msg.relatedGoals
+                    relatedGoals = msg.relatedGoals,
+                    challenges = msg.challenges
                 )
+                is Msg.SetScreen -> copy(currentScreen = msg.screen)
             }
     }
 }

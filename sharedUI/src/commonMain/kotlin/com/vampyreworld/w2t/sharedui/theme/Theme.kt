@@ -7,101 +7,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
-import com.vampyreworld.w2t.sharedui.theme.color.AppColorScheme
-import com.vampyreworld.w2t.sharedui.theme.color.BgCool
-import com.vampyreworld.w2t.sharedui.theme.color.BgLight
-import com.vampyreworld.w2t.sharedui.theme.color.BgSecondary
-import com.vampyreworld.w2t.sharedui.theme.color.Black15
-import com.vampyreworld.w2t.sharedui.theme.color.Black20
-import com.vampyreworld.w2t.sharedui.theme.color.Black40
-import com.vampyreworld.w2t.sharedui.theme.color.Black80
-import com.vampyreworld.w2t.sharedui.theme.color.Blue
-import com.vampyreworld.w2t.sharedui.theme.color.BrightRed
-import com.vampyreworld.w2t.sharedui.theme.color.Dark
-import com.vampyreworld.w2t.sharedui.theme.color.Dark10
-import com.vampyreworld.w2t.sharedui.theme.color.DarkColorScheme
-import com.vampyreworld.w2t.sharedui.theme.color.Error15
-import com.vampyreworld.w2t.sharedui.theme.color.Error20
-import com.vampyreworld.w2t.sharedui.theme.color.Error40
-import com.vampyreworld.w2t.sharedui.theme.color.Error5
-import com.vampyreworld.w2t.sharedui.theme.color.Error60
-import com.vampyreworld.w2t.sharedui.theme.color.Error80
-import com.vampyreworld.w2t.sharedui.theme.color.GradientBlue
-import com.vampyreworld.w2t.sharedui.theme.color.Gray
-import com.vampyreworld.w2t.sharedui.theme.color.GrayBorderColor
-import com.vampyreworld.w2t.sharedui.theme.color.GrayDeep
-import com.vampyreworld.w2t.sharedui.theme.color.LightColorScheme
-import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
-import com.vampyreworld.w2t.sharedui.theme.color.MessageBackground
-import com.vampyreworld.w2t.sharedui.theme.color.MessageStateColor
-import com.vampyreworld.w2t.sharedui.theme.color.NaturalWhite10
-import com.vampyreworld.w2t.sharedui.theme.color.NaturalWhite100
-import com.vampyreworld.w2t.sharedui.theme.color.NaturalWhite15
-import com.vampyreworld.w2t.sharedui.theme.color.NaturalWhite20
-import com.vampyreworld.w2t.sharedui.theme.color.NaturalWhite40
-import com.vampyreworld.w2t.sharedui.theme.color.NaturalWhite5
-import com.vampyreworld.w2t.sharedui.theme.color.NaturalWhite60
-import com.vampyreworld.w2t.sharedui.theme.color.NaturalWhite80
-import com.vampyreworld.w2t.sharedui.theme.color.Orange
-import com.vampyreworld.w2t.sharedui.theme.color.Orange2
-import com.vampyreworld.w2t.sharedui.theme.color.Secondary
-import com.vampyreworld.w2t.sharedui.theme.color.Shadow
-import com.vampyreworld.w2t.sharedui.theme.color.Success10
-import com.vampyreworld.w2t.sharedui.theme.color.Success100
-import com.vampyreworld.w2t.sharedui.theme.color.Success20
-import com.vampyreworld.w2t.sharedui.theme.color.Success40
-import com.vampyreworld.w2t.sharedui.theme.color.Success5
-import com.vampyreworld.w2t.sharedui.theme.color.Success60
-import com.vampyreworld.w2t.sharedui.theme.color.Success80
-import com.vampyreworld.w2t.sharedui.theme.color.Transparent
-import com.vampyreworld.w2t.sharedui.theme.color.Unspecified
-import com.vampyreworld.w2t.sharedui.theme.color.Warning10
-import com.vampyreworld.w2t.sharedui.theme.color.Warning100
-import com.vampyreworld.w2t.sharedui.theme.color.Warning20
-import com.vampyreworld.w2t.sharedui.theme.color.Warning40
-import com.vampyreworld.w2t.sharedui.theme.color.Warning5
-import com.vampyreworld.w2t.sharedui.theme.color.Warning60
-import com.vampyreworld.w2t.sharedui.theme.color.Warning80
-import com.vampyreworld.w2t.sharedui.theme.color.White20
-import com.vampyreworld.w2t.sharedui.theme.color.White40
-import com.vampyreworld.w2t.sharedui.theme.color.White5
-import com.vampyreworld.w2t.sharedui.theme.color.White80
-import com.vampyreworld.w2t.sharedui.theme.color.backgroundDark
-import com.vampyreworld.w2t.sharedui.theme.color.black
-import com.vampyreworld.w2t.sharedui.theme.color.black10
-import com.vampyreworld.w2t.sharedui.theme.color.black100
-import com.vampyreworld.w2t.sharedui.theme.color.black5
-import com.vampyreworld.w2t.sharedui.theme.color.black60
-import com.vampyreworld.w2t.sharedui.theme.color.blueFill
-import com.vampyreworld.w2t.sharedui.theme.color.customColor1ContainerDark
-import com.vampyreworld.w2t.sharedui.theme.color.customColor1Dark
-import com.vampyreworld.w2t.sharedui.theme.color.customColor2ContainerDark
-import com.vampyreworld.w2t.sharedui.theme.color.customColor2Dark
-import com.vampyreworld.w2t.sharedui.theme.color.customColor3ContainerDark
-import com.vampyreworld.w2t.sharedui.theme.color.customColor3Dark
-import com.vampyreworld.w2t.sharedui.theme.color.dark20
-import com.vampyreworld.w2t.sharedui.theme.color.dark40
-import com.vampyreworld.w2t.sharedui.theme.color.dark60
-import com.vampyreworld.w2t.sharedui.theme.color.error10
-import com.vampyreworld.w2t.sharedui.theme.color.error100
-import com.vampyreworld.w2t.sharedui.theme.color.errorContainerDarkMediumContrast
-import com.vampyreworld.w2t.sharedui.theme.color.greenBlue
-import com.vampyreworld.w2t.sharedui.theme.color.greenBoarder
-import com.vampyreworld.w2t.sharedui.theme.color.highText
-import com.vampyreworld.w2t.sharedui.theme.color.inversePrimaryDark
-import com.vampyreworld.w2t.sharedui.theme.color.lightBlue100
-import com.vampyreworld.w2t.sharedui.theme.color.lowText
-import com.vampyreworld.w2t.sharedui.theme.color.outlineDark
-import com.vampyreworld.w2t.sharedui.theme.color.outlineVariantDark
-import com.vampyreworld.w2t.sharedui.theme.color.primary100
-import com.vampyreworld.w2t.sharedui.theme.color.primaryContainerDark
-import com.vampyreworld.w2t.sharedui.theme.color.purple
-import com.vampyreworld.w2t.sharedui.theme.color.red
-import com.vampyreworld.w2t.sharedui.theme.color.surfaceContainerDark
-import com.vampyreworld.w2t.sharedui.theme.color.surfaceContainerHighDark
-import com.vampyreworld.w2t.sharedui.theme.color.white10
-import com.vampyreworld.w2t.sharedui.theme.color.white100
-import com.vampyreworld.w2t.sharedui.theme.color.white60
+import com.vampyreworld.w2t.sharedui.theme.color.*
 
 private val lightAppColors = AppColorScheme(
 
@@ -231,8 +137,15 @@ private val lightAppColors = AppColorScheme(
     gradientBlue = GradientBlue,
 
     blue = Blue,
-
-    brightRed = BrightRed
+    brightRed = BrightRed,
+    accent = OD_Accent,
+    muted = OD_Muted,
+    border = OD_Border,
+    moodHighEnergyStart = OD_Mood_HighEnergy_Start,
+    moodHighEnergyEnd = OD_Mood_HighEnergy_End,
+    moodFocusedStart = OD_Mood_Focused_Start,
+    moodFocusedEnd = OD_Mood_Focused_End,
+    challengeColor = OD_Challenge,
 )
 private val darkAppColors = AppColorScheme(
 
@@ -362,8 +275,15 @@ private val darkAppColors = AppColorScheme(
     gradientBlue = inversePrimaryDark,
 
     blue = customColor3Dark,
-
-    brightRed = errorContainerDarkMediumContrast
+    brightRed = errorContainerDarkMediumContrast,
+    accent = OD_Accent,
+    muted = OD_Muted,
+    border = OD_Border,
+    moodHighEnergyStart = OD_Mood_HighEnergy_Start,
+    moodHighEnergyEnd = OD_Mood_HighEnergy_End,
+    moodFocusedStart = OD_Mood_Focused_Start,
+    moodFocusedEnd = OD_Mood_Focused_End,
+    challengeColor = OD_Challenge,
 )
 
 
@@ -386,7 +306,7 @@ fun W2TTheme(
     CompositionLocalProvider(
         LocalAppColorScheme provides extraColors,
         LocalAppDimens provides DefaultAppDimens,
-        LocalLayoutDirection provides LayoutDirection.Rtl
+        LocalLayoutDirection provides LayoutDirection.Ltr
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

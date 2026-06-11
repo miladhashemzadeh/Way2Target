@@ -1,6 +1,7 @@
 package com.vampyreworld.w2t.database
 
 import app.cash.sqldelight.ColumnAdapter
+import app.cash.sqldelight.EnumColumnAdapter
 import com.vampyreworld.w2t.domain.data.model.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -15,11 +16,23 @@ val booleanAdapter = object : ColumnAdapter<Boolean, Long> {
     override fun encode(value: Boolean): Long = if (value) 1L else 0L
 }
 
-val goalTierAdapter = jsonColumnAdapter<GoalTier>()
-val goalStatusAdapter = jsonColumnAdapter<GoalStatus>()
-val wayStatusAdapter = jsonColumnAdapter<WayStatus>()
-val schedulingInfoAdapter = jsonColumnAdapter<SchedulingInfo>()
-val solutionTypeAdapter = jsonColumnAdapter<SolutionType>()
-val solutionResultAdapter = jsonColumnAdapter<SolutionResult>()
+val intAdapter = object : ColumnAdapter<Int, Long> {
+    override fun decode(databaseValue: Long): Int = databaseValue.toInt()
+    override fun encode(value: Int): Long = value.toLong()
+}
+
+val longAdapter = object : ColumnAdapter<Long, Long> {
+    override fun decode(databaseValue: Long): Long = databaseValue
+    override fun encode(value: Long): Long = value
+}
+
+val goalStatusAdapter = EnumColumnAdapter<GoalStatus>()
+val wayStatusAdapter = EnumColumnAdapter<WayStatus>()
+val relationTypeAdapter = EnumColumnAdapter<RelationType>()
+val solutionTypeAdapter = EnumColumnAdapter<SolutionType>()
+val solutionResultAdapter = EnumColumnAdapter<SolutionResult>()
+
+val actionScheduleAdapter = jsonColumnAdapter<ActionSchedule>()
 val costAdapter = jsonColumnAdapter<Cost>()
 val decisionContextAdapter = jsonColumnAdapter<DecisionContext>()
+val longListAdapter = jsonColumnAdapter<List<Long>>()

@@ -5,17 +5,12 @@ import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.vampyreworld.w2t.database.SolutionEntity
 import com.vampyreworld.w2t.database.W2TDatabase
-import com.vampyreworld.w2t.domain.data.model.Cost
 import com.vampyreworld.w2t.domain.data.model.Solution
-import com.vampyreworld.w2t.domain.data.model.SolutionResult
-import com.vampyreworld.w2t.domain.data.model.SolutionType
 import com.vampyreworld.w2t.domain.repository.SolutionRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 class SolutionRepositoryImpl(
     private val database: W2TDatabase
@@ -42,20 +37,20 @@ class SolutionRepositoryImpl(
             queries.insertSolution(
                 title = solution.title,
                 description = solution.desc,
-                solutionType = solution.solutionType.name,
-                cost = Json.encodeToString(solution.cost),
-                aidStrength = solution.aidStrength.toLong(),
-                result = solution.result.name
+                solutionType = solution.solutionType,
+                cost = solution.cost,
+                aidStrength = solution.aidStrength,
+                result = solution.result
             )
         } else {
             queries.updateSolution(
                 id = solution.id,
                 title = solution.title,
                 description = solution.desc,
-                solutionType = solution.solutionType.name,
-                cost = Json.encodeToString(solution.cost),
-                aidStrength = solution.aidStrength.toLong(),
-                result = solution.result.name
+                solutionType = solution.solutionType,
+                cost = solution.cost,
+                aidStrength = solution.aidStrength,
+                result = solution.result
             )
         }
     }
@@ -64,15 +59,13 @@ class SolutionRepositoryImpl(
         queries.deleteSolution(id)
     }
 
-    private fun SolutionEntity.toDomain(): Solution {
-        return Solution(
-            id = id,
-            title = title,
-            desc = description,
-            solutionType = SolutionType.valueOf(solutionType),
-            cost = Json.decodeFromString(cost),
-            aidStrength = aidStrength.toInt(),
-            result = SolutionResult.valueOf(result)
-        )
-    }
+    private fun SolutionEntity.toDomain(): Solution = Solution(
+        id = id,
+        title = title,
+        desc = description,
+        solutionType = solutionType,
+        cost = cost,
+        aidStrength = aidStrength,
+        result = result
+    )
 }
