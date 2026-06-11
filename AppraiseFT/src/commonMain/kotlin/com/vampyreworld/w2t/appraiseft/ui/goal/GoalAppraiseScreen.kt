@@ -100,7 +100,9 @@ fun GoalAppraiseScreen(component: AppraiseComponent) {
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = colors.accent,
-                        unfocusedBorderColor = colors.border
+                        unfocusedBorderColor = colors.border,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
             }

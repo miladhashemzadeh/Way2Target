@@ -95,7 +95,9 @@ fun ChallengeAppraiseScreen(component: AppraiseComponent) {
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedStatus) },
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = colors.accent,
-                            unfocusedBorderColor = colors.border
+                            unfocusedBorderColor = colors.border,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                         )
                     )
                     ExposedDropdownMenu(

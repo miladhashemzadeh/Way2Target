@@ -1,6 +1,7 @@
 package com.vampyreworld.w2t.shomeft.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -181,7 +182,8 @@ fun W2TBottomNavigation(component: HomeComponent) {
     val colors = LocalAppColorScheme.current
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surface,
-        tonalElevation = 8.dp
+        tonalElevation = 8.dp,
+        modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
     ) {
         NavigationBarItem(
             selected = true,

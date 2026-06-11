@@ -166,7 +166,7 @@ fun W2TAiInsightsCard(
                 onClick = onButtonClick,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
-                    contentColor = colors.accent
+                    contentColor = colors.moodFocusedStart
                 ),
                 shape = CircleShape,
                 modifier = Modifier.padding(top = 12.dp)
@@ -356,7 +356,8 @@ fun W2TTreeNode(
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                    .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -470,7 +471,7 @@ fun W2TChallengeCard(
                             text = status,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
@@ -677,7 +678,7 @@ fun W2TStatusChip(
     text: String,
     backgroundColor: Color,
     modifier: Modifier = Modifier,
-    contentColor: Color = Color.White
+    contentColor: Color = MaterialTheme.colorScheme.onPrimary
 ) {
     Surface(
         color = backgroundColor,

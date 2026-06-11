@@ -6,8 +6,8 @@ import androidx.compose.ui.graphics.Color
 // BASE COLORS (DEFINED DIRECTLY)
 // ======================================================
 
-val primary100 = Color(0x1e88E5FF)
-val Secondary = Color(0x35d687FF)
+val primary100 = Color(0xFF1E88E5)
+val Secondary = Color(0xFF35D687)
 
 val Primary80 = primary100.copy(alpha = .8f)
 val Primary60 = primary100.copy(alpha = .6f)

@@ -110,6 +110,19 @@ fun TargetDetailScreen(
             }
 
             item {
+                Button(
+                    onClick = { component.onIntent(TargetContract.Intent.CreateChallenge) },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
+                    shape = RoundedCornerShape(28.dp)
+                ) {
+                    Icon(Icons.Default.FlashOn, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Add Challenge to this Goal")
+                }
+            }
+
+            item {
                 W2TCard {
                     val sectionTitle = if (goal.tier == GoalTier.MASTER) "Goal Breakdown" else "Action Goals"
                     W2TSectionTitle(sectionTitle)
@@ -185,28 +198,17 @@ fun TargetDetailScreen(
 
         item {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Button(
-                    onClick = { component.onIntent(TargetContract.Intent.NavigateToChallengeList) },
-                    modifier = Modifier.weight(1f).height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
-                    shape = RoundedCornerShape(28.dp)
-                ) {
-                    Icon(Icons.Default.FlashOn, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Challenges")
-                }
-                
                 if (goal.tier != GoalTier.ACTION) {
                     Button(
                         onClick = { component.onIntent(TargetContract.Intent.CreateChildGoal) },
-                        modifier = Modifier.weight(1f).height(56.dp),
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = colors.accent.copy(alpha = 0.1f), contentColor = colors.accent),
                         shape = RoundedCornerShape(28.dp),
                         elevation = null
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(if (goal.tier == GoalTier.MASTER) "Milestone" else "Action")
+                        Text(if (goal.tier == GoalTier.MASTER) "Add Milestone" else "Add Action")
                     }
                 }
             }
@@ -228,7 +230,7 @@ private fun ActionDetailHeader(goal: Goal, relatedGoals: List<Goal>, colors: com
                     text = if (goal.status == GoalStatus.COMPLETED) "Completed" else "Pending",
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
                     style = MaterialTheme.typography.labelMedium,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold
                 )
             }

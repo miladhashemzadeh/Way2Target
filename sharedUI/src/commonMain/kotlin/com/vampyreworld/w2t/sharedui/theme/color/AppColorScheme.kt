@@ -341,36 +341,36 @@ val LightColorScheme = lightColorScheme(
     secondary = Secondary,
     tertiary = OD_Success,
     background = OD_Bg,
-    surface = OD_Surface,
-    onPrimary = OD_Surface,
-    onSecondary = OD_Surface,
-    onTertiary = OD_Surface,
+    surface = Color.White,
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
     onBackground = OD_Fg,
     onSurface = OD_Fg,
     error = error100,
     errorContainer = Error80,
-    onError = white100,
-    surfaceVariant = OD_Bg
+    onError = Color.White,
+    surfaceVariant = Color(0xFFF0F2F5)
 )
 
 val DarkColorScheme = darkColorScheme(
-    primary = primary100,
+    primary = Color(0xFF64B5F6),
     secondary = customColor1Dark,
     tertiary = customColor2Dark,
 
-    background = backgroundDark,
-    surface = surfaceContainerDark,
+    background = Color(0xFF121212),
+    surface = Color(0xFF1E1E1E),
 
-    onPrimary = white100,
-    onSecondary = white100,
-    onTertiary = black100,
+    onPrimary = Color.Black,
+    onSecondary = Color.Black,
+    onTertiary = Color.Black,
 
-    onBackground = white100,
-    onSurface = white100,
+    onBackground = Color.White,
+    onSurface = Color.White,
 
-    error = errorContainerDarkMediumContrast,
+    error = Color(0xFFCF6679),
     errorContainer = error100,
-    onError = white100,
+    onError = Color.Black,
 
-    surfaceVariant = surfaceContainerHighDark
+    surfaceVariant = Color(0xFF2C2C2C)
 )
