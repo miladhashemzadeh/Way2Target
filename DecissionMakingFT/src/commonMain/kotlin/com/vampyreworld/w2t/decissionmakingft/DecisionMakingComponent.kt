@@ -44,9 +44,9 @@ class DefaultDecisionMakingComponent(
             _state.value = _state.value.copy(isLoading = true)
             try {
                 saveDecisionUseCase(intent.decision)
-                // Possibly dispatch a side effect or update state
+                onBack()
             } catch (e: Exception) {
-                // Handle error
+                _sideEffects.emit(DecisionMakingContract.SideEffect.ShowError(e.message ?: "Failed to save decision"))
             } finally {
                 _state.value = _state.value.copy(isLoading = false)
             }

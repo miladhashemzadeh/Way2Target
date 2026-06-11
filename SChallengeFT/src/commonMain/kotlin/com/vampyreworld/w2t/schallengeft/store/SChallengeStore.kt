@@ -9,6 +9,9 @@ interface SChallengeStore : Store<SChallengeStore.Intent, SChallengeContract.Sta
         data class OnChallengeClick(val challengeId: Long) : Intent
         data class AddChallenge(val challenge: com.vampyreworld.w2t.domain.data.model.Challenges) : Intent
         data class UpdateStabilityCondition(val conditionId: Long, val isMaintained: Boolean) : Intent
+        data class OnStatusChange(val status: String) : Intent
+        data object OnTakeAiHelp : Intent
+        data object ClearSelectedChallenge : Intent
     }
 
     sealed interface Label {

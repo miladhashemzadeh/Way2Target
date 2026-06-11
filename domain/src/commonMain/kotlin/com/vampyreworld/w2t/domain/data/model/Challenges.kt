@@ -19,6 +19,7 @@ data class Challenges(
     val prosAfterSolve: Long?,
     val consAfterFailure: Long?,
     val stabilityConditions: List<StabilityCondition> = emptyList(),
+    val status: ChallengeStatus = ChallengeStatus.ACTIVE
 ) : WayNode {
 
 
@@ -29,4 +30,12 @@ data class Challenges(
             if (isBarrier) 1.0f else 0.0f
         )
     }
+}
+
+@Serializable
+enum class ChallengeStatus {
+    ACTIVE,
+    FINISHED,
+    FAILED,
+    CANCELLED
 }

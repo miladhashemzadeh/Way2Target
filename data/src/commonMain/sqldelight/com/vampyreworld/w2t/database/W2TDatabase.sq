@@ -56,7 +56,8 @@ CREATE TABLE ChallengesEntity (
     moodImpact INTEGER NOT NULL,
     prosAfterSolve INTEGER,
     consAfterFailure INTEGER,
-    stabilityConditions TEXT
+    stabilityConditions TEXT,
+    status TEXT NOT NULL DEFAULT 'ACTIVE'
 );
 
 CREATE TABLE UserMoodEntity (
@@ -139,11 +140,11 @@ SELECT * FROM DecisionEntity WHERE id = ?;
 
 -- Queries for Challenges
 insertChallenge:
-INSERT INTO ChallengesEntity (solvingBeforeGoalId, title, description, cost, priority, isBarrier, parentGoalId, preferredSolutions, helpsToSolution, failedDecisions, moodImpact, prosAfterSolve, consAfterFailure, stabilityConditions)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO ChallengesEntity (solvingBeforeGoalId, title, description, cost, priority, isBarrier, parentGoalId, preferredSolutions, helpsToSolution, failedDecisions, moodImpact, prosAfterSolve, consAfterFailure, stabilityConditions, status)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 updateChallenge:
-UPDATE ChallengesEntity SET solvingBeforeGoalId = ?, title = ?, description = ?, cost = ?, priority = ?, isBarrier = ?, parentGoalId = ?, preferredSolutions = ?, helpsToSolution = ?, failedDecisions = ?, moodImpact = ?, prosAfterSolve = ?, consAfterFailure = ?, stabilityConditions = ?
+UPDATE ChallengesEntity SET solvingBeforeGoalId = ?, title = ?, description = ?, cost = ?, priority = ?, isBarrier = ?, parentGoalId = ?, preferredSolutions = ?, helpsToSolution = ?, failedDecisions = ?, moodImpact = ?, prosAfterSolve = ?, consAfterFailure = ?, stabilityConditions = ?, status = ?
 WHERE id = ?;
 
 deleteChallenge:

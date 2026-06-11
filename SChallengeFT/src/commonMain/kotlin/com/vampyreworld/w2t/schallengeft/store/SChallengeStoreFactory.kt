@@ -4,6 +4,7 @@ import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
+import com.vampyreworld.w2t.domain.data.model.ChallengeStatus
 import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.usecase.AddChallengeUseCase
 import com.vampyreworld.w2t.domain.usecase.GetChallengeByIdUseCase
@@ -39,8 +40,35 @@ class SChallengeStoreFactory(
                 is SChallengeStore.Intent.OnChallengeClick -> loadChallenge(intent.challengeId)
                 is SChallengeStore.Intent.AddChallenge -> addChallenge(intent.challenge)
                 is SChallengeStore.Intent.UpdateStabilityCondition -> updateStabilityCondition(intent)
+                is SChallengeStore.Intent.OnStatusChange -> updateStatus(intent.status)
+                SChallengeStore.Intent.OnTakeAiHelp -> takeAiHelp()
+                SChallengeStore.Intent.ClearSelectedChallenge -> dispatch(Msg.Loaded(state().challenges, null))
                 else -> {}
             }
+        }
+
+        private fun updateStatus(statusStr: String) {
+            val challenge = state().selectedChallenge ?: return
+            val status = try {
+                ChallengeStatus.valueOf(statusStr.uppercase())
+            } catch (e: Exception) {
+                ChallengeStatus.ACTIVE
+            }
+            val updatedChallenge = challenge.copy(status = status)
+            scope.launch {
+                try {
+                    addChallengeUseCase(updatedChallenge)
+                    loadData()
+                } catch (e: Exception) {
+                    publish(SChallengeStore.Label.Error(e.message ?: "Failed to update status"))
+                }
+            }
+        }
+
+        private fun takeAiHelp() {
+            // Implementation for AI help would go here
+            // For now, maybe just a side effect or log
+            publish(SChallengeStore.Label.Error("AI Help is not implemented yet"))
         }
 
         private fun loadChallenge(id: Long) {

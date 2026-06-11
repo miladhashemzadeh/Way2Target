@@ -69,8 +69,7 @@ class MVITargetComponent(
     override val sideEffects: Flow<TargetContract.SideEffect> = store.labels.map { label ->
         when (label) {
             is TargetStore.Label.Error -> {
-                // TODO: Show error message
-                TargetContract.SideEffect.Back
+                TargetContract.SideEffect.ShowError(label.message)
             }
             TargetStore.Label.Saved -> {
                 TargetContract.SideEffect.Back

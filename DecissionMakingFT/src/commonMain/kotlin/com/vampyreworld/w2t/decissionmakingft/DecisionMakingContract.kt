@@ -10,6 +10,7 @@ interface DecisionMakingContract {
 
     sealed interface SideEffect {
         data object Back : SideEffect
+        data class ShowError(val message: String) : SideEffect
     }
 
     sealed interface Intent {

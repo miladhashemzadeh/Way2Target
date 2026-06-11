@@ -36,7 +36,7 @@ class DefaultSChallengeComponent(
                 when (label) {
                     SChallengeStore.Label.Back -> onBack()
                     is SChallengeStore.Label.Error -> {
-                        // Handle error (e.g. show toast via side effect)
+                        _sideEffects.emit(SChallengeContract.SideEffect.ShowError(label.message))
                     }
                 }
             }
@@ -48,11 +48,7 @@ class DefaultSChallengeComponent(
         when (intent) {
             SChallengeContract.Intent.OnBackClicked -> {
                 if (state.value.selectedChallenge != null) {
-                    store.accept(SChallengeStore.Intent.Refresh) // Go back to list by refreshing without challengeId
-                    // Wait, this logic depends on how challengeId was passed to the factory.
-                    // If challengeId is fixed in factory, we can't "un-select" it easily without recreating the component or store.
-                    // For now, let's just call onBack() if we want to leave the screen.
-                    onBack()
+                    store.accept(SChallengeStore.Intent.ClearSelectedChallenge)
                 } else {
                     onBack()
                 }
@@ -64,9 +60,11 @@ class DefaultSChallengeComponent(
                 store.accept(SChallengeStore.Intent.AddChallenge(intent.challenge))
             }
             is SChallengeContract.Intent.OnStatusChange -> {
-                // ...
+                store.accept(SChallengeStore.Intent.OnStatusChange(intent.status))
             }
-            SChallengeContract.Intent.OnTakeAiHelp -> {}
+            SChallengeContract.Intent.OnTakeAiHelp -> {
+                store.accept(SChallengeStore.Intent.OnTakeAiHelp)
+            }
             SChallengeContract.Intent.OnMakeDecision -> {
                 state.value.selectedChallenge?.id?.let { navigateToDecision(it) }
             }
