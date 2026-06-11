@@ -1,5 +1,7 @@
 package com.vampyreworld.w2t.schallengeft.ui.list
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,12 +10,15 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.vampyreworld.w2t.domain.data.model.Challenges
-import com.vampyreworld.w2t.domain.data.model.Cost
+import com.vampyreworld.w2t.domain.data.model.GoalStatus
+import com.vampyreworld.w2t.sharedui.catalog.*
+import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 import com.vampyreworld.w2t.schallengeft.SChallengeContract
 import com.vampyreworld.w2t.schallengeft.SChallengeComponent
-import com.vampyreworld.w2t.schallengeft.ui.components.ChallengeCard
 
 @Composable
 fun ChallengesListScreen(
@@ -21,104 +26,81 @@ fun ChallengesListScreen(
     component: SChallengeComponent,
     padding: PaddingValues
 ) {
-    var showAddDialog by remember { mutableStateOf(false) }
-    
-    Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+    val colors = LocalAppColorScheme.current
+    var selectedTab by remember { mutableIntStateOf(0) }
+    val tabs = listOf("Ongoing", "Finished", "Failed")
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        W2TTabNav(
+            tabs = tabs.map { tab ->
+                val count = when (tab) {
+                    "Ongoing" -> state.challenges.count { it.status == GoalStatus.ACTIVE }
+                    "Finished" -> state.challenges.count { it.status == GoalStatus.COMPLETED }
+                    "Failed" -> state.challenges.count { it.status == GoalStatus.CANCELLED }
+                    else -> 0
+                }
+                "$tab ($count)"
+            },
+            selectedTabIndex = selectedTab,
+            onTabSelected = { selectedTab = it },
+            modifier = Modifier.padding(16.dp)
+        )
+
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
-                Text("Active Challenges", style = MaterialTheme.typography.headlineSmall)
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-            
-            items(state.challenges) { challenge ->
-                ChallengeCard(
-                    challenge = challenge,
-                    onClick = { 
-                        component.onIntent(SChallengeContract.Intent.OnChallengeClick(challenge.id))
-                    }
-                )
+            val filteredChallenges = state.challenges.filter {
+                when (selectedTab) {
+                    0 -> it.status == GoalStatus.ACTIVE
+                    1 -> it.status == GoalStatus.COMPLETED
+                    2 -> it.status == GoalStatus.CANCELLED
+                    else -> true
+                }
             }
 
-            if (state.challenges.isEmpty()) {
+            items(filteredChallenges) { challenge ->
+                W2TChallengeCard(
+                    title = challenge.title,
+                    goalTitle = "Learn Programming", // Should come from state
+                    description = challenge.desc,
+                    status = when (challenge.status) {
+                        GoalStatus.ACTIVE -> "Ongoing"
+                        GoalStatus.COMPLETED -> "Finished"
+                        GoalStatus.CANCELLED -> "Failed"
+                        else -> "Ongoing"
+                    },
+                    modifier = Modifier.clickable {
+                        component.onIntent(SChallengeContract.Intent.OnChallengeClick(challenge.id))
+                    }
+                ) {
+                    // Show some solutions or AI strategy if expanded or in list
+                    if (challenge.status == GoalStatus.ACTIVE) {
+                        W2TStrategyCard(
+                            description = "Focus on one data structure at a time, implement basic operations, then move to complex algorithms.",
+                            onButtonClick = { }
+                        )
+                    }
+                }
+            }
+
+            if (filteredChallenges.isEmpty()) {
                 item {
-                    Text("No challenges found. Keep moving forward!", style = MaterialTheme.typography.bodyMedium)
+                    Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                        Text(
+                            text = "No challenges found in this category.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = colors.muted
+                        )
+                    }
                 }
             }
         }
-        
-        FloatingActionButton(
-            onClick = { showAddDialog = true },
-            modifier = Modifier
-                .padding(16.dp)
-                .align(androidx.compose.ui.Alignment.BottomEnd)
-        ) {
-            Icon(Icons.Default.Add, contentDescription = "Add Challenge")
-        }
     }
-
-    if (showAddDialog) {
-        AddChallengeDialog(
-            onDismiss = { showAddDialog = false },
-            onConfirm = { title, desc ->
-                val newChallenge = Challenges(
-                    id = 0,
-                    title = title,
-                    desc = desc,
-                    cost = Cost(10, 10, 0),
-                    priority = 50,
-                    isBarrier = false,
-                    parentGoalId = state.goalId,
-                    moodImpact = 0,
-                    stabilityConditions = emptyList()
-                )
-                component.onIntent(SChallengeContract.Intent.OnAddChallenge(newChallenge))
-                showAddDialog = false
-            }
-        )
-    }
-}
-
-@Composable
-fun AddChallengeDialog(
-    onDismiss: () -> Unit,
-    onConfirm: (String, String) -> Unit
-) {
-    var title by remember { mutableStateOf("") }
-    var desc by remember { mutableStateOf("") }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Add New Challenge") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("Title") }
-                )
-                OutlinedTextField(
-                    value = desc,
-                    onValueChange = { desc = it },
-                    label = { Text("Description") }
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = { onConfirm(title, desc) },
-                enabled = title.isNotBlank()
-            ) {
-                Text("Add")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    )
 }

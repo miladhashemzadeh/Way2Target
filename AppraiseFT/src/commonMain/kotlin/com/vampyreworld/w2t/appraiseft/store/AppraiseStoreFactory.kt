@@ -24,21 +24,39 @@ class AppraiseStoreFactory(
     private sealed interface Msg {
         data object Loading : Msg
         data class Result(val appraisal: String) : Msg
+        data class UpdateChallengeStatus(val status: String) : Msg
+        data class UpdateSelectedSolution(val solutionId: Long) : Msg
+        data class UpdateReflection(val reflection: String) : Msg
     }
 
     private inner class ExecutorImpl : CoroutineExecutor<AppraiseStore.Intent, Nothing, AppraiseContract.State, Msg, AppraiseStore.Label>() {
         override fun executeIntent(intent: AppraiseStore.Intent) {
             when (intent) {
-                AppraiseStore.Intent.Appraise -> performAppraisal()
+                AppraiseStore.Intent.Back -> publish(AppraiseStore.Label.Back)
+                AppraiseStore.Intent.Appraise -> performUpdate()
+                is AppraiseStore.Intent.ChangeChallengeStatus -> dispatch(Msg.UpdateChallengeStatus(intent.status))
+                is AppraiseStore.Intent.SelectSolution -> dispatch(Msg.UpdateSelectedSolution(intent.solutionId))
+                is AppraiseStore.Intent.ChangeReflection -> dispatch(Msg.UpdateReflection(intent.reflection))
+                AppraiseStore.Intent.UpdateChallenge -> performUpdate()
+                AppraiseStore.Intent.CompleteGoal -> performCompleteGoal()
+                AppraiseStore.Intent.ArchiveGoal -> performArchiveGoal()
             }
         }
 
-        private fun performAppraisal() {
+        private fun performUpdate() {
             scope.launch {
                 dispatch(Msg.Loading)
-                delay(1000) // Simulate AI thinking
-                dispatch(Msg.Result("AI Appraisal: This is a high-impact task with moderate risk."))
+                delay(1000)
+                dispatch(Msg.Result("Updated successfully"))
             }
+        }
+
+        private fun performCompleteGoal() {
+            // Implementation for completing goal
+        }
+
+        private fun performArchiveGoal() {
+            // Implementation for archiving goal
         }
     }
 
@@ -47,6 +65,9 @@ class AppraiseStoreFactory(
             when (msg) {
                 Msg.Loading -> copy(isLoading = true)
                 is Msg.Result -> copy(isLoading = false, appraisalResult = msg.appraisal)
+                is Msg.UpdateChallengeStatus -> copy(challengeStatus = msg.status)
+                is Msg.UpdateSelectedSolution -> copy(selectedSolutionId = msg.solutionId)
+                is Msg.UpdateReflection -> copy(reflection = msg.reflection)
             }
     }
 }

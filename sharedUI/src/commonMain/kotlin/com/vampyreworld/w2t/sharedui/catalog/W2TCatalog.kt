@@ -672,6 +672,63 @@ fun W2TRemovableItem(
     }
 }
 
+@Composable
+fun W2TStatusChip(
+    text: String,
+    backgroundColor: Color,
+    modifier: Modifier = Modifier,
+    contentColor: Color = Color.White
+) {
+    Surface(
+        color = backgroundColor,
+        shape = CircleShape,
+        modifier = modifier
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+            color = contentColor
+        )
+    }
+}
+
+@Composable
+fun W2TDetailRow(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
+) {
+    val colors = LocalAppColorScheme.current
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyMedium,
+                color = colors.muted,
+                textAlign = androidx.compose.ui.text.style.TextAlign.End,
+                modifier = Modifier.weight(1f).padding(start = 16.dp)
+            )
+        }
+        HorizontalDivider(color = colors.border.copy(alpha = 0.5f))
+    }
+}
+
 @Preview
 @Composable
 fun W2TCatalogPreview() {

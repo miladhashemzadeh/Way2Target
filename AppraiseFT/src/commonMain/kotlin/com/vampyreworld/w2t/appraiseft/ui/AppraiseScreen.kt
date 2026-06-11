@@ -19,11 +19,12 @@ fun AppraiseScreen(component: AppraiseComponent) {
     val state by component.state.subscribeAsState()
 
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("Appraisal") },
                 navigationIcon = {
-                    IconButton(onClick = { component.onIntent(AppraiseContract.Intent.Back) }) {
+                    IconButton(onClick = { component.onIntent(AppraiseContract.Intent.OnBackClicked) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -48,7 +49,7 @@ fun AppraiseScreen(component: AppraiseComponent) {
             } else if (state.appraisalResult.isNotEmpty()) {
                 Text(text = state.appraisalResult)
             } else {
-                Button(onClick = { component.onIntent(AppraiseContract.Intent.Appraise) }) {
+                Button(onClick = { component.onIntent(AppraiseContract.Intent.OnAppraiseClicked) }) {
                     Text("Start AI Appraisal")
                 }
             }

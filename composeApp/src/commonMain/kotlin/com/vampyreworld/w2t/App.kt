@@ -1,6 +1,7 @@
 package com.vampyreworld.w2t
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -33,7 +34,9 @@ fun App(root: RootComponent) {
     KoinContext {
         W2TTheme(isDarkMode = isDarkMode) {
             Children(
-                modifier = Modifier.background(MaterialTheme.colorScheme.background),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background),
                 stack = root.childStack,
                 animation = stackAnimation(fade()),
             ) {

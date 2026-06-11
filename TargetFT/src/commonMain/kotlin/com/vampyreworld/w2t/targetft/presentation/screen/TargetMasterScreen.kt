@@ -24,6 +24,7 @@ fun TargetMasterScreen(component: TargetMasterComponent) {
     val colors = LocalAppColorScheme.current
 
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { component.onIntent(TargetMasterIntent.OnAddGoalClick) },

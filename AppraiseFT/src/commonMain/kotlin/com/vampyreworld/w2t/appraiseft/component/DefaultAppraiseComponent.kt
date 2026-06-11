@@ -40,8 +40,14 @@ class DefaultAppraiseComponent(
 
     override fun onIntent(intent: AppraiseContract.Intent) {
         when (intent) {
-            AppraiseContract.Intent.Appraise -> store.accept(AppraiseStore.Intent.Appraise)
-            AppraiseContract.Intent.Back -> onBack()
+            AppraiseContract.Intent.OnBackClicked -> onBack()
+            AppraiseContract.Intent.OnAppraiseClicked -> store.accept(AppraiseStore.Intent.Appraise)
+            is AppraiseContract.Intent.OnChallengeStatusChanged -> store.accept(AppraiseStore.Intent.ChangeChallengeStatus(intent.status))
+            is AppraiseContract.Intent.OnSolutionSelected -> store.accept(AppraiseStore.Intent.SelectSolution(intent.solutionId))
+            is AppraiseContract.Intent.OnReflectionChanged -> store.accept(AppraiseStore.Intent.ChangeReflection(intent.reflection))
+            AppraiseContract.Intent.OnUpdateChallengeClicked -> store.accept(AppraiseStore.Intent.UpdateChallenge)
+            AppraiseContract.Intent.OnCompleteGoalClicked -> store.accept(AppraiseStore.Intent.CompleteGoal)
+            AppraiseContract.Intent.OnArchiveGoalClicked -> store.accept(AppraiseStore.Intent.ArchiveGoal)
         }
     }
 }

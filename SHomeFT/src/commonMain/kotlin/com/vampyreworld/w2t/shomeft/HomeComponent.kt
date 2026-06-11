@@ -70,6 +70,9 @@ class DefaultHomeComponent(
             HomeContract.Intent.CreateMasterGoal -> {
                 navigateToTarget(null)
             }
+            HomeContract.Intent.OnCheckMoodClick -> {
+                navigateToMoodAdd()
+            }
             is HomeContract.Intent.OnMasterGoalClick -> {
                 navigateToTarget(intent.goalId)
             }
@@ -80,6 +83,12 @@ class DefaultHomeComponent(
             }
             is HomeContract.Intent.CreateChallengeForMasterGoal -> {
                 navigateToSChallenge(intent.goalId)
+            }
+            is HomeContract.Intent.OnActionCheck -> {
+                // Handle Action Check
+            }
+            is HomeContract.Intent.OnViewStrategyClick -> {
+                // Handle View Strategy
             }
         }
     }

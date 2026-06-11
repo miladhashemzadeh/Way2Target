@@ -61,14 +61,14 @@ fun TargetDetailScreen(
                         relatedGoals.find { it.id == milestone.masterGoalId }
                     } else null
                     
-                    DetailRow("Master Goal", masterGoal?.title ?: "Not set", colors) {
+                    W2TDetailRow("Master Goal", masterGoal?.title ?: "Not set") {
                         masterGoal?.id?.let { component.onIntent(TargetContract.Intent.OnGoalClick(it)) }
                     }
-                    DetailRow("Milestone", milestone?.title ?: "Not set", colors) {
+                    W2TDetailRow("Milestone", milestone?.title ?: "Not set") {
                         milestone?.id?.let { component.onIntent(TargetContract.Intent.OnGoalClick(it)) }
                     }
-                    DetailRow("Due Date", "Tomorrow, 5:00 PM", colors)
-                    DetailRow("Reminders", if (goal.notificationEnabled) "Enabled" else "Disabled", colors)
+                    W2TDetailRow("Due Date", "Tomorrow, 5:00 PM")
+                    W2TDetailRow("Reminders", if (goal.notificationEnabled) "Enabled" else "Disabled")
                 }
             }
         } else {
@@ -79,9 +79,7 @@ fun TargetDetailScreen(
                         if (goal.tier == GoalTier.MILESTONE) {
                             val masterGoal = relatedGoals.find { it.tier == GoalTier.MASTER }
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                Surface(color = colors.accent, shape = CircleShape) {
-                                    Text("Ongoing", modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp), style = MaterialTheme.typography.labelMedium, color = Color.White, fontWeight = FontWeight.Bold)
-                                }
+                                W2TStatusChip(text = "Ongoing", backgroundColor = colors.accent)
                                 if (masterGoal != null) {
                                     Text(
                                         text = "Goal: ${masterGoal.title} ›", 
@@ -151,26 +149,6 @@ fun TargetDetailScreen(
                                 onClick = { component.onIntent(TargetContract.Intent.OnGoalClick(action.id)) }
                             )
                         }
-                    }
-                }
-            }
-        }
-
-        if (component.state.value.challenges.isNotEmpty()) {
-            item {
-                W2TCard {
-                    W2TSectionTitle("Active Challenges")
-                    component.state.value.challenges.forEach { challenge ->
-                        W2TChallengeCard(
-                            title = challenge.title,
-                            goalTitle = goal.title,
-                            description = challenge.desc,
-                            status = if (challenge.status == GoalStatus.COMPLETED) "Finished" else "Ongoing",
-                            modifier = Modifier.clickable { 
-                                component.onIntent(TargetContract.Intent.OnChallengeClick(challenge.id))
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
                     }
                 }
             }
@@ -271,25 +249,5 @@ private fun ActionDetailHeader(goal: Goal, relatedGoals: List<Goal>, colors: com
             color = MaterialTheme.colorScheme.onBackground,
             lineHeight = 24.sp
         )
-    }
-}
-
-@Composable
-private fun DetailRow(
-    label: String, 
-    value: String, 
-    colors: com.vampyreworld.w2t.sharedui.theme.color.AppColorScheme,
-    onClick: (() -> Unit)? = null
-) {
-    Column(modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = label, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
-            Text(text = value, style = MaterialTheme.typography.bodyMedium, color = colors.muted)
-        }
-        HorizontalDivider(color = colors.border.copy(alpha = 0.5f))
     }
 }
