@@ -116,7 +116,7 @@ fun W2TMoodWidget(
             Button(
                 onClick = onButtonClick,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
+                    containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = colors.accent
                 ),
                 shape = CircleShape,
@@ -165,7 +165,7 @@ fun W2TAiInsightsCard(
             Button(
                 onClick = onButtonClick,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
+                    containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = colors.moodFocusedStart
                 ),
                 shape = CircleShape,
@@ -356,7 +356,7 @@ fun W2TTreeNode(
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
                     .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -364,6 +364,7 @@ fun W2TTreeNode(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f)
                 )
                 if (type == "action" && onCheckedChange != null) {
@@ -556,7 +557,7 @@ fun W2TStrategyCard(
             )
             Button(
                 onClick = onButtonClick,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = colors.moodFocusedStart),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface, contentColor = colors.moodFocusedStart),
                 shape = CircleShape,
                 modifier = Modifier.padding(top = 8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
@@ -621,7 +622,7 @@ fun W2TSelectableItem(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(if (selected) colors.accent.copy(alpha = 0.05f) else colors.bgLight.copy(alpha = 0.5f))
+            .background(if (selected) colors.accent.copy(alpha = 0.12f) else colors.bgLight.copy(alpha = 0.8f))
             .border(1.dp, if (selected) colors.accent else colors.border, RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
             .padding(16.dp),

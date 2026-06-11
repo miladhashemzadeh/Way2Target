@@ -29,9 +29,9 @@ sealed class Screens {
     data class TargetDetail(val goalId: Long) : Screens()
 
     @Serializable
-    data class ListOfChallenges(val goalId: Long) : Screens()
+    data class ListOfChallenges(val goalId: Long?) : Screens()
     @Serializable
-    data class AddChallenge(val goalId: Long) : Screens()
+    data class AddChallenge(val goalId: Long?) : Screens()
     @Serializable
     data class DetailOfChallenge(val goalId: Long, val challengeId: Long) : Screens()
 
@@ -41,9 +41,9 @@ sealed class Screens {
     data class AddSolution(val goalId: Long?, val challengeId: Long?) : Screens()
 
     @Serializable
-    data class DecisionForTarget(val goalId: Long) : Screens()
+    data class DecisionForTarget(val goalId: Long?) : Screens()
     @Serializable
-    data class DecisionForChallenge(val goalId: Long, val challengeId: Long) : Screens()
+    data class DecisionForChallenge(val goalId: Long?, val challengeId: Long) : Screens()
 
     @Serializable
     data class AppraiseTarget(val goalId: Long) : Screens()

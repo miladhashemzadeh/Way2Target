@@ -10,6 +10,7 @@ import com.vampyreworld.w2t.moodaddft.MoodAddComponent
 import com.vampyreworld.w2t.onboarding.OnboardingComponent
 import com.vampyreworld.w2t.prefrencesft.PrefrencesComponent
 import com.vampyreworld.w2t.schallengeft.SChallengeComponent
+import com.vampyreworld.w2t.schallengeft.ui.create.ChallengeCreateComponent
 import com.vampyreworld.w2t.solutionft.component.SolutionComponent
 import com.vampyreworld.w2t.splash.SplashComponent
 import com.vampyreworld.w2t.targetft.component.TargetComponent
@@ -27,6 +28,7 @@ interface RootComponent {
         data class TargetMaster(val component: TargetMasterComponent) : Child()
         data class MoodAdd(val component: MoodAddComponent) : Child()
         data class SChallenge(val component: SChallengeComponent) : Child()
+        data class ChallengeCreate(val component: ChallengeCreateComponent) : Child()
         data class DecisionMaking(val component: DecisionMakingComponent) : Child()
         data class Solution(val component: SolutionComponent) : Child()
         data class Preferences(val component: PrefrencesComponent) : Child()

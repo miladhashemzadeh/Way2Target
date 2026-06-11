@@ -306,7 +306,7 @@ fun W2TTheme(
     CompositionLocalProvider(
         LocalAppColorScheme provides extraColors,
         LocalAppDimens provides DefaultAppDimens,
-        LocalLayoutDirection provides LayoutDirection.Rtl
+        LocalLayoutDirection provides LayoutDirection.Ltr
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

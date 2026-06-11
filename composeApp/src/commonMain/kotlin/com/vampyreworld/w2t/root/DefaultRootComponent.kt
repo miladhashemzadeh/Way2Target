@@ -18,6 +18,7 @@ import com.vampyreworld.w2t.moodaddft.DefaultMoodAddComponent
 import com.vampyreworld.w2t.onboarding.DefaultOnboardingComponent
 import com.vampyreworld.w2t.prefrencesft.DefaultPrefrencesComponent
 import com.vampyreworld.w2t.schallengeft.DefaultSChallengeComponent
+import com.vampyreworld.w2t.schallengeft.ui.create.DefaultChallengeCreateComponent
 import com.vampyreworld.w2t.solutionft.component.DefaultSolutionComponent
 import com.vampyreworld.w2t.splash.DefaultSplashComponent
 import com.vampyreworld.w2t.targetft.component.MVITargetComponent
@@ -128,7 +129,7 @@ class DefaultRootComponent(
                         }
                     },
                     navigateToMoodAdd = { navigation.push(Screens.AddMood) },
-                    navigateToSChallenge = { id -> navigation.push(Screens.AddChallenge(id)) },
+                    navigateToSChallenge = { id -> navigation.push(Screens.ListOfChallenges(id)) },
                     navigateToDecisionMaking = { id -> navigation.push(Screens.DecisionForTarget(id)) },
                     navigateToSolution = { navigation.push(Screens.AddSolution(null, null)) },
                     navigateToPreferences = { navigation.push(Screens.Preferences) },
@@ -240,17 +241,13 @@ class DefaultRootComponent(
                 )
             )
 
-            is Screens.AddChallenge -> RootComponent.Child.SChallenge(
-                DefaultSChallengeComponent(
+            is Screens.AddChallenge -> RootComponent.Child.ChallengeCreate(
+                DefaultChallengeCreateComponent(
                     componentContext = componentContext,
-                    storeFactory = get { parametersOf(config.goalId, null) },
-                    onBack = { navigation.pop() },
-                    navigateToAddSolution = { challengeId -> 
-                        navigation.push(Screens.AddSolution(config.goalId, challengeId)) 
-                    },
-                    navigateToDecision = { challengeId ->
-                        navigation.push(Screens.DecisionForChallenge(config.goalId, challengeId))
-                    }
+                    goalId = config.goalId,
+                    getGoalsUseCase = get(),
+                    addChallengeUseCase = get(),
+                    onBack = { navigation.pop() }
                 )
             )
 

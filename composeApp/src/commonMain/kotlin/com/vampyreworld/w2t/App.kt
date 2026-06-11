@@ -20,6 +20,7 @@ import com.vampyreworld.w2t.onboarding.ui.OnboardingScreen
 import com.vampyreworld.w2t.prefrencesft.ui.PrefrencesScreen
 import com.vampyreworld.w2t.root.RootComponent
 import com.vampyreworld.w2t.schallengeft.ui.SChallengeScreen
+import com.vampyreworld.w2t.schallengeft.ui.create.ChallengeCreateScreen
 import com.vampyreworld.w2t.sharedui.theme.W2TTheme
 import com.vampyreworld.w2t.solutionft.ui.SolutionScreen
 import com.vampyreworld.w2t.splash.ui.SplashScreen
@@ -48,6 +49,7 @@ fun App(root: RootComponent) {
                     is RootComponent.Child.TargetMaster -> TargetMasterScreen(child.component)
                     is RootComponent.Child.MoodAdd -> MoodAddScreen(child.component)
                     is RootComponent.Child.SChallenge -> SChallengeScreen(child.component)
+                    is RootComponent.Child.ChallengeCreate -> ChallengeCreateScreen(child.component)
                     is RootComponent.Child.DecisionMaking -> DecisionMakingScreen(child.component)
                     is RootComponent.Child.Solution -> SolutionScreen(child.component)
                     is RootComponent.Child.Preferences -> PrefrencesScreen(child.component)

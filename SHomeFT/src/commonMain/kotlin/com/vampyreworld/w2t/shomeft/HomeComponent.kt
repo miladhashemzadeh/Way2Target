@@ -34,7 +34,7 @@ class DefaultHomeComponent(
     private val deleteGoalUseCase: DeleteGoalUseCase,
     private val navigateToTarget: (Long?) -> Unit,
     private val navigateToMoodAdd: () -> Unit,
-    private val navigateToSChallenge: (Long) -> Unit,
+    private val navigateToSChallenge: (Long?) -> Unit,
     private val navigateToDecisionMaking: (Long) -> Unit,
     private val navigateToSolution: () -> Unit,
     private val navigateToPreferences: () -> Unit,
@@ -95,7 +95,7 @@ class DefaultHomeComponent(
 
     override fun onNavigateToTarget() = navigateToTarget(null)
     override fun onNavigateToMoodAdd() = navigateToMoodAdd()
-    override fun onNavigateToSChallenge() = navigateToSChallenge(0L)
+    override fun onNavigateToSChallenge() = navigateToSChallenge(null)
     override fun onNavigateToDecisionMaking() = navigateToDecisionMaking(0L)
     override fun onNavigateToSolution() = navigateToSolution()
     override fun onNavigateToPreferences() = navigateToPreferences()
