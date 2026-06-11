@@ -16,6 +16,7 @@ class TargetStoreFactory(
     private val getGoalsUseCase: GetGoalsUseCase,
     private val saveGoalUseCase: SaveGoalUseCase,
     private val deleteGoalUseCase: DeleteGoalUseCase,
+    private val getChallengesUseCase: com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase,
     private val goalId: Long? = null,
     private val initialTier: String? = null,
     private val parentId: Long? = null
@@ -33,7 +34,11 @@ class TargetStoreFactory(
 
     private sealed interface Msg {
         data object Loading : Msg
-        data class Loaded(val selectedGoal: Goal?, val relatedGoals: List<Goal>) : Msg
+        data class Loaded(
+            val selectedGoal: Goal?, 
+            val relatedGoals: List<Goal>,
+            val challenges: List<com.vampyreworld.w2t.domain.data.model.Challenges>
+        ) : Msg
         data class SetScreen(val screen: TargetContract.Screen) : Msg
     }
 
@@ -99,9 +104,15 @@ class TargetStoreFactory(
                 dispatch(Msg.Loading)
                 getGoalsUseCase().collect { goals ->
                     val selectedGoal = goals.find { it.id == goalId }
-                    // Load all goals if we are in detail view, so we can show the tree
                     val relatedGoals = if (goalId != null) goals else emptyList()
-                    dispatch(Msg.Loaded(selectedGoal, relatedGoals))
+                    
+                    if (goalId != null) {
+                        getChallengesUseCase(goalId).collect { challenges ->
+                            dispatch(Msg.Loaded(selectedGoal, relatedGoals, challenges))
+                        }
+                    } else {
+                        dispatch(Msg.Loaded(selectedGoal, relatedGoals, emptyList()))
+                    }
                 }
             }
         }
@@ -177,7 +188,8 @@ class TargetStoreFactory(
                 is Msg.Loaded -> copy(
                     isLoading = false,
                     selectedGoal = msg.selectedGoal,
-                    relatedGoals = msg.relatedGoals
+                    relatedGoals = msg.relatedGoals,
+                    challenges = msg.challenges
                 )
                 is Msg.SetScreen -> copy(currentScreen = msg.screen)
             }

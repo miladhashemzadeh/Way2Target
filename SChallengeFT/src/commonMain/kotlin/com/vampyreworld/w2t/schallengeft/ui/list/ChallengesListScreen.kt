@@ -71,7 +71,7 @@ fun ChallengesListScreen(
                     cost = Cost(10, 10, 0),
                     priority = 50,
                     isBarrier = false,
-                    parentGoalId = state.goalId ?: 0L,
+                    parentGoalId = state.goalId,
                     moodImpact = 0,
                     stabilityConditions = emptyList()
                 )

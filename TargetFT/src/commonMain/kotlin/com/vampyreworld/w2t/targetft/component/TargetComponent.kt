@@ -26,6 +26,7 @@ class DefaultTargetComponent(
     private val initialTier: String? = null,
     private val parentId: Long? = null,
     private val getGoalsUseCase: GetGoalsUseCase,
+    private val getChallengesUseCase: com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase,
     private val saveGoalUseCase: SaveGoalUseCase,
     private val onBack: () -> Unit,
     private val navigateToDecision: (Long) -> Unit = {},
@@ -55,11 +56,15 @@ class DefaultTargetComponent(
                 getGoalsUseCase().collect { goals ->
                     val selectedGoal = goals.find { it.id == goalId }
                     val relatedGoals = goals.filter { it.upperGoalId == goalId }
-                    _state.value = _state.value.copy(
-                        selectedGoal = selectedGoal,
-                        relatedGoals = relatedGoals,
-                        isLoading = false
-                    )
+                    
+                    getChallengesUseCase(goalId).collect { challenges ->
+                        _state.value = _state.value.copy(
+                            selectedGoal = selectedGoal,
+                            relatedGoals = relatedGoals,
+                            challenges = challenges,
+                            isLoading = false
+                        )
+                    }
                 }
             } else {
                 _state.value = _state.value.copy(isLoading = false)

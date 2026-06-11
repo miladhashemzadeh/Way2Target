@@ -7,6 +7,7 @@ interface TargetContract {
         val isLoading: Boolean = false,
         val selectedGoal: Goal? = null,
         val relatedGoals: List<Goal> = emptyList(),
+        val challenges: List<com.vampyreworld.w2t.domain.data.model.Challenges> = emptyList(),
         val initialTier: String? = null,
         val parentId: Long? = null,
         val currentScreen: Screen = Screen.DETAIL

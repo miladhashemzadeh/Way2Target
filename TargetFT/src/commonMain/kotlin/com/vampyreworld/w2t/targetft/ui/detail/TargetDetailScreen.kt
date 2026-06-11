@@ -1,5 +1,6 @@
 package com.vampyreworld.w2t.targetft.ui.detail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -19,6 +20,8 @@ import com.vampyreworld.w2t.domain.data.model.ActionGoal
 import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.domain.data.model.GoalStatus
 import com.vampyreworld.w2t.domain.data.model.GoalTier
+import com.vampyreworld.w2t.domain.data.model.MilestoneGoal
+import com.vampyreworld.w2t.domain.data.model.MasterGoal
 import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 import com.vampyreworld.w2t.targetft.TargetContract
@@ -48,16 +51,22 @@ fun TargetDetailScreen(
 
         if (goal is ActionGoal) {
             item {
-                ActionDetailHeader(goal, relatedGoals, colors)
+                ActionDetailHeader(goal, relatedGoals, colors, component)
             }
             item {
                 W2TCard {
                     W2TSectionTitle("Details")
-                    val masterGoal = relatedGoals.find { it.tier == GoalTier.MASTER }
-                    val milestone = relatedGoals.find { it.tier == GoalTier.MILESTONE }
+                    val milestone = relatedGoals.find { it.id == goal.milestoneGoalId }
+                    val masterGoal = if (milestone is MilestoneGoal) {
+                        relatedGoals.find { it.id == milestone.masterGoalId }
+                    } else null
                     
-                    DetailRow("Master Goal", masterGoal?.title ?: "Not set", colors)
-                    DetailRow("Milestone", milestone?.title ?: "Not set", colors)
+                    DetailRow("Master Goal", masterGoal?.title ?: "Not set", colors) {
+                        masterGoal?.id?.let { component.onIntent(TargetContract.Intent.OnGoalClick(it)) }
+                    }
+                    DetailRow("Milestone", milestone?.title ?: "Not set", colors) {
+                        milestone?.id?.let { component.onIntent(TargetContract.Intent.OnGoalClick(it)) }
+                    }
                     DetailRow("Due Date", "Tomorrow, 5:00 PM", colors)
                     DetailRow("Reminders", if (goal.notificationEnabled) "Enabled" else "Disabled", colors)
                 }
@@ -74,7 +83,12 @@ fun TargetDetailScreen(
                                     Text("Ongoing", modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp), style = MaterialTheme.typography.labelMedium, color = Color.White, fontWeight = FontWeight.Bold)
                                 }
                                 if (masterGoal != null) {
-                                    Text("Goal: ${masterGoal.title} ›", style = MaterialTheme.typography.bodySmall, color = colors.muted)
+                                    Text(
+                                        text = "Goal: ${masterGoal.title} ›", 
+                                        style = MaterialTheme.typography.bodySmall, 
+                                        color = colors.muted,
+                                        modifier = Modifier.clickable { component.onIntent(TargetContract.Intent.OnGoalClick(masterGoal.id)) }
+                                    )
                                 }
                             }
                             Spacer(modifier = Modifier.height(16.dp))
@@ -142,6 +156,46 @@ fun TargetDetailScreen(
             }
         }
 
+        if (component.state.value.challenges.isNotEmpty()) {
+            item {
+                W2TCard {
+                    W2TSectionTitle("Active Challenges")
+                    component.state.value.challenges.forEach { challenge ->
+                        W2TChallengeCard(
+                            title = challenge.title,
+                            goalTitle = goal.title,
+                            description = challenge.desc,
+                            status = if (challenge.status == GoalStatus.COMPLETED) "Finished" else "Ongoing",
+                            modifier = Modifier.clickable { 
+                                component.onIntent(TargetContract.Intent.OnChallengeClick(challenge.id))
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
+                }
+            }
+        }
+
+        if (component.state.value.challenges.isNotEmpty()) {
+            item {
+                W2TCard {
+                    W2TSectionTitle("Active Challenges")
+                    component.state.value.challenges.forEach { challenge ->
+                        W2TChallengeCard(
+                            title = challenge.title,
+                            goalTitle = goal.title,
+                            description = challenge.desc,
+                            status = if (challenge.status == GoalStatus.COMPLETED) "Finished" else "Ongoing",
+                            modifier = Modifier.clickable { 
+                                component.onIntent(TargetContract.Intent.OnChallengeClick(challenge.id))
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
+                }
+            }
+        }
+
         item {
             W2TAiInsightsCard(
                 title = "AI Insights",
@@ -185,7 +239,7 @@ fun TargetDetailScreen(
 }
 
 @Composable
-private fun ActionDetailHeader(goal: Goal, relatedGoals: List<Goal>, colors: com.vampyreworld.w2t.sharedui.theme.color.AppColorScheme) {
+private fun ActionDetailHeader(goal: Goal, relatedGoals: List<Goal>, colors: com.vampyreworld.w2t.sharedui.theme.color.AppColorScheme, component: TargetComponent) {
     Column {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Surface(
@@ -205,7 +259,8 @@ private fun ActionDetailHeader(goal: Goal, relatedGoals: List<Goal>, colors: com
                 Text(
                     text = "Milestone: ${milestone.title} ›",
                     style = MaterialTheme.typography.bodySmall,
-                    color = colors.muted
+                    color = colors.muted,
+                    modifier = Modifier.clickable { component.onIntent(TargetContract.Intent.OnGoalClick(milestone.id)) }
                 )
             }
         }
@@ -220,8 +275,13 @@ private fun ActionDetailHeader(goal: Goal, relatedGoals: List<Goal>, colors: com
 }
 
 @Composable
-private fun DetailRow(label: String, value: String, colors: com.vampyreworld.w2t.sharedui.theme.color.AppColorScheme) {
-    Column {
+private fun DetailRow(
+    label: String, 
+    value: String, 
+    colors: com.vampyreworld.w2t.sharedui.theme.color.AppColorScheme,
+    onClick: (() -> Unit)? = null
+) {
+    Column(modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,

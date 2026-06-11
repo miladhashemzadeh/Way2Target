@@ -29,6 +29,7 @@ class MVITargetComponent(
     getGoalsUseCase: GetGoalsUseCase,
     saveGoalUseCase: SaveGoalUseCase,
     deleteGoalUseCase: DeleteGoalUseCase,
+    getChallengesUseCase: com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase,
     private val onBack: () -> Unit,
     private val navigateToDecision: (Long) -> Unit = {},
     private val navigateToMood: () -> Unit = {},
@@ -45,6 +46,7 @@ class MVITargetComponent(
             getGoalsUseCase,
             saveGoalUseCase,
             deleteGoalUseCase,
+            getChallengesUseCase,
             goalId = goalId,
             initialTier = initialTier,
             parentId = parentId
