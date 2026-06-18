@@ -159,14 +159,14 @@ fun HomeScreen(component: HomeComponent) {
                     Spacer(modifier = Modifier.height(24.dp))
                     Button(
                         onClick = {
-                            if (deleteGoalName == "Goal #${showDeleteSheet?.id}") {
+                            if (deleteGoalName == "Goal #${showDeleteSheet?.title}") {
                                 component.onIntent(HomeContract.Intent.DeleteMasterGoal(showDeleteSheet!!.id))
                                 showDeleteSheet = null
                                 deleteGoalName = ""
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                        enabled = deleteGoalName == "Goal #${showDeleteSheet?.id}",
+                        enabled = deleteGoalName == "Goal #${showDeleteSheet?.title}",
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("Delete Permanently")
