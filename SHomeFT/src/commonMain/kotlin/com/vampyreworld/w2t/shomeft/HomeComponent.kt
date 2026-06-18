@@ -3,11 +3,13 @@ package com.vampyreworld.w2t.shomeft
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.vampyreworld.w2t.core.utils.componentScope
 import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.domain.data.model.MasterGoal
 import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -40,7 +42,8 @@ class DefaultHomeComponent(
     private val navigateToDecisionMaking: (Long) -> Unit,
     private val navigateToSolution: () -> Unit,
     private val navigateToPreferences: () -> Unit,
-    private val navigateToAboutUs: () -> Unit
+    private val navigateToAboutUs: () -> Unit,
+    private val onExit: () -> Unit
 ) : HomeComponent, ComponentContext by componentContext {
 
     private val scope = componentScope()
@@ -50,8 +53,22 @@ class DefaultHomeComponent(
     private val _sideEffects = MutableSharedFlow<HomeContract.SideEffect>()
     override val sideEffects = _sideEffects.asSharedFlow()
 
+    private var isBackDouble = false
+
     init {
         loadGoals()
+        backHandler.register(BackCallback {
+            if (isBackDouble) {
+                onExit()
+            } else {
+                isBackDouble = true
+                scope.launch {
+                    _sideEffects.emit(HomeContract.SideEffect.ShowToast("D-Back for Exit"))
+                    delay(2000)
+                    isBackDouble = false
+                }
+            }
+        })
     }
 
     private fun loadGoals() {

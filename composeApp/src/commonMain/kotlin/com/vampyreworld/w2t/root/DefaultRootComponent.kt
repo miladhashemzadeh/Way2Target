@@ -44,7 +44,8 @@ import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 
 class DefaultRootComponent(
-    componentContext: ComponentContext
+    componentContext: ComponentContext,
+    private val onExit: () -> Unit = {}
 ) : RootComponent, KoinComponent, ComponentContext by componentContext {
 
     private val getThemeUseCase: GetThemeUseCase = get()
@@ -140,7 +141,8 @@ class DefaultRootComponent(
                     navigateToDecisionMaking = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
                     navigateToSolution = { navigation.bringToFront(Screens.AddSolution(null, null)) },
                     navigateToPreferences = { navigation.bringToFront(Screens.Preferences) },
-                    navigateToAboutUs = { navigation.bringToFront(Screens.AboutUs) }
+                    navigateToAboutUs = { navigation.bringToFront(Screens.AboutUs) },
+                    onExit = onExit
                 )
             )
 
@@ -207,7 +209,7 @@ class DefaultRootComponent(
                             onBack = { navigation.pop() },
                             navigateToDecision = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
                             navigateToMood = { navigation.bringToFront(Screens.AddMood) },
-                            navigateToGoal = { id, tier -> navigation.bringToFront(Screens.TargetDetail(id, tier)) },
+                            navigateToGoal = { id, tier -> navigation.bringToFront(Screens.TargetDetail(id, tier, config.parentId)) },
                             navigateToCreateAction = { parentId ->
                                 navigation.bringToFront(Screens.AddGoal(parentId, "ACTION"))
                             },
@@ -232,7 +234,7 @@ class DefaultRootComponent(
                             onBack = { navigation.pop() },
                             navigateToDecision = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
                             navigateToMood = { navigation.bringToFront(Screens.AddMood) },
-                            navigateToGoal = { id, tier -> navigation.bringToFront(Screens.TargetDetail(id, tier)) },
+                            navigateToGoal = { id, tier -> navigation.bringToFront(Screens.TargetDetail(id, tier, config.parentId)) },
                             navigateToChallenge = { goalId ->
                                 navigation.bringToFront(Screens.AddChallenge(goalId))
                             },

@@ -39,87 +39,118 @@ class GoalRepositoryImpl(
     }
 
     override suspend fun saveGoal(goal: Goal) {
-        when (goal) {
-            is MasterGoal -> {
-                if (goal.id == 0L) {
-                    queries.insertMasterGoal(
-                        title = goal.title,
-                        description = goal.description,
-                        priority = goal.priority,
-                        status = goal.status,
-                        isLifeGoal = goal.isLifeGoal,
-                        milestoneIds = goal.milestoneIds,
-                        walkedMilestoneId = goal.walkedMilestoneId
-                    )
-                } else {
-                    queries.updateMasterGoal(
-                        id = goal.id,
-                        title = goal.title,
-                        description = goal.description,
-                        priority = goal.priority,
-                        status = goal.status,
-                        isLifeGoal = goal.isLifeGoal,
-                        milestoneIds = goal.milestoneIds,
-                        walkedMilestoneId = goal.walkedMilestoneId
-                    )
+        database.transaction {
+            when (goal) {
+                is MasterGoal -> {
+                    if (goal.id == 0L) {
+                        queries.insertMasterGoal(
+                            title = goal.title,
+                            description = goal.description,
+                            priority = goal.priority,
+                            status = goal.status,
+                            isLifeGoal = goal.isLifeGoal,
+                            milestoneIds = goal.milestoneIds,
+                            walkedMilestoneId = goal.walkedMilestoneId
+                        )
+                    } else {
+                        queries.updateMasterGoal(
+                            id = goal.id,
+                            title = goal.title,
+                            description = goal.description,
+                            priority = goal.priority,
+                            status = goal.status,
+                            isLifeGoal = goal.isLifeGoal,
+                            milestoneIds = goal.milestoneIds,
+                            walkedMilestoneId = goal.walkedMilestoneId
+                        )
+                    }
                 }
-            }
-            is MilestoneGoal -> {
-                if (goal.id == 0L) {
-                    queries.insertMilestoneGoal(
-                        title = goal.title,
-                        description = goal.description,
-                        priority = goal.priority,
-                        status = goal.status,
-                        masterGoalId = goal.masterGoalId,
-                        actionIds = goal.actionIds,
-                        walkedActionId = goal.walkedActionId,
-                        isSkill = goal.isSkill,
-                        wayIds = goal.wayIds,
-                        walkedWayId = goal.walkedWayId
-                    )
-                } else {
-                    queries.updateMilestoneGoal(
-                        id = goal.id,
-                        title = goal.title,
-                        description = goal.description,
-                        priority = goal.priority,
-                        status = goal.status,
-                        masterGoalId = goal.masterGoalId,
-                        actionIds = goal.actionIds,
-                        walkedActionId = goal.walkedActionId,
-                        isSkill = goal.isSkill,
-                        wayIds = goal.wayIds,
-                        walkedWayId = goal.walkedWayId
-                    )
+                is MilestoneGoal -> {
+                    if (goal.id == 0L) {
+                        queries.insertMilestoneGoal(
+                            title = goal.title,
+                            description = goal.description,
+                            priority = goal.priority,
+                            status = goal.status,
+                            masterGoalId = goal.masterGoalId,
+                            actionIds = goal.actionIds,
+                            walkedActionId = goal.walkedActionId,
+                            isSkill = goal.isSkill,
+                            wayIds = goal.wayIds,
+                            walkedWayId = goal.walkedWayId
+                        )
+                        val newId = queries.lastInsertId().executeAsOne()
+                        queries.selectMasterGoalById(goal.masterGoalId).executeAsOneOrNull()?.let { master ->
+                            queries.updateMasterGoal(
+                                id = master.id,
+                                title = master.title,
+                                description = master.description,
+                                priority = master.priority,
+                                status = master.status,
+                                isLifeGoal = master.isLifeGoal,
+                                milestoneIds = (master.milestoneIds + newId).distinct(),
+                                walkedMilestoneId = master.walkedMilestoneId
+                            )
+                        }
+                    } else {
+                        queries.updateMilestoneGoal(
+                            id = goal.id,
+                            title = goal.title,
+                            description = goal.description,
+                            priority = goal.priority,
+                            status = goal.status,
+                            masterGoalId = goal.masterGoalId,
+                            actionIds = goal.actionIds,
+                            walkedActionId = goal.walkedActionId,
+                            isSkill = goal.isSkill,
+                            wayIds = goal.wayIds,
+                            walkedWayId = goal.walkedWayId
+                        )
+                    }
                 }
-            }
-            is ActionGoal -> {
-                if (goal.id == 0L) {
-                    queries.insertActionGoal(
-                        title = goal.title,
-                        description = goal.description,
-                        priority = goal.priority,
-                        status = goal.status,
-                        milestoneGoalId = goal.milestoneGoalId,
-                        schedule = goal.schedule,
-                        cost = goal.cost,
-                        notificationEnabled = goal.notificationEnabled,
-                        completionCriteria = goal.completionCriteria
-                    )
-                } else {
-                    queries.updateActionGoal(
-                        id = goal.id,
-                        title = goal.title,
-                        description = goal.description,
-                        priority = goal.priority,
-                        status = goal.status,
-                        milestoneGoalId = goal.milestoneGoalId,
-                        schedule = goal.schedule,
-                        cost = goal.cost,
-                        notificationEnabled = goal.notificationEnabled,
-                        completionCriteria = goal.completionCriteria
-                    )
+                is ActionGoal -> {
+                    if (goal.id == 0L) {
+                        queries.insertActionGoal(
+                            title = goal.title,
+                            description = goal.description,
+                            priority = goal.priority,
+                            status = goal.status,
+                            milestoneGoalId = goal.milestoneGoalId,
+                            schedule = goal.schedule,
+                            cost = goal.cost,
+                            notificationEnabled = goal.notificationEnabled,
+                            completionCriteria = goal.completionCriteria
+                        )
+                        val newId = queries.lastInsertId().executeAsOne()
+                        queries.selectMilestoneGoalById(goal.milestoneGoalId).executeAsOneOrNull()?.let { milestone ->
+                            queries.updateMilestoneGoal(
+                                id = milestone.id,
+                                title = milestone.title,
+                                description = milestone.description,
+                                priority = milestone.priority,
+                                status = milestone.status,
+                                masterGoalId = milestone.masterGoalId,
+                                actionIds = (milestone.actionIds + newId).distinct(),
+                                walkedActionId = milestone.walkedActionId,
+                                isSkill = milestone.isSkill,
+                                wayIds = milestone.wayIds,
+                                walkedWayId = milestone.walkedWayId
+                            )
+                        }
+                    } else {
+                        queries.updateActionGoal(
+                            id = goal.id,
+                            title = goal.title,
+                            description = goal.description,
+                            priority = goal.priority,
+                            status = goal.status,
+                            milestoneGoalId = goal.milestoneGoalId,
+                            schedule = goal.schedule,
+                            cost = goal.cost,
+                            notificationEnabled = goal.notificationEnabled,
+                            completionCriteria = goal.completionCriteria
+                        )
+                    }
                 }
             }
         }

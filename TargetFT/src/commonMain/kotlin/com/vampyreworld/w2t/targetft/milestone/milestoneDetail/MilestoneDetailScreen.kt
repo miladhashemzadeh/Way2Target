@@ -89,20 +89,32 @@ fun MilestoneDetailScreen(
 
         item {
             W2TCard {
-                W2TSectionTitle("Action Goals")
-                state.actions.forEach { action ->
-                    W2TActionItem(
-                        title = action.title,
-                        subtitle = goal.title,
-                        time = if (action.status == GoalStatus.COMPLETED) "Completed" else "Due Tomorrow",
-                        checked = action.status == GoalStatus.COMPLETED,
-                        onCheckedChange = { isChecked ->
-                            component.onIntent(MilestoneDetailContract.Intent.UpdateGoal(
-                                action.withStatus(if (isChecked) GoalStatus.COMPLETED else GoalStatus.ACTIVE)
-                            ))
-                        },
-                        onClick = { component.onIntent(MilestoneDetailContract.Intent.OnGoalClick(action.id, "ACTION")) }
+                W2TSectionTitle("Action Goals (${state.actions.size})")
+                if (state.error != null) {
+                    Text("Error: ${state.error}", color = MaterialTheme.colorScheme.error)
+                }
+                if (state.actions.isEmpty()) {
+                    Text(
+                        text = "No actions defined for this milestone.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = colors.muted,
+                        modifier = Modifier.padding(vertical = 8.dp)
                     )
+                } else {
+                    state.actions.forEach { action ->
+                        W2TActionItem(
+                            title = action.title,
+                            subtitle = goal.title,
+                            time = if (action.status == GoalStatus.COMPLETED) "Completed" else "Due Tomorrow",
+                            checked = action.status == GoalStatus.COMPLETED,
+                            onCheckedChange = { isChecked ->
+                                component.onIntent(MilestoneDetailContract.Intent.UpdateGoal(
+                                    action.withStatus(if (isChecked) GoalStatus.COMPLETED else GoalStatus.ACTIVE)
+                                ))
+                            },
+                            onClick = { component.onIntent(MilestoneDetailContract.Intent.OnGoalClick(action.id, "ACTION")) }
+                        )
+                    }
                 }
             }
         }

@@ -169,6 +169,9 @@ insertActionGoal:
 INSERT INTO ActionGoalEntity (title, description, priority, status, milestoneGoalId, schedule, cost, notificationEnabled, completionCriteria)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 
+lastInsertId:
+SELECT last_insert_rowid();
+
 updateActionGoal:
 UPDATE ActionGoalEntity SET title = ?, description = ?, priority = ?, status = ?, milestoneGoalId = ?, schedule = ?, cost = ?, notificationEnabled = ?, completionCriteria = ?
 WHERE id = ?;

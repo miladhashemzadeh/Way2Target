@@ -20,8 +20,8 @@ import way2target.composeapp.generated.resources.compose_multiplatform
 @Composable
 fun SplashScreen(component: SplashComponent) {
     LaunchedEffect(Unit) {
-        // Wait for 7 seconds as requested
-        delay(7000)
+        // Wait for 1.5 seconds as requested
+        delay(1500)
         component.onIntent(SplashContract.Intent.OnFinished)
     }
 

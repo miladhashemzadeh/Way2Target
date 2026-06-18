@@ -39,7 +39,8 @@ class DefaultActionCreateComponent(
             getChallengesUseCase,
             goalId = null,
             initialTier = "ACTION",
-            parentId = parentId
+            parentId = parentId,
+            expectedTier = com.vampyreworld.w2t.domain.data.model.GoalTier.ACTION
         ).create()
     }
 
@@ -80,7 +81,8 @@ class DefaultActionCreateComponent(
                         energyCost = intent.energyCost,
                         timeCost = intent.timeCost,
                         moneyCost = intent.moneyCost
-                    )
+                    ),
+                    parentId = parentId
                 ))
             }
         }

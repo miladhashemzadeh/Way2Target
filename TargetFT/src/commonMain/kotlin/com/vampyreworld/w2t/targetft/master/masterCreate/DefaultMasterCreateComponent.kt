@@ -37,7 +37,8 @@ class DefaultMasterCreateComponent(
             getChallengesUseCase,
             goalId = null,
             initialTier = "MASTER",
-            parentId = null
+            parentId = null,
+            expectedTier = com.vampyreworld.w2t.domain.data.model.GoalTier.MASTER
         ).create()
     }
 
@@ -72,7 +73,8 @@ class DefaultMasterCreateComponent(
                     title = intent.title,
                     description = intent.description,
                     tier = "MASTER",
-                    isLifeGoal = intent.isLifeGoal
+                    isLifeGoal = intent.isLifeGoal,
+                    parentId = null
                 ))
             }
         }

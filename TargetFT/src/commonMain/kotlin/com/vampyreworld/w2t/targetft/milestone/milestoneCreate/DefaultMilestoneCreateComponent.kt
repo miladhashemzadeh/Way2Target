@@ -38,7 +38,8 @@ class DefaultMilestoneCreateComponent(
             getChallengesUseCase,
             goalId = null,
             initialTier = "MILESTONE",
-            parentId = parentId
+            parentId = parentId,
+            expectedTier = com.vampyreworld.w2t.domain.data.model.GoalTier.MILESTONE
         ).create()
     }
 
@@ -74,7 +75,8 @@ class DefaultMilestoneCreateComponent(
                     title = intent.title,
                     description = intent.description,
                     tier = "MILESTONE",
-                    isSkill = intent.isSkill
+                    isSkill = intent.isSkill,
+                    parentId = parentId
                 ))
             }
         }

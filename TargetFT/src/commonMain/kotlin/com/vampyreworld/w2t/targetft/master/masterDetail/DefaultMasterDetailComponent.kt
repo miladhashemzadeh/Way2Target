@@ -10,6 +10,7 @@ import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase
+import com.vampyreworld.w2t.domain.data.model.MilestoneGoal
 import com.vampyreworld.w2t.sharedui.arch.asValue
 import com.vampyreworld.w2t.targetft.store.TargetStore
 import com.vampyreworld.w2t.targetft.store.TargetStoreFactory
@@ -43,8 +44,9 @@ class DefaultMasterDetailComponent(
             deleteGoalUseCase,
             getChallengesUseCase,
             goalId = goalId,
-            initialTier = null,
-            parentId = null
+            initialTier = "MASTER",
+            parentId = null,
+            expectedTier = com.vampyreworld.w2t.domain.data.model.GoalTier.MASTER
         ).create()
     }
 
@@ -56,8 +58,8 @@ class DefaultMasterDetailComponent(
         MasterDetailContract.State(
             isLoading = mviState.isLoading,
             selectedGoal = mviState.selectedGoal,
-            milestones = mviState.relatedGoals.filter { 
-                it is com.vampyreworld.w2t.domain.data.model.MilestoneGoal && it.masterGoalId == goalId 
+            milestones = mviState.relatedGoals.filterIsInstance<MilestoneGoal>().filter { 
+                it.masterGoalId == goalId
             },
             challenges = mviState.challenges,
             error = mviState.error

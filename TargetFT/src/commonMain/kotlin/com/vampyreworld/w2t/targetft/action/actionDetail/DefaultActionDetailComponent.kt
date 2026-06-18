@@ -43,8 +43,9 @@ class DefaultActionDetailComponent(
             deleteGoalUseCase,
             getChallengesUseCase,
             goalId = goalId,
-            initialTier = null,
-            parentId = parentId
+            initialTier = "ACTION",
+            parentId = parentId,
+            expectedTier = com.vampyreworld.w2t.domain.data.model.GoalTier.ACTION
         ).create()
     }
 

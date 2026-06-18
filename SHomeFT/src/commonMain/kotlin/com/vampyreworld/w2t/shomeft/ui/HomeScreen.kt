@@ -29,9 +29,21 @@ fun HomeScreen(component: HomeComponent) {
     val colors = LocalAppColorScheme.current
     var showDeleteSheet by remember { mutableStateOf<Goal?>(null) }
     var deleteGoalName by remember { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        component.sideEffects.collect { sideEffect ->
+            when (sideEffect) {
+                is HomeContract.SideEffect.ShowToast -> {
+                    snackbarHostState.showSnackbar(sideEffect.message)
+                }
+            }
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             W2TBottomNavigation(component)
         },
