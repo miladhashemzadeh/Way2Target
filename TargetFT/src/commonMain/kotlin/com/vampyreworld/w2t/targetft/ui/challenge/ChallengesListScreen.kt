@@ -13,11 +13,11 @@ import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
-import com.vampyreworld.w2t.targetft.master.MasterComponent
+import com.vampyreworld.w2t.targetft.master.masterDetail.MasterDetailContract
 
 @Composable
 fun ChallengesListScreen(
-    component: MasterComponent,
+    component: MasterDetailContract.Component,
     challenges: List<Challenges>,
     goals: List<Goal>,
     padding: PaddingValues

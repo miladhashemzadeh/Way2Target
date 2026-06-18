@@ -14,13 +14,12 @@ import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.sharedui.catalog.W2TCard
 import com.vampyreworld.w2t.sharedui.catalog.W2THeader
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
-import com.vampyreworld.w2t.targetft.TargetContract
-import com.vampyreworld.w2t.targetft.master.MasterComponent
+import com.vampyreworld.w2t.targetft.master.masterDetail.MasterDetailContract
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChallengeCreateScreen(
-    component: MasterComponent,
+    component: MasterDetailContract.Component,
     goals: List<Goal>,
     padding: PaddingValues
 ) {
@@ -183,15 +182,14 @@ fun ChallengeCreateScreen(
         Button(
             onClick = { 
                 if (title.isNotBlank()) {
-                   //todo
-                   /*component.onIntent(
-                        TargetContract.Intent.OnSaveChallenge(
+                   component.onIntent(
+                        MasterDetailContract.Intent.OnSaveChallenge(
                             title = title,
                             description = description,
                             goalId = selectedGoalId,
                             impact = impactLevel
                         )
-                    )*/
+                    )
                 }
             },
             modifier = Modifier

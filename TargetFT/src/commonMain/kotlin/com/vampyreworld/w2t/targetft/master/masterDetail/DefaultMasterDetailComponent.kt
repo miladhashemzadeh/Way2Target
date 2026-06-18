@@ -83,6 +83,7 @@ class DefaultMasterDetailComponent(
             is MasterDetailContract.Intent.OnGoalClick -> navigateToGoal(intent.goalId)
             is MasterDetailContract.Intent.DeleteMilestone -> store.accept(TargetStore.Intent.DeleteSubGoal(intent.goalId))
             is MasterDetailContract.Intent.UpdateGoal -> store.accept(TargetStore.Intent.UpdateGoal(intent.goal))
+            is MasterDetailContract.Intent.OnSaveChallenge -> store.accept(TargetStore.Intent.SaveChallenge(intent.title, intent.description, intent.goalId, intent.impact))
         }
     }
 }

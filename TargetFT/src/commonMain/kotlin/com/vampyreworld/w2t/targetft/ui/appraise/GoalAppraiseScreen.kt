@@ -16,12 +16,11 @@ import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.domain.data.model.GoalStatus
 import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
-import com.vampyreworld.w2t.targetft.TargetContract
-import com.vampyreworld.w2t.targetft.master.MasterComponent
+import com.vampyreworld.w2t.targetft.master.masterDetail.MasterDetailContract
 
 @Composable
 fun GoalAppraiseScreen(
-    component: MasterComponent,
+    component: MasterDetailContract.Component,
     goal: Goal,
     padding: PaddingValues
 ) {
@@ -83,8 +82,8 @@ fun GoalAppraiseScreen(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Button(
-                onClick = { //todo
-                    /*component.onIntent(TargetContract.Intent.UpdateGoal(goal.withStatus(GoalStatus.COMPLETED)))*/
+                onClick = { 
+                    component.onIntent(MasterDetailContract.Intent.UpdateGoal(goal.withStatus(GoalStatus.COMPLETED)))
                 },
                 modifier = Modifier.weight(1f).height(56.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = colors.success),
@@ -93,8 +92,8 @@ fun GoalAppraiseScreen(
                 Text("Complete", fontWeight = FontWeight.Bold)
             }
             Button(
-                onClick = { //todo
-                    /*component.onIntent(TargetContract.Intent.UpdateGoal(goal.withStatus(GoalStatus.CANCELLED)))*/
+                onClick = { 
+                    component.onIntent(MasterDetailContract.Intent.UpdateGoal(goal.withStatus(GoalStatus.CANCELLED)))
                 },
                 modifier = Modifier.weight(1f).height(56.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = colors.muted),
