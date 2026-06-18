@@ -55,6 +55,7 @@ kotlin {
             implementation(project(":PrefrencesFT"))
             implementation(project(":SHomeFT"))
             implementation(project(":AppraiseFT"))
+            implementation(project(":ProfileFT"))
 
             implementation(libs.decompose)
             implementation(libs.decompose.extensions.compose)

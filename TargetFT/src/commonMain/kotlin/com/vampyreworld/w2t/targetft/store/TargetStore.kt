@@ -11,7 +11,17 @@ interface TargetStore : Store<TargetStore.Intent, TargetContract.State, TargetSt
         data object NavigateToAppraise : Intent
         data object NavigateToDefineSteps : Intent
         data object CancelGoal : Intent
-        data class SaveGoal(val title: String, val description: String, val tier: String) : Intent
+        data class SaveGoal(
+            val title: String,
+            val description: String,
+            val tier: String,
+            val isLifeGoal: Boolean = false,
+            val isSkill: Boolean = false,
+            val completionCriteria: String = "",
+            val cost: com.vampyreworld.w2t.domain.data.model.Cost? = null,
+            val schedule: com.vampyreworld.w2t.domain.data.model.ActionSchedule? = null,
+            val parentId: Long? = null
+        ) : Intent
         data class SaveChallenge(val title: String, val description: String, val goalId: Long?, val impact: String) : Intent
         data class OnChallengeClick(val challengeId: Long) : Intent
         data class DeleteSubGoal(val goalId: Long) : Intent

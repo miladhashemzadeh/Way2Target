@@ -21,7 +21,8 @@ class TargetStoreFactory(
     private val getChallengesUseCase: com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase,
     private val goalId: Long? = null,
     private val initialTier: String? = null,
-    private val parentId: Long? = null
+    private val parentId: Long? = null,
+    private val expectedTier: GoalTier? = null
 ) {
     fun create(): TargetStore =
         object : TargetStore, Store<TargetStore.Intent, TargetContract.State, TargetStore.Label> by storeFactory.create(
@@ -112,15 +113,16 @@ class TargetStoreFactory(
                         getGoalsUseCase(),
                         getChallengesUseCase(goalId)
                     ) { goals, challenges ->
-                        val selectedGoal = goals.find { it.id == goalId }
+                        val selectedGoal = goals.find { 
+                            it.id == goalId && (expectedTier == null || it.tier == expectedTier) 
+                        }
                         Msg.Loaded(selectedGoal, goals, challenges)
                     }.collect { msg ->
                         dispatch(msg)
                     }
                 } else {
                     getGoalsUseCase().collect { goals ->
-                        val selectedGoal = goals.find { it.id == goalId }
-                        dispatch(Msg.Loaded(selectedGoal, goals, emptyList()))
+                        dispatch(Msg.Loaded(null, goals, emptyList()))
                     }
                 }
             }
@@ -137,24 +139,35 @@ class TargetStoreFactory(
                             title = intent.title,
                             description = intent.description,
                             priority = 50,
-                            status = GoalStatus.ACTIVE
-                        )
-                        GoalTier.MILESTONE -> MilestoneGoal(
-                            id = 0,
-                            title = intent.title,
-                            description = intent.description,
-                            priority = 50,
                             status = GoalStatus.ACTIVE,
-                            masterGoalId = state().parentId ?: 0L
+                            isLifeGoal = intent.isLifeGoal
                         )
-                        GoalTier.ACTION -> ActionGoal(
-                            id = 0,
-                            title = intent.title,
-                            description = intent.description,
-                            priority = 50,
-                            status = GoalStatus.ACTIVE,
-                            milestoneGoalId = state().parentId ?: 0L
-                        )
+                        GoalTier.MILESTONE -> {
+                            val masterId = intent.parentId ?: state().parentId ?: 0L
+                            MilestoneGoal(
+                                id = 0,
+                                title = intent.title,
+                                description = intent.description,
+                                priority = 50,
+                                status = GoalStatus.ACTIVE,
+                                masterGoalId = masterId,
+                                isSkill = intent.isSkill
+                            )
+                        }
+                        GoalTier.ACTION -> {
+                            val milestoneId = intent.parentId ?: state().parentId ?: 0L
+                            ActionGoal(
+                                id = 0,
+                                title = intent.title,
+                                description = intent.description,
+                                priority = 50,
+                                status = GoalStatus.ACTIVE,
+                                milestoneGoalId = milestoneId,
+                                completionCriteria = intent.completionCriteria,
+                                cost = intent.cost,
+                                schedule = intent.schedule
+                            )
+                        }
                     }
                     saveGoalUseCase(newGoal)
                     publish(TargetStore.Label.Saved)

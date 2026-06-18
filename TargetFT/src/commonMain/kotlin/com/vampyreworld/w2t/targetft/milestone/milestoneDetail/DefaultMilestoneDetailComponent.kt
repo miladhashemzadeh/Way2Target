@@ -10,6 +10,8 @@ import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase
+import com.vampyreworld.w2t.domain.data.model.ActionGoal
+import com.vampyreworld.w2t.domain.data.model.GoalStatus
 import com.vampyreworld.w2t.sharedui.arch.asValue
 import com.vampyreworld.w2t.targetft.store.TargetStore
 import com.vampyreworld.w2t.targetft.store.TargetStoreFactory
@@ -30,7 +32,7 @@ class DefaultMilestoneDetailComponent(
     private val onBack: () -> Unit,
     private val navigateToDecision: (Long) -> Unit,
     private val navigateToMood: () -> Unit,
-    private val navigateToGoal: (Long) -> Unit,
+    private val navigateToGoal: (Long, String) -> Unit,
     private val navigateToCreateAction: (parentId: Long) -> Unit,
     private val navigateToChallenge: (goalId: Long) -> Unit,
     private val navigateToAppraise: (goalId: Long) -> Unit
@@ -44,8 +46,9 @@ class DefaultMilestoneDetailComponent(
             deleteGoalUseCase,
             getChallengesUseCase,
             goalId = goalId,
-            initialTier = null,
-            parentId = parentId
+            initialTier = "MILESTONE",
+            parentId = parentId,
+            expectedTier = com.vampyreworld.w2t.domain.data.model.GoalTier.MILESTONE
         ).create()
     }
 
@@ -57,7 +60,9 @@ class DefaultMilestoneDetailComponent(
         MilestoneDetailContract.State(
             isLoading = mviState.isLoading,
             selectedGoal = mviState.selectedGoal,
-            actions = mviState.relatedGoals,
+            actions = mviState.relatedGoals.filterIsInstance<ActionGoal>().filter { 
+                it.milestoneGoalId == goalId
+            },
             challenges = mviState.challenges,
             parentId = mviState.parentId,
             error = mviState.error
@@ -82,9 +87,10 @@ class DefaultMilestoneDetailComponent(
             MilestoneDetailContract.Intent.NavigateToChallengeList -> navigateToChallenge(goalId)
             MilestoneDetailContract.Intent.NavigateToAppraise -> navigateToAppraise(goalId)
             MilestoneDetailContract.Intent.NavigateToDefineSteps -> store.accept(TargetStore.Intent.NavigateToDefineSteps)
-            is MilestoneDetailContract.Intent.OnGoalClick -> navigateToGoal(intent.goalId)
+            is MilestoneDetailContract.Intent.OnGoalClick -> navigateToGoal(intent.goalId, intent.tier)
             is MilestoneDetailContract.Intent.DeleteAction -> store.accept(TargetStore.Intent.DeleteSubGoal(intent.goalId))
             is MilestoneDetailContract.Intent.UpdateGoal -> store.accept(TargetStore.Intent.UpdateGoal(intent.goal))
+            MilestoneDetailContract.Intent.DeleteGoal -> store.accept(TargetStore.Intent.DeleteSubGoal(goalId))
         }
     }
 }

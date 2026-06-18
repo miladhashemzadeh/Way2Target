@@ -10,6 +10,7 @@ import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase
+import com.vampyreworld.w2t.domain.data.model.Cost
 import com.vampyreworld.w2t.sharedui.arch.asValue
 import com.vampyreworld.w2t.targetft.store.TargetStore
 import com.vampyreworld.w2t.targetft.store.TargetStoreFactory
@@ -38,7 +39,8 @@ class DefaultActionCreateComponent(
             getChallengesUseCase,
             goalId = null,
             initialTier = "ACTION",
-            parentId = parentId
+            parentId = parentId,
+            expectedTier = com.vampyreworld.w2t.domain.data.model.GoalTier.ACTION
         ).create()
     }
 
@@ -55,7 +57,14 @@ class DefaultActionCreateComponent(
         ActionCreateContract.State(
             isLoading = mviState.isLoading,
             parentId = mviState.parentId,
-            error = mviState.error
+            error = mviState.error,
+            title = "", // These should ideally be part of MVI state if we want to survive process death
+            description = "",
+            completionCriteria = "",
+            energyCost = 50,
+            timeCost = 50,
+            moneyCost = 0,
+            schedule = null
         )
     }
 
@@ -69,8 +78,25 @@ class DefaultActionCreateComponent(
     override fun onIntent(intent: ActionCreateContract.Intent) {
         when (intent) {
             ActionCreateContract.Intent.OnBackClicked -> onBack()
+            is ActionCreateContract.Intent.OnTitleChanged -> {}
+            is ActionCreateContract.Intent.OnDescriptionChanged -> {}
+            is ActionCreateContract.Intent.OnCriteriaChanged -> {}
+            is ActionCreateContract.Intent.OnCostChanged -> {}
+            is ActionCreateContract.Intent.OnScheduleChanged -> {}
             is ActionCreateContract.Intent.OnSaveGoal -> {
-                store.accept(TargetStore.Intent.SaveGoal(intent.title, intent.description, "ACTION"))
+                store.accept(TargetStore.Intent.SaveGoal(
+                    title = intent.title,
+                    description = intent.description,
+                    tier = "ACTION",
+                    completionCriteria = intent.completionCriteria,
+                    cost = Cost(
+                        energyCost = intent.energyCost,
+                        timeCost = intent.timeCost,
+                        moneyCost = intent.moneyCost
+                    ),
+                    schedule = intent.schedule,
+                    parentId = parentId
+                ))
             }
         }
     }

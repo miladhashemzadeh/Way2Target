@@ -67,9 +67,6 @@ class ChallengeRepositoryImpl(
                     prosAfterSolveId = challenge.prosAfterSolveId,
                     consAfterFailureId = challenge.consAfterFailureId
                 )
-                // Note: To insert conditions for a NEW challenge, we'd need the generated ID.
-                // SqlDelight's insert doesn't return ID by default unless we use a query that does.
-                // Assuming for now challenge.id is used or this is an update flow.
             } else {
                 queries.updateChallenge(
                     id = challenge.id,

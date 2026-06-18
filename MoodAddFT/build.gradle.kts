@@ -67,6 +67,7 @@ kotlin {
                 implementation(project(":di"))
                 implementation(project(":domain"))
                 implementation(project(":core"))
+                implementation(libs.kotlinx.datetime)
 
 
             }

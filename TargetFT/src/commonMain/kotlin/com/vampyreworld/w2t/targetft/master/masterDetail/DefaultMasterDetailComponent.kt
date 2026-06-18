@@ -10,6 +10,7 @@ import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase
+import com.vampyreworld.w2t.domain.data.model.MilestoneGoal
 import com.vampyreworld.w2t.sharedui.arch.asValue
 import com.vampyreworld.w2t.targetft.store.TargetStore
 import com.vampyreworld.w2t.targetft.store.TargetStoreFactory
@@ -29,7 +30,7 @@ class DefaultMasterDetailComponent(
     private val onBack: () -> Unit,
     private val navigateToDecision: (Long) -> Unit,
     private val navigateToMood: () -> Unit,
-    private val navigateToGoal: (Long) -> Unit,
+    private val navigateToGoal: (Long, String) -> Unit,
     private val navigateToCreateMilestone: (parentId: Long) -> Unit,
     private val navigateToChallenge: (goalId: Long) -> Unit,
     private val navigateToAppraise: (goalId: Long) -> Unit
@@ -43,8 +44,9 @@ class DefaultMasterDetailComponent(
             deleteGoalUseCase,
             getChallengesUseCase,
             goalId = goalId,
-            initialTier = null,
-            parentId = null
+            initialTier = "MASTER",
+            parentId = null,
+            expectedTier = com.vampyreworld.w2t.domain.data.model.GoalTier.MASTER
         ).create()
     }
 
@@ -56,7 +58,9 @@ class DefaultMasterDetailComponent(
         MasterDetailContract.State(
             isLoading = mviState.isLoading,
             selectedGoal = mviState.selectedGoal,
-            milestones = mviState.relatedGoals,
+            milestones = mviState.relatedGoals.filterIsInstance<MilestoneGoal>().filter { 
+                it.masterGoalId == goalId
+            },
             challenges = mviState.challenges,
             error = mviState.error
         )
@@ -80,9 +84,11 @@ class DefaultMasterDetailComponent(
             MasterDetailContract.Intent.NavigateToChallengeList -> navigateToChallenge(goalId)
             MasterDetailContract.Intent.NavigateToAppraise -> navigateToAppraise(goalId)
             MasterDetailContract.Intent.NavigateToDefineSteps -> store.accept(TargetStore.Intent.NavigateToDefineSteps)
-            is MasterDetailContract.Intent.OnGoalClick -> navigateToGoal(intent.goalId)
+            is MasterDetailContract.Intent.OnGoalClick -> navigateToGoal(intent.goalId, intent.tier)
             is MasterDetailContract.Intent.DeleteMilestone -> store.accept(TargetStore.Intent.DeleteSubGoal(intent.goalId))
             is MasterDetailContract.Intent.UpdateGoal -> store.accept(TargetStore.Intent.UpdateGoal(intent.goal))
+            is MasterDetailContract.Intent.OnSaveChallenge -> store.accept(TargetStore.Intent.SaveChallenge(intent.title, intent.description, intent.goalId, intent.impact))
+            MasterDetailContract.Intent.DeleteGoal -> store.accept(TargetStore.Intent.DeleteSubGoal(goalId))
         }
     }
 }

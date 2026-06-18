@@ -8,6 +8,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,6 +24,9 @@ import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 import com.vampyreworld.w2t.sharedui.theme.color.OD_Accent
 import androidx.compose.ui.tooling.preview.Preview
 import com.vampyreworld.w2t.sharedui.theme.W2TTheme
+import com.vampyreworld.w2t.sharedui.theme.LocalUserProfile
+import coil3.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 
 @Composable
 fun W2TCard(
@@ -275,10 +280,16 @@ fun W2TActionItem(
 fun W2THeader(
     title: String,
     subtitle: String,
-    avatarText: String,
+    avatarText: String? = null,
+    avatarUrl: String? = null,
     modifier: Modifier = Modifier
 ) {
     val colors = LocalAppColorScheme.current
+    val userProfile = LocalUserProfile.current
+    
+    val finalAvatarUrl = avatarUrl ?: (if (avatarText == null) userProfile.avatarUrl else null)
+    val finalAvatarText = avatarText ?: userProfile.name.take(1).uppercase().ifEmpty { "U" }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -286,7 +297,7 @@ fun W2THeader(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
@@ -305,11 +316,20 @@ fun W2THeader(
                 .background(colors.accent.copy(alpha = 0.15f)),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = avatarText,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = colors.accent
-            )
+            if (finalAvatarUrl != null) {
+                AsyncImage(
+                    model = finalAvatarUrl,
+                    contentDescription = "Avatar",
+                    modifier = Modifier.fillMaxSize().clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Text(
+                    text = finalAvatarText,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = colors.accent
+                )
+            }
         }
     }
 }
@@ -728,6 +748,75 @@ fun W2TDetailRow(
             )
         }
         HorizontalDivider(color = colors.border.copy(alpha = 0.5f))
+    }
+}
+
+@Composable
+fun W2TBottomNavigation(
+    onHomeClick: () -> Unit,
+    onProfileClick: () -> Unit,
+    onChallengesClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    selectedTab: Int // 0: Home, 1: Profile, 2: Challenges, 3: Settings
+) {
+    val colors = LocalAppColorScheme.current
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.surface,
+        tonalElevation = 8.dp,
+        modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+    ) {
+        NavigationBarItem(
+            selected = selectedTab == 0,
+            onClick = onHomeClick,
+            icon = { Icon(Icons.Default.Home, contentDescription = null) },
+            label = { Text("Home") },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = colors.accent,
+                selectedTextColor = colors.accent,
+                unselectedIconColor = colors.muted,
+                unselectedTextColor = colors.muted,
+                indicatorColor = colors.accent.copy(alpha = 0.1f)
+            )
+        )
+        NavigationBarItem(
+            selected = selectedTab == 1,
+            onClick = onProfileClick,
+            icon = { Icon(Icons.Default.Person, contentDescription = null) },
+            label = { Text("Profile") },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = colors.accent,
+                selectedTextColor = colors.accent,
+                unselectedIconColor = colors.muted,
+                unselectedTextColor = colors.muted,
+                indicatorColor = colors.accent.copy(alpha = 0.1f)
+            )
+        )
+        NavigationBarItem(
+            selected = selectedTab == 2,
+            onClick = onChallengesClick,
+            icon = { Icon(Icons.Default.Flag, contentDescription = null) },
+            label = { Text("Challenges") },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = colors.accent,
+                selectedTextColor = colors.accent,
+                unselectedIconColor = colors.muted,
+                unselectedTextColor = colors.muted,
+                indicatorColor = colors.accent.copy(alpha = 0.1f)
+            )
+        )
+        NavigationBarItem(
+            selected = selectedTab == 3,
+            onClick = onSettingsClick,
+            icon = { Icon(Icons.Default.Settings, contentDescription = null) },
+            label = { Text("Settings") },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = colors.accent,
+                selectedTextColor = colors.accent,
+                unselectedIconColor = colors.muted,
+                unselectedTextColor = colors.muted,
+                indicatorColor = colors.accent.copy(alpha = 0.1f)
+            )
+        )
     }
 }
 

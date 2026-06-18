@@ -29,9 +29,21 @@ fun HomeScreen(component: HomeComponent) {
     val colors = LocalAppColorScheme.current
     var showDeleteSheet by remember { mutableStateOf<Goal?>(null) }
     var deleteGoalName by remember { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        component.sideEffects.collect { sideEffect ->
+            when (sideEffect) {
+                is HomeContract.SideEffect.ShowToast -> {
+                    snackbarHostState.showSnackbar(sideEffect.message)
+                }
+            }
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             W2TBottomNavigation(component)
         },
@@ -54,9 +66,10 @@ fun HomeScreen(component: HomeComponent) {
         ) {
             item {
                 W2THeader(
-                    title = "Good morning, ${state.userName}!",
-                    subtitle = "Ready to crush your goals?",
-                    avatarText = state.userName.take(1).uppercase()
+                    title = "صبح بخیر، ${state.userName}!",
+                    subtitle = "آماده‌ای برای رسیدن به اهدافت؟",
+                    avatarText = state.userName.take(1).uppercase(),
+                    avatarUrl = state.avatarUrl
                 )
             }
 
@@ -159,14 +172,14 @@ fun HomeScreen(component: HomeComponent) {
                     Spacer(modifier = Modifier.height(24.dp))
                     Button(
                         onClick = {
-                            if (deleteGoalName == "Goal #${showDeleteSheet?.id}") {
+                            if (deleteGoalName == "Goal #${showDeleteSheet?.title}") {
                                 component.onIntent(HomeContract.Intent.DeleteMasterGoal(showDeleteSheet!!.id))
                                 showDeleteSheet = null
                                 deleteGoalName = ""
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                        enabled = deleteGoalName == "Goal #${showDeleteSheet?.id}",
+                        enabled = deleteGoalName == "Goal #${showDeleteSheet?.title}",
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("Delete Permanently")
@@ -179,54 +192,11 @@ fun HomeScreen(component: HomeComponent) {
 
 @Composable
 fun W2TBottomNavigation(component: HomeComponent) {
-    val colors = LocalAppColorScheme.current
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface,
-        tonalElevation = 8.dp,
-        modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
-    ) {
-        NavigationBarItem(
-            selected = true,
-            onClick = { },
-            icon = { Icon(Icons.Default.Home, contentDescription = null) },
-            label = { Text("Home") },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = colors.accent,
-                selectedTextColor = colors.accent,
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted,
-                indicatorColor = colors.accent.copy(alpha = 0.1f)
-            )
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = { component.onNavigateToTarget() },
-            icon = { Icon(Icons.Default.CenterFocusStrong, contentDescription = null) },
-            label = { Text("Goals") },
-            colors = NavigationBarItemDefaults.colors(
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted
-            )
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = { component.onNavigateToSChallenge() },
-            icon = { Icon(Icons.Default.Flag, contentDescription = null) },
-            label = { Text("Challenges") },
-            colors = NavigationBarItemDefaults.colors(
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted
-            )
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = { component.onNavigateToPreferences() },
-            icon = { Icon(Icons.Default.Settings, contentDescription = null) },
-            label = { Text("Settings") },
-            colors = NavigationBarItemDefaults.colors(
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted
-            )
-        )
-    }
+    com.vampyreworld.w2t.sharedui.catalog.W2TBottomNavigation(
+        onHomeClick = { },
+        onProfileClick = { component.onNavigateToProfile() },
+        onChallengesClick = { component.onNavigateToSChallenge() },
+        onSettingsClick = { component.onNavigateToPreferences() },
+        selectedTab = 0
+    )
 }

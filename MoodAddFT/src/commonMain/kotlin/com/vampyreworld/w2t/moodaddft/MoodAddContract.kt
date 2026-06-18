@@ -5,7 +5,8 @@ import com.vampyreworld.w2t.domain.data.model.UserMood
 interface MoodAddContract {
     data class State(
         val isLoading: Boolean = false,
-        val moodHistory: List<UserMood> = emptyList()
+        val moodHistory: List<UserMood> = emptyList(),
+        val isAlreadyAddedToday: Boolean = false
     )
 
     sealed interface SideEffect {

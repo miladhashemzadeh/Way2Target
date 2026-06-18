@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface UserMoodRepository {
     fun getUserMoods(): Flow<List<UserMood>>
     suspend fun saveUserMood(userMood: UserMood)
+    suspend fun hasMoodForToday(): Boolean
 }

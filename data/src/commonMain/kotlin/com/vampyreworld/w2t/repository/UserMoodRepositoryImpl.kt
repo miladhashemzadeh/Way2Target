@@ -6,6 +6,7 @@ import com.vampyreworld.w2t.database.UserMoodEntity
 import com.vampyreworld.w2t.database.W2TDatabase
 import com.vampyreworld.w2t.domain.data.model.UserMood
 import com.vampyreworld.w2t.domain.repository.UserMoodRepository
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -33,6 +34,18 @@ class UserMoodRepositoryImpl(
             socialRate = userMood.socialRate,
             selfControlRate = userMood.selfControlRate
         )
+    }
+
+    override suspend fun hasMoodForToday(): Boolean {
+        val now = kotlinx.datetime.Clock.System.now()
+        val tz = kotlinx.datetime.TimeZone.currentSystemDefault()
+        val today = now.toLocalDateTime(tz).date
+        
+        val latest = queries.selectAllUserMoods().executeAsList().firstOrNull() ?: return false
+        val latestDate = kotlinx.datetime.Instant.fromEpochMilliseconds(latest.timestamp)
+            .toLocalDateTime(tz).date
+            
+        return latestDate == today
     }
 
     private fun UserMoodEntity.toDomain(): UserMood = UserMood(

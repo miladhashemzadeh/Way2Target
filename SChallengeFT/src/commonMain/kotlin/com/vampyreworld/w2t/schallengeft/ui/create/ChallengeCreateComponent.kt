@@ -69,7 +69,11 @@ class DefaultChallengeCreateComponent(
 
     private fun createChallenge() {
         val currentState = _state.value
-        if (currentState.title.isBlank()) return
+        println("DefaultChallengeCreateComponent: createChallenge title=${currentState.title} goalId=${currentState.selectedGoalId}")
+        if (currentState.title.isBlank()) {
+            println("DefaultChallengeCreateComponent: title is blank, aborting")
+            return
+        }
 
         scope.launch {
             _state.value = _state.value.copy(isLoading = true)
@@ -88,9 +92,12 @@ class DefaultChallengeCreateComponent(
                     status = GoalStatus.ACTIVE,
                     isBarrier = currentState.impactLevel == ChallengeCreateContract.ImpactLevel.HIGH
                 )
+                println("DefaultChallengeCreateComponent: saving challenge $challenge")
                 addChallengeUseCase(challenge)
+                println("DefaultChallengeCreateComponent: save success, navigating back")
                 onBack()
             } catch (e: Exception) {
+                println("DefaultChallengeCreateComponent: save error ${e.message}")
                 _sideEffects.emit(ChallengeCreateContract.SideEffect.ShowError(e.message ?: "Unknown error"))
             } finally {
                 _state.value = _state.value.copy(isLoading = false)

@@ -30,7 +30,7 @@ class DefaultActionDetailComponent(
     private val onBack: () -> Unit,
     private val navigateToDecision: (Long) -> Unit,
     private val navigateToMood: () -> Unit,
-    private val navigateToGoal: (Long) -> Unit,
+    private val navigateToGoal: (Long, String) -> Unit,
     private val navigateToChallenge: (goalId: Long) -> Unit,
     private val navigateToAppraise: (goalId: Long) -> Unit
 ) : ActionDetailContract.Component, ComponentContext by componentContext {
@@ -43,8 +43,9 @@ class DefaultActionDetailComponent(
             deleteGoalUseCase,
             getChallengesUseCase,
             goalId = goalId,
-            initialTier = null,
-            parentId = parentId
+            initialTier = "ACTION",
+            parentId = parentId,
+            expectedTier = com.vampyreworld.w2t.domain.data.model.GoalTier.ACTION
         ).create()
     }
 
@@ -79,8 +80,9 @@ class DefaultActionDetailComponent(
             ActionDetailContract.Intent.NavigateToChallengeList -> navigateToChallenge(goalId)
             ActionDetailContract.Intent.NavigateToAppraise -> navigateToAppraise(goalId)
             ActionDetailContract.Intent.NavigateToDefineSteps -> store.accept(TargetStore.Intent.NavigateToDefineSteps)
-            is ActionDetailContract.Intent.OnGoalClick -> navigateToGoal(intent.goalId)
+            is ActionDetailContract.Intent.OnGoalClick -> navigateToGoal(intent.goalId, intent.tier)
             is ActionDetailContract.Intent.UpdateGoal -> store.accept(TargetStore.Intent.UpdateGoal(intent.goal))
+            ActionDetailContract.Intent.DeleteGoal -> store.accept(TargetStore.Intent.DeleteSubGoal(goalId))
         }
     }
 }

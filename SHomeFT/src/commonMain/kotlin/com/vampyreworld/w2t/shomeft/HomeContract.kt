@@ -6,7 +6,8 @@ import com.vampyreworld.w2t.domain.data.model.UserMood
 
 interface HomeContract {
     data class State(
-        val userName: String = "User",
+        val userName: String = "کاربر",
+        val avatarUrl: String? = null,
         val isLoading: Boolean = false,
         val userMood: UserMood? = null,
         val masterGoals: List<Goal> = emptyList(),

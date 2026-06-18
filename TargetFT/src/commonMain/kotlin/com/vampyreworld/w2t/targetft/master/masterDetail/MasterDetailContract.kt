@@ -29,9 +29,11 @@ interface MasterDetailContract {
         object NavigateToChallengeList : Intent()
         object NavigateToAppraise : Intent()
         object NavigateToDefineSteps : Intent()
-        data class OnGoalClick(val goalId: Long) : Intent()
+        data class OnGoalClick(val goalId: Long, val tier: String) : Intent()
         data class DeleteMilestone(val goalId: Long) : Intent()
         data class UpdateGoal(val goal: Goal) : Intent()
+        data class OnSaveChallenge(val title: String, val description: String, val goalId: Long?, val impact: String) : Intent()
+        object DeleteGoal : Intent()
     }
 
     interface Component {

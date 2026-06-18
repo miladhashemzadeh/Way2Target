@@ -8,9 +8,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.schallengeft.SChallengeContract
-import com.vampyreworld.w2t.schallengeft.SChallengeComponent
+import com.vampyreworld.w2t.schallengeft.component.SChallengeComponent
 import com.vampyreworld.w2t.schallengeft.ui.detail.ChallengeDetailScreen
 import com.vampyreworld.w2t.schallengeft.ui.list.ChallengesListScreen
+import com.vampyreworld.w2t.sharedui.catalog.W2TBottomNavigation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,6 +29,17 @@ fun SChallengeScreen(component: SChallengeComponent) {
                     }
                 }
             )
+        },
+        bottomBar = {
+            if (challenge == null) {
+                W2TBottomNavigation(
+                    onHomeClick = { component.onNavigateToHome() },
+                    onProfileClick = { component.onNavigateToProfile() },
+                    onChallengesClick = { },
+                    onSettingsClick = { component.onNavigateToPreferences() },
+                    selectedTab = 2
+                )
+            }
         }
     ) { padding ->
         if (challenge == null) {

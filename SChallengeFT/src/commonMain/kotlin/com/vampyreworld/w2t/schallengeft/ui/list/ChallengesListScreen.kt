@@ -18,7 +18,7 @@ import com.vampyreworld.w2t.domain.data.model.GoalStatus
 import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 import com.vampyreworld.w2t.schallengeft.SChallengeContract
-import com.vampyreworld.w2t.schallengeft.SChallengeComponent
+import com.vampyreworld.w2t.schallengeft.component.SChallengeComponent
 
 @Composable
 fun ChallengesListScreen(
@@ -77,6 +77,7 @@ fun ChallengesListScreen(
                         else -> "Ongoing"
                     },
                     modifier = Modifier.clickable {
+                        println("ChallengesListScreen: clicked challenge ${challenge.id}")
                         component.onIntent(SChallengeContract.Intent.OnChallengeClick(challenge.id))
                     }
                 ) {
@@ -84,7 +85,10 @@ fun ChallengesListScreen(
                     if (challenge.status == GoalStatus.ACTIVE) {
                         W2TStrategyCard(
                             description = "Focus on one data structure at a time, implement basic operations, then move to complex algorithms.",
-                            onButtonClick = { }
+                            onButtonClick = { 
+                                println("ChallengesListScreen: strategy clicked for challenge ${challenge.id}")
+                                component.onIntent(SChallengeContract.Intent.OnViewChallengeSolutions(challenge.id))
+                            }
                         )
                     }
                 }

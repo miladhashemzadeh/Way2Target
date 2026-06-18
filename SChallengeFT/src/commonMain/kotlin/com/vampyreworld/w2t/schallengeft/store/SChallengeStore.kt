@@ -11,6 +11,7 @@ interface SChallengeStore : Store<SChallengeStore.Intent, SChallengeContract.Sta
         data class UpdateStabilityCondition(val conditionId: Long, val isMaintained: Boolean) : Intent
         data object OnTakeAiHelp : Intent
         data object ClearSelectedChallenge : Intent
+        data class DeleteChallenge(val id: Long) : Intent
     }
 
     sealed interface Label {

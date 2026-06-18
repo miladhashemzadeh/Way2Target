@@ -37,7 +37,8 @@ class DefaultMasterCreateComponent(
             getChallengesUseCase,
             goalId = null,
             initialTier = "MASTER",
-            parentId = null
+            parentId = null,
+            expectedTier = com.vampyreworld.w2t.domain.data.model.GoalTier.MASTER
         ).create()
     }
 
@@ -68,7 +69,13 @@ class DefaultMasterCreateComponent(
         when (intent) {
             MasterCreateContract.Intent.OnBackClicked -> onBack()
             is MasterCreateContract.Intent.OnSaveGoal -> {
-                store.accept(TargetStore.Intent.SaveGoal(intent.title, intent.description, "MASTER"))
+                store.accept(TargetStore.Intent.SaveGoal(
+                    title = intent.title,
+                    description = intent.description,
+                    tier = "MASTER",
+                    isLifeGoal = intent.isLifeGoal,
+                    parentId = null
+                ))
             }
         }
     }

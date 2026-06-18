@@ -10,7 +10,9 @@ class AddMoodUseCaseImpl(
     private val repository: UserMoodRepository
 ) : AddMoodUseCase {
     override suspend fun invoke(mood: UserMood) {
-        repository.saveUserMood(mood)
+        if (!repository.hasMoodForToday()) {
+            repository.saveUserMood(mood)
+        }
     }
 }
 

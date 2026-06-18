@@ -38,7 +38,8 @@ class DefaultMilestoneCreateComponent(
             getChallengesUseCase,
             goalId = null,
             initialTier = "MILESTONE",
-            parentId = parentId
+            parentId = parentId,
+            expectedTier = com.vampyreworld.w2t.domain.data.model.GoalTier.MILESTONE
         ).create()
     }
 
@@ -70,7 +71,13 @@ class DefaultMilestoneCreateComponent(
         when (intent) {
             MilestoneCreateContract.Intent.OnBackClicked -> onBack()
             is MilestoneCreateContract.Intent.OnSaveGoal -> {
-                store.accept(TargetStore.Intent.SaveGoal(intent.title, intent.description, "MILESTONE"))
+                store.accept(TargetStore.Intent.SaveGoal(
+                    title = intent.title,
+                    description = intent.description,
+                    tier = "MILESTONE",
+                    isSkill = intent.isSkill,
+                    parentId = parentId
+                ))
             }
         }
     }

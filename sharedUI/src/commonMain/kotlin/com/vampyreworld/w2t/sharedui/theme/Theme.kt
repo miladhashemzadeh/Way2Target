@@ -290,6 +290,7 @@ private val darkAppColors = AppColorScheme(
 @Composable
 fun W2TTheme(
     isDarkMode: Boolean = true,
+    userProfileInfo: UserProfileInfo = UserProfileInfo(),
     content: @Composable () -> Unit,
 ) {
     val colorScheme = when (isDarkMode) {
@@ -306,7 +307,8 @@ fun W2TTheme(
     CompositionLocalProvider(
         LocalAppColorScheme provides extraColors,
         LocalAppDimens provides DefaultAppDimens,
-        LocalLayoutDirection provides LayoutDirection.Ltr
+        LocalLayoutDirection provides LayoutDirection.Ltr,
+        LocalUserProfile provides userProfileInfo
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

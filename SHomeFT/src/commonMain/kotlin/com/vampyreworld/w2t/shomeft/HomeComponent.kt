@@ -3,11 +3,14 @@ package com.vampyreworld.w2t.shomeft
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.vampyreworld.w2t.core.utils.componentScope
 import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.domain.data.model.MasterGoal
 import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
+import com.vampyreworld.w2t.domain.usecase.profile.GetUserProfileUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -20,6 +23,7 @@ interface HomeComponent {
     fun onIntent(intent: HomeContract.Intent)
 
     fun onNavigateToTarget()
+    fun onNavigateToProfile()
     fun onNavigateToMoodAdd()
     fun onNavigateToSChallenge()
     fun onNavigateToDecisionMaking()
@@ -32,13 +36,16 @@ class DefaultHomeComponent(
     componentContext: ComponentContext,
     private val getGoalsUseCase: GetGoalsUseCase,
     private val deleteGoalUseCase: DeleteGoalUseCase,
+    private val getUserProfileUseCase: GetUserProfileUseCase,
     private val navigateToTarget: (Long?) -> Unit,
+    private val navigateToProfile: () -> Unit,
     private val navigateToMoodAdd: () -> Unit,
     private val navigateToSChallenge: (Long?) -> Unit,
     private val navigateToDecisionMaking: (Long) -> Unit,
     private val navigateToSolution: () -> Unit,
     private val navigateToPreferences: () -> Unit,
-    private val navigateToAboutUs: () -> Unit
+    private val navigateToAboutUs: () -> Unit,
+    private val onExit: () -> Unit
 ) : HomeComponent, ComponentContext by componentContext {
 
     private val scope = componentScope()
@@ -48,8 +55,23 @@ class DefaultHomeComponent(
     private val _sideEffects = MutableSharedFlow<HomeContract.SideEffect>()
     override val sideEffects = _sideEffects.asSharedFlow()
 
+    private var isBackDouble = false
+
     init {
         loadGoals()
+        loadProfile()
+        backHandler.register(BackCallback {
+            if (isBackDouble) {
+                onExit()
+            } else {
+                isBackDouble = true
+                scope.launch {
+                    _sideEffects.emit(HomeContract.SideEffect.ShowToast("D-Back for Exit"))
+                    delay(2000)
+                    isBackDouble = false
+                }
+            }
+        })
     }
 
     private fun loadGoals() {
@@ -62,10 +84,21 @@ class DefaultHomeComponent(
         }
     }
 
+    private fun loadProfile() {
+        scope.launch {
+            getUserProfileUseCase().collect { profile ->
+                _state.value = _state.value.copy(
+                    userName = profile.name.ifEmpty { "کاربر" },
+                    avatarUrl = profile.avatarUrl
+                )
+            }
+        }
+    }
+
     override fun onIntent(intent: HomeContract.Intent) {
         when (intent) {
             HomeContract.Intent.OnProfileClick -> {
-                // Handle intent
+                navigateToProfile()
             }
             HomeContract.Intent.CreateMasterGoal -> {
                 navigateToTarget(null)
@@ -94,8 +127,9 @@ class DefaultHomeComponent(
     }
 
     override fun onNavigateToTarget() = navigateToTarget(null)
+    override fun onNavigateToProfile() = navigateToProfile()
     override fun onNavigateToMoodAdd() = navigateToMoodAdd()
-    override fun onNavigateToSChallenge() = navigateToSChallenge(null)
+    override fun onNavigateToSChallenge() = navigateToSChallenge(0L)
     override fun onNavigateToDecisionMaking() = navigateToDecisionMaking(0L)
     override fun onNavigateToSolution() = navigateToSolution()
     override fun onNavigateToPreferences() = navigateToPreferences()
