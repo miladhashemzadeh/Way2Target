@@ -179,54 +179,11 @@ fun HomeScreen(component: HomeComponent) {
 
 @Composable
 fun W2TBottomNavigation(component: HomeComponent) {
-    val colors = LocalAppColorScheme.current
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface,
-        tonalElevation = 8.dp,
-        modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
-    ) {
-        NavigationBarItem(
-            selected = true,
-            onClick = { },
-            icon = { Icon(Icons.Default.Home, contentDescription = null) },
-            label = { Text("Home") },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = colors.accent,
-                selectedTextColor = colors.accent,
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted,
-                indicatorColor = colors.accent.copy(alpha = 0.1f)
-            )
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = { component.onNavigateToTarget() },
-            icon = { Icon(Icons.Default.CenterFocusStrong, contentDescription = null) },
-            label = { Text("Goals") },
-            colors = NavigationBarItemDefaults.colors(
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted
-            )
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = { component.onNavigateToSChallenge() },
-            icon = { Icon(Icons.Default.Flag, contentDescription = null) },
-            label = { Text("Challenges") },
-            colors = NavigationBarItemDefaults.colors(
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted
-            )
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = { component.onNavigateToPreferences() },
-            icon = { Icon(Icons.Default.Settings, contentDescription = null) },
-            label = { Text("Settings") },
-            colors = NavigationBarItemDefaults.colors(
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted
-            )
-        )
-    }
+    com.vampyreworld.w2t.sharedui.catalog.W2TBottomNavigation(
+        onHomeClick = { },
+        onProfileClick = { component.onNavigateToProfile() },
+        onChallengesClick = { component.onNavigateToSChallenge() },
+        onSettingsClick = { component.onNavigateToPreferences() },
+        selectedTab = 0
+    )
 }

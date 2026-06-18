@@ -134,6 +134,7 @@ class DefaultRootComponent(
                             navigation.bringToFront(Screens.TargetDetail(id))
                         }
                     },
+                    navigateToProfile = { navigation.bringToFront(Screens.Profile) },
                     navigateToMoodAdd = { navigation.bringToFront(Screens.AddMood) },
                     navigateToSChallenge = { id -> navigation.bringToFront(Screens.ListOfChallenges(id)) },
                     navigateToDecisionMaking = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
@@ -284,6 +285,10 @@ class DefaultRootComponent(
                     componentContext = componentContext,
                     storeFactory = get { parametersOf(config.goalId, null) },
                     onBack = { navigation.pop() },
+                    navigateToHome = { navigation.bringToFront(Screens.Home) },
+                    navigateToProfile = { navigation.bringToFront(Screens.Profile) },
+                    navigateToSChallenge = { id -> navigation.bringToFront(Screens.ListOfChallenges(id)) },
+                    navigateToPreferences = { navigation.bringToFront(Screens.Preferences) },
                     navigateToAddSolution = { challengeId -> 
                         navigation.bringToFront(Screens.AddSolution(config.goalId, challengeId)) 
                     },
@@ -308,6 +313,10 @@ class DefaultRootComponent(
                     componentContext = componentContext,
                     storeFactory = get { parametersOf(config.goalId, config.challengeId) },
                     onBack = { navigation.pop() },
+                    navigateToHome = { navigation.bringToFront(Screens.Home) },
+                    navigateToProfile = { navigation.bringToFront(Screens.Profile) },
+                    navigateToSChallenge = { id -> navigation.bringToFront(Screens.ListOfChallenges(id)) },
+                    navigateToPreferences = { navigation.bringToFront(Screens.Preferences) },
                     navigateToAddSolution = { challengeId -> 
                         navigation.bringToFront(Screens.AddSolution(config.goalId, challengeId)) 
                     },
@@ -375,6 +384,15 @@ class DefaultRootComponent(
             )
 
             is Screens.Preferences -> RootComponent.Child.Preferences(
+                DefaultPrefrencesComponent(
+                    componentContext = componentContext,
+                    getThemeUseCase = get(),
+                    setThemeUseCase = get(),
+                    onBack = { navigation.pop() }
+                )
+            )
+
+            is Screens.Profile -> RootComponent.Child.Profile(
                 DefaultPrefrencesComponent(
                     componentContext = componentContext,
                     getThemeUseCase = get(),

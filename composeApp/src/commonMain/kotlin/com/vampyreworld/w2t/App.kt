@@ -57,6 +57,7 @@ fun App(root: RootComponent) {
                     is RootComponent.Child.DecisionMaking -> DecisionMakingScreen(child.component)
                     is RootComponent.Child.Solution -> SolutionScreen(child.component)
                     is RootComponent.Child.Preferences -> PrefrencesScreen(child.component)
+                    is RootComponent.Child.Profile -> PrefrencesScreen(child.component)
                     is RootComponent.Child.AboutUs -> AboutUsScreen(child.component)
                     is RootComponent.Child.Appraise -> AppraiseScreen(child.component)
                 }

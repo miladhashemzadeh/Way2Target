@@ -36,6 +36,7 @@ interface RootComponent {
         data class DecisionMaking(val component: DecisionMakingComponent) : Child()
         data class Solution(val component: SolutionComponent) : Child()
         data class Preferences(val component: PrefrencesComponent) : Child()
+        data class Profile(val component: PrefrencesComponent) : Child() // Using PrefrencesComponent for Profile for now, or create a new one
         data class AboutUs(val component: AboutUsComponent) : Child()
         data class Appraise(val component: AppraiseComponent) : Child()
     }

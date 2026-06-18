@@ -53,6 +53,8 @@ sealed class Screens {
     @Serializable
     data object Preferences : Screens()
     @Serializable
+    data object Profile : Screens()
+    @Serializable
     data object OnBoarding : Screens()
     @Serializable
     data object Splash : Screens()

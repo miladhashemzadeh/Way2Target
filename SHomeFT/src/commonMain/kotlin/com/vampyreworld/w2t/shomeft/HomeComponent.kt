@@ -20,6 +20,7 @@ interface HomeComponent {
     fun onIntent(intent: HomeContract.Intent)
 
     fun onNavigateToTarget()
+    fun onNavigateToProfile()
     fun onNavigateToMoodAdd()
     fun onNavigateToSChallenge()
     fun onNavigateToDecisionMaking()
@@ -33,6 +34,7 @@ class DefaultHomeComponent(
     private val getGoalsUseCase: GetGoalsUseCase,
     private val deleteGoalUseCase: DeleteGoalUseCase,
     private val navigateToTarget: (Long?) -> Unit,
+    private val navigateToProfile: () -> Unit,
     private val navigateToMoodAdd: () -> Unit,
     private val navigateToSChallenge: (Long?) -> Unit,
     private val navigateToDecisionMaking: (Long) -> Unit,
@@ -65,7 +67,7 @@ class DefaultHomeComponent(
     override fun onIntent(intent: HomeContract.Intent) {
         when (intent) {
             HomeContract.Intent.OnProfileClick -> {
-                // Handle intent
+                navigateToProfile()
             }
             HomeContract.Intent.CreateMasterGoal -> {
                 navigateToTarget(null)
@@ -94,6 +96,7 @@ class DefaultHomeComponent(
     }
 
     override fun onNavigateToTarget() = navigateToTarget(null)
+    override fun onNavigateToProfile() = navigateToProfile()
     override fun onNavigateToMoodAdd() = navigateToMoodAdd()
     override fun onNavigateToSChallenge() = navigateToSChallenge(null)
     override fun onNavigateToDecisionMaking() = navigateToDecisionMaking(0L)

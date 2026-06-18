@@ -18,12 +18,21 @@ interface SChallengeComponent {
     val sideEffects: Flow<SChallengeContract.SideEffect>
     
     fun onIntent(intent: SChallengeContract.Intent)
+
+    fun onNavigateToHome()
+    fun onNavigateToProfile()
+    fun onNavigateToSChallenge()
+    fun onNavigateToPreferences()
 }
 
 class DefaultSChallengeComponent(
     componentContext: ComponentContext,
     storeFactory: SChallengeStoreFactory,
     private val onBack: () -> Unit,
+    private val navigateToHome: () -> Unit = {},
+    private val navigateToProfile: () -> Unit = {},
+    private val navigateToSChallenge: (Long?) -> Unit = {},
+    private val navigateToPreferences: () -> Unit = {},
     private val navigateToAddSolution: (challengeId: Long) -> Unit = {},
     private val navigateToDecision: (challengeId: Long) -> Unit = {}
 ) : SChallengeComponent, ComponentContext by componentContext {
@@ -79,4 +88,9 @@ class DefaultSChallengeComponent(
             }
         }
     }
+
+    override fun onNavigateToHome() = navigateToHome()
+    override fun onNavigateToProfile() = navigateToProfile()
+    override fun onNavigateToSChallenge() = navigateToSChallenge(null)
+    override fun onNavigateToPreferences() = navigateToPreferences()
 }
