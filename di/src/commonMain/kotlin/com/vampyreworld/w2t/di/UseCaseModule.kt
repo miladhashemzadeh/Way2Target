@@ -1,4 +1,4 @@
-package com.vampyreworld.w2t.domain.di
+package com.vampyreworld.w2t.di
 
 import com.vampyreworld.w2t.domain.usecase.*
 import com.vampyreworld.w2t.domain.usecase.decision.impl.*
@@ -14,7 +14,7 @@ import com.vampyreworld.w2t.domain.usecase.prefrences.GetThemeUseCase
 import com.vampyreworld.w2t.domain.usecase.prefrences.SetThemeUseCase
 import org.koin.dsl.module
 
-val domainModule = module {
+val useCaseModule = module {
     // Profile
     factory { GetUserProfileUseCase(get()) }
     factory { SaveUserProfileUseCase(get()) }

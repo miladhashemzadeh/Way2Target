@@ -4,7 +4,7 @@ import com.vampyreworld.navigation.AppRouterImpl
 import com.vampyreworld.navigation.Router
 import com.vampreworld.w2t.data.di.dataModule as settingsModule
 import com.vampyreworld.w2t.di.dataModule as databaseModule
-import com.vampyreworld.w2t.domain.di.domainModule
+import com.vampyreworld.w2t.di.useCaseModule
 import com.vampyreworld.w2t.appraiseft.di.appraiseModule
 import com.vampyreworld.w2t.decissionmakingft.decisionMakingModule
 import com.vampyreworld.w2t.moodaddft.moodAddModule
@@ -25,7 +25,7 @@ val featureModules = module {
         navigationModule,
         settingsModule,
         databaseModule,
-        domainModule,
+        useCaseModule,
         targetModule,
         moodAddModule,
         sChallengeModule,
