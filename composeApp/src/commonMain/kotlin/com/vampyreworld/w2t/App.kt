@@ -34,9 +34,10 @@ import org.koin.compose.KoinContext
 @Composable
 fun App(root: RootComponent) {
     val isDarkMode by root.isDarkMode.subscribeAsState()
+    val userProfile by root.userProfile.subscribeAsState()
 
     KoinContext {
-        W2TTheme(isDarkMode = isDarkMode) {
+        W2TTheme(isDarkMode = isDarkMode, userProfileInfo = userProfile) {
             Children(
                 modifier = Modifier
                     .fillMaxSize()

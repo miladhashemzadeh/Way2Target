@@ -19,6 +19,7 @@ interface TargetStore : Store<TargetStore.Intent, TargetContract.State, TargetSt
             val isSkill: Boolean = false,
             val completionCriteria: String = "",
             val cost: com.vampyreworld.w2t.domain.data.model.Cost? = null,
+            val schedule: com.vampyreworld.w2t.domain.data.model.ActionSchedule? = null,
             val parentId: Long? = null
         ) : Intent
         data class SaveChallenge(val title: String, val description: String, val goalId: Long?, val impact: String) : Intent

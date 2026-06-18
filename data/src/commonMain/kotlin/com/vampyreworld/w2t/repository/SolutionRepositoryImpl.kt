@@ -22,14 +22,18 @@ class SolutionRepositoryImpl(
         return queries.selectAllSolutions()
             .asFlow()
             .mapToList(Dispatchers.IO)
-            .map { entities -> entities.map { it.toDomain() } }
+            .map { entities -> 
+                entities.map { it.toDomain() } 
+            }
     }
 
     override fun getSolutionById(id: Long): Flow<Solution?> {
         return queries.selectSolutionById(id)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
-            .map { it?.toDomain() }
+            .map { 
+                it?.toDomain() 
+            }
     }
 
     override suspend fun saveSolution(solution: Solution) {

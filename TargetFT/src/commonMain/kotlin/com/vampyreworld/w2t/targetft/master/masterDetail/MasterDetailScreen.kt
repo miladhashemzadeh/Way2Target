@@ -6,10 +6,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -18,6 +18,7 @@ import com.vampyreworld.w2t.domain.data.model.GoalStatus
 import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MasterDetailScreen(
     component: MasterDetailContract.Component,
@@ -27,6 +28,10 @@ fun MasterDetailScreen(
     val goal = state.selectedGoal ?: return
     val colors = LocalAppColorScheme.current
     
+    var isEditing by remember { mutableStateOf(false) }
+    var editedTitle by remember { mutableStateOf(goal.title) }
+    var editedDescription by remember { mutableStateOf(goal.description) }
+
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(padding),
         contentPadding = PaddingValues(24.dp),
@@ -34,28 +39,67 @@ fun MasterDetailScreen(
     ) {
         item {
             W2THeader(
-                title = "Goal Detail",
-                subtitle = "Ready to crush your goals?",
-                avatarText = "M"
+                title = "جزئیات هدف",
+                subtitle = "آماده‌ای برای رسیدن به اهدافت؟"
             )
         }
 
         item {
             W2TCard {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = goal.title,
-                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    W2TProgressBar(progress = 0.7f, color = colors.accent)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "70% Complete",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = colors.accent,
-                        fontWeight = FontWeight.Medium
-                    )
+                    if (isEditing) {
+                        OutlinedTextField(
+                            value = editedTitle,
+                            onValueChange = { editedTitle = it },
+                            label = { Text("Title") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = editedDescription,
+                            onValueChange = { editedDescription = it },
+                            label = { Text("Description") },
+                            modifier = Modifier.fillMaxWidth(),
+                            minLines = 3
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Button(
+                                onClick = {
+                                    val updatedGoal = when(goal) {
+                                        is com.vampyreworld.w2t.domain.data.model.MasterGoal -> goal.copy(title = editedTitle, description = editedDescription)
+                                        is com.vampyreworld.w2t.domain.data.model.MilestoneGoal -> goal.copy(title = editedTitle, description = editedDescription)
+                                        is com.vampyreworld.w2t.domain.data.model.ActionGoal -> goal.copy(title = editedTitle, description = editedDescription)
+                                    }
+                                    component.onIntent(MasterDetailContract.Intent.UpdateGoal(updatedGoal))
+                                    isEditing = false
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) { Text("Save") }
+                            OutlinedButton(onClick = { isEditing = false }, modifier = Modifier.weight(1f)) { Text("Cancel") }
+                        }
+                    } else {
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text(
+                                text = goal.title,
+                                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(onClick = { isEditing = true }) {
+                                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = colors.accent)
+                            }
+                        }
+                        Text(text = goal.description, style = MaterialTheme.typography.bodyMedium, color = colors.muted)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        W2TProgressBar(progress = 0.7f, color = colors.accent)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "70% Complete",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = colors.accent,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             }
         }

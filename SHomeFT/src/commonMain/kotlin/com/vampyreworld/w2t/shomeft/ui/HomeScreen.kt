@@ -66,9 +66,10 @@ fun HomeScreen(component: HomeComponent) {
         ) {
             item {
                 W2THeader(
-                    title = "Good morning, ${state.userName}!",
-                    subtitle = "Ready to crush your goals?",
-                    avatarText = state.userName.take(1).uppercase()
+                    title = "صبح بخیر، ${state.userName}!",
+                    subtitle = "آماده‌ای برای رسیدن به اهدافت؟",
+                    avatarText = state.userName.take(1).uppercase(),
+                    avatarUrl = state.avatarUrl
                 )
             }
 

@@ -15,7 +15,7 @@ import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.data.model.Solution
 import com.vampyreworld.w2t.domain.data.model.StabilityCondition
 import com.vampyreworld.w2t.schallengeft.SChallengeContract
-import com.vampyreworld.w2t.schallengeft.SChallengeComponent
+import com.vampyreworld.w2t.schallengeft.component.SChallengeComponent
 
 @Composable
 fun ChallengeDetailScreen(
@@ -47,7 +47,16 @@ fun ChallengeDetailScreen(
         }
 
         item {
-            Text("Suggested Solutions", style = MaterialTheme.typography.titleLarge)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Suggested Solutions", style = MaterialTheme.typography.titleLarge)
+                TextButton(onClick = { component.onIntent(SChallengeContract.Intent.OnViewSolutions) }) {
+                    Text("View All")
+                }
+            }
         }
 
         if (solutions.isEmpty()) {

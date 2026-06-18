@@ -5,11 +5,14 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.vampyreworld.w2t.domain.data.model.Challenges
+import com.vampyreworld.w2t.domain.data.model.Solution
 import com.vampyreworld.w2t.domain.usecase.AddChallengeUseCase
 import com.vampyreworld.w2t.domain.usecase.DeleteChallengeUseCase
 import com.vampyreworld.w2t.domain.usecase.GetChallengeByIdUseCase
 import com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase
+import com.vampyreworld.w2t.domain.usecase.GetSolutionsUseCase
 import com.vampyreworld.w2t.schallengeft.SChallengeContract
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class SChallengeStoreFactory(
@@ -18,6 +21,7 @@ class SChallengeStoreFactory(
     private val deleteChallengeUseCase: DeleteChallengeUseCase,
     private val getChallengesUseCase: GetChallengesUseCase,
     private val getChallengeByIdUseCase: GetChallengeByIdUseCase,
+    private val getSolutionsUseCase: GetSolutionsUseCase,
     private val goalId: Long? = null,
     private val challengeId: Long? = null
 ) {
@@ -31,7 +35,11 @@ class SChallengeStoreFactory(
 
     private sealed interface Msg {
         data object Loading : Msg
-        data class Loaded(val challenges: List<Challenges>, val selectedChallenge: Challenges?) : Msg
+        data class Loaded(
+            val challenges: List<Challenges>,
+            val selectedChallenge: Challenges?,
+            val solutions: List<Solution> = emptyList()
+        ) : Msg
     }
 
     private inner class ExecutorImpl : CoroutineExecutor<SChallengeStore.Intent, Nothing, SChallengeContract.State, Msg, SChallengeStore.Label>() {
@@ -69,19 +77,29 @@ class SChallengeStoreFactory(
         private fun loadChallenge(id: Long) {
             scope.launch {
                 dispatch(Msg.Loading)
-                getChallengeByIdUseCase(id).collect { challenge ->
-                    dispatch(Msg.Loaded(state().challenges, challenge))
+                combine(
+                    getChallengeByIdUseCase(id),
+                    getSolutionsUseCase(null, id)
+                ) { challenge, solutions ->
+                    Msg.Loaded(state().challenges, challenge, solutions)
+                }.collect { msg ->
+                    dispatch(msg)
                 }
             }
         }
 
         private fun loadData() {
+            val currentGoalId = goalId ?: state().goalId
             scope.launch {
                 dispatch(Msg.Loading)
-                val currentGoalId = goalId ?: state().goalId
                 if (challengeId != null) {
-                    getChallengeByIdUseCase(challengeId).collect { challenge ->
-                        dispatch(Msg.Loaded(emptyList(), challenge))
+                    combine(
+                        getChallengeByIdUseCase(challengeId),
+                        getSolutionsUseCase(null, challengeId)
+                    ) { challenge, solutions ->
+                        Msg.Loaded(emptyList(), challenge, solutions)
+                    }.collect { msg ->
+                        dispatch(msg)
                     }
                 } else if (currentGoalId != null) {
                     getChallengesUseCase(currentGoalId).collect { challenges ->
@@ -129,7 +147,8 @@ class SChallengeStoreFactory(
                 is Msg.Loaded -> copy(
                     isLoading = false,
                     challenges = msg.challenges,
-                    selectedChallenge = msg.selectedChallenge
+                    selectedChallenge = msg.selectedChallenge,
+                    solutions = msg.solutions
                 )
             }
     }

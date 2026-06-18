@@ -11,6 +11,7 @@ val sChallengeModule = module {
             deleteChallengeUseCase = get(),
             getChallengesUseCase = get(),
             getChallengeByIdUseCase = get(),
+            getSolutionsUseCase = get(),
             goalId = goalId,
             challengeId = challengeId
         )

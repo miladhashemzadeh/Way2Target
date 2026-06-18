@@ -9,6 +9,7 @@ import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.domain.data.model.MasterGoal
 import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
+import com.vampyreworld.w2t.domain.usecase.profile.GetUserProfileUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -35,6 +36,7 @@ class DefaultHomeComponent(
     componentContext: ComponentContext,
     private val getGoalsUseCase: GetGoalsUseCase,
     private val deleteGoalUseCase: DeleteGoalUseCase,
+    private val getUserProfileUseCase: GetUserProfileUseCase,
     private val navigateToTarget: (Long?) -> Unit,
     private val navigateToProfile: () -> Unit,
     private val navigateToMoodAdd: () -> Unit,
@@ -57,6 +59,7 @@ class DefaultHomeComponent(
 
     init {
         loadGoals()
+        loadProfile()
         backHandler.register(BackCallback {
             if (isBackDouble) {
                 onExit()
@@ -77,6 +80,17 @@ class DefaultHomeComponent(
             getGoalsUseCase().collect { goals ->
                 val masterGoals = goals.filterIsInstance<MasterGoal>()
                 _state.value = _state.value.copy(masterGoals = masterGoals, isLoading = false)
+            }
+        }
+    }
+
+    private fun loadProfile() {
+        scope.launch {
+            getUserProfileUseCase().collect { profile ->
+                _state.value = _state.value.copy(
+                    userName = profile.name.ifEmpty { "کاربر" },
+                    avatarUrl = profile.avatarUrl
+                )
             }
         }
     }
@@ -115,7 +129,7 @@ class DefaultHomeComponent(
     override fun onNavigateToTarget() = navigateToTarget(null)
     override fun onNavigateToProfile() = navigateToProfile()
     override fun onNavigateToMoodAdd() = navigateToMoodAdd()
-    override fun onNavigateToSChallenge() = navigateToSChallenge(null)
+    override fun onNavigateToSChallenge() = navigateToSChallenge(0L)
     override fun onNavigateToDecisionMaking() = navigateToDecisionMaking(0L)
     override fun onNavigateToSolution() = navigateToSolution()
     override fun onNavigateToPreferences() = navigateToPreferences()

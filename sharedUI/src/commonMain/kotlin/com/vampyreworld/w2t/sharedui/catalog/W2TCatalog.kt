@@ -24,6 +24,9 @@ import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 import com.vampyreworld.w2t.sharedui.theme.color.OD_Accent
 import androidx.compose.ui.tooling.preview.Preview
 import com.vampyreworld.w2t.sharedui.theme.W2TTheme
+import com.vampyreworld.w2t.sharedui.theme.LocalUserProfile
+import coil3.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 
 @Composable
 fun W2TCard(
@@ -277,10 +280,16 @@ fun W2TActionItem(
 fun W2THeader(
     title: String,
     subtitle: String,
-    avatarText: String,
+    avatarText: String? = null,
+    avatarUrl: String? = null,
     modifier: Modifier = Modifier
 ) {
     val colors = LocalAppColorScheme.current
+    val userProfile = LocalUserProfile.current
+    
+    val finalAvatarUrl = avatarUrl ?: (if (avatarText == null) userProfile.avatarUrl else null)
+    val finalAvatarText = avatarText ?: userProfile.name.take(1).uppercase().ifEmpty { "U" }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -288,7 +297,7 @@ fun W2THeader(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
@@ -307,11 +316,20 @@ fun W2THeader(
                 .background(colors.accent.copy(alpha = 0.15f)),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = avatarText,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = colors.accent
-            )
+            if (finalAvatarUrl != null) {
+                AsyncImage(
+                    model = finalAvatarUrl,
+                    contentDescription = "Avatar",
+                    modifier = Modifier.fillMaxSize().clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Text(
+                    text = finalAvatarText,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = colors.accent
+                )
+            }
         }
     }
 }

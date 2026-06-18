@@ -10,7 +10,7 @@ import com.vampyreworld.w2t.moodaddft.MoodAddComponent
 import com.vampyreworld.w2t.onboarding.OnboardingComponent
 import com.vampyreworld.w2t.prefrencesft.PrefrencesComponent
 import com.vampyreworld.w2t.profileft.ProfileContract
-import com.vampyreworld.w2t.schallengeft.SChallengeComponent
+import com.vampyreworld.w2t.schallengeft.component.SChallengeComponent
 import com.vampyreworld.w2t.schallengeft.ui.create.ChallengeCreateComponent
 import com.vampyreworld.w2t.solutionft.component.SolutionComponent
 import com.vampyreworld.w2t.splash.SplashComponent
@@ -18,10 +18,12 @@ import com.vampyreworld.w2t.targetft.master.MasterComponent
 import com.vampyreworld.w2t.targetft.milestone.MilestoneComponent
 import com.vampyreworld.w2t.targetft.action.ActionComponent
 import com.vampyreworld.w2t.targetft.presentation.component.TargetMasterComponent
+import com.vampyreworld.w2t.sharedui.theme.UserProfileInfo
 
 interface RootComponent {
     val childStack: Value<ChildStack<*, Child>>
     val isDarkMode: Value<Boolean>
+    val userProfile: Value<UserProfileInfo>
 
     sealed class Child {
         data class Splash(val component: SplashComponent) : Child()

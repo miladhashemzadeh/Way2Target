@@ -164,7 +164,8 @@ class TargetStoreFactory(
                                 status = GoalStatus.ACTIVE,
                                 milestoneGoalId = milestoneId,
                                 completionCriteria = intent.completionCriteria,
-                                cost = intent.cost
+                                cost = intent.cost,
+                                schedule = intent.schedule
                             )
                         }
                     }

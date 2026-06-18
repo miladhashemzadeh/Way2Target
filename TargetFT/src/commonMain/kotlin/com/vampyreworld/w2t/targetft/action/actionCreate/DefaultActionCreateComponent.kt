@@ -57,7 +57,14 @@ class DefaultActionCreateComponent(
         ActionCreateContract.State(
             isLoading = mviState.isLoading,
             parentId = mviState.parentId,
-            error = mviState.error
+            error = mviState.error,
+            title = "", // These should ideally be part of MVI state if we want to survive process death
+            description = "",
+            completionCriteria = "",
+            energyCost = 50,
+            timeCost = 50,
+            moneyCost = 0,
+            schedule = null
         )
     }
 
@@ -71,6 +78,11 @@ class DefaultActionCreateComponent(
     override fun onIntent(intent: ActionCreateContract.Intent) {
         when (intent) {
             ActionCreateContract.Intent.OnBackClicked -> onBack()
+            is ActionCreateContract.Intent.OnTitleChanged -> {}
+            is ActionCreateContract.Intent.OnDescriptionChanged -> {}
+            is ActionCreateContract.Intent.OnCriteriaChanged -> {}
+            is ActionCreateContract.Intent.OnCostChanged -> {}
+            is ActionCreateContract.Intent.OnScheduleChanged -> {}
             is ActionCreateContract.Intent.OnSaveGoal -> {
                 store.accept(TargetStore.Intent.SaveGoal(
                     title = intent.title,
@@ -82,6 +94,7 @@ class DefaultActionCreateComponent(
                         timeCost = intent.timeCost,
                         moneyCost = intent.moneyCost
                     ),
+                    schedule = intent.schedule,
                     parentId = parentId
                 ))
             }

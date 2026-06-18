@@ -9,4 +9,9 @@ interface SChallengeComponent {
     val sideEffects: Flow<SChallengeContract.SideEffect>
     
     fun onIntent(intent: SChallengeContract.Intent)
+
+    fun onNavigateToHome()
+    fun onNavigateToProfile()
+    fun onNavigateToSChallenge()
+    fun onNavigateToPreferences()
 }

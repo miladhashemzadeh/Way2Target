@@ -65,7 +65,8 @@ fun ProfileScreen(component: ProfileContract.Component) {
                 W2THeader(
                     title = state.profile.name.ifEmpty { "کاربر عزیز" },
                     subtitle = "اطلاعات شخصی برای شخصی‌سازی تجربه شما",
-                    avatarText = state.profile.name.take(1).uppercase().ifEmpty { "U" }
+                    avatarText = state.profile.name.take(1).uppercase().ifEmpty { "U" },
+                    avatarUrl = state.profile.avatarUrl
                 )
 
                 if (state.isEditMode) {
@@ -150,6 +151,13 @@ private fun ProfileEditView(component: ProfileContract.Component, state: Profile
                 label = "نام",
                 value = state.profile.name,
                 onValueChange = { component.onIntent(ProfileContract.Intent.UpdateProfile(state.profile.copy(name = it))) },
+                colors = colors
+            )
+
+            ProfileTextField(
+                label = "آدرس تصویر پروفایل (URL)",
+                value = state.profile.avatarUrl ?: "",
+                onValueChange = { component.onIntent(ProfileContract.Intent.UpdateProfile(state.profile.copy(avatarUrl = it))) },
                 colors = colors
             )
 

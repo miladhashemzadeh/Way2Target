@@ -19,7 +19,7 @@ import com.vampyreworld.w2t.onboarding.DefaultOnboardingComponent
 import com.vampyreworld.w2t.prefrencesft.DefaultPrefrencesComponent
 import com.vampyreworld.w2t.profileft.ProfileContract
 import com.vampyreworld.w2t.profileft.component.DefaultProfileComponent
-import com.vampyreworld.w2t.schallengeft.DefaultSChallengeComponent
+import com.vampyreworld.w2t.schallengeft.component.DefaultSChallengeComponent
 import com.vampyreworld.w2t.schallengeft.ui.create.DefaultChallengeCreateComponent
 import com.vampyreworld.w2t.solutionft.component.DefaultSolutionComponent
 import com.vampyreworld.w2t.splash.DefaultSplashComponent
@@ -38,7 +38,9 @@ import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.onboarding.SetOnboardingCompletedUseCase
 import com.vampyreworld.w2t.domain.usecase.prefrences.GetThemeUseCase
+import com.vampyreworld.w2t.domain.usecase.profile.GetUserProfileUseCase
 import com.vampyreworld.w2t.sharedui.arch.componentScope
+import com.vampyreworld.w2t.sharedui.theme.UserProfileInfo
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.core.component.KoinComponent
@@ -51,6 +53,7 @@ class DefaultRootComponent(
 ) : RootComponent, KoinComponent, ComponentContext by componentContext {
 
     private val getThemeUseCase: GetThemeUseCase = get()
+    private val getUserProfileUseCase: GetUserProfileUseCase = get()
     private val isOnboardingCompletedUseCase: IsOnboardingCompletedUseCase = get()
     private val setOnboardingCompletedUseCase: SetOnboardingCompletedUseCase = get()
     private val router: Router = get()
@@ -58,12 +61,26 @@ class DefaultRootComponent(
     private val _isDarkMode = MutableValue(true)
     override val isDarkMode: Value<Boolean> = _isDarkMode
 
+    private val _userProfile = MutableValue(UserProfileInfo())
+    override val userProfile: Value<UserProfileInfo> = _userProfile
+
     private val navigation = StackNavigation<Screens>()
 
     init {
         getThemeUseCase()
             .onEach { isDark ->
                 _isDarkMode.update { isDark }
+            }
+            .launchIn(componentScope())
+
+        getUserProfileUseCase()
+            .onEach { profile ->
+                _userProfile.update { 
+                    UserProfileInfo(
+                        name = profile.name,
+                        avatarUrl = profile.avatarUrl
+                    )
+                }
             }
             .launchIn(componentScope())
 
@@ -130,6 +147,7 @@ class DefaultRootComponent(
                     componentContext = componentContext,
                     getGoalsUseCase = get(),
                     deleteGoalUseCase = get(),
+                    getUserProfileUseCase = get(),
                     navigateToTarget = { id -> 
                         if (id == null) {
                             navigation.bringToFront(Screens.AddGoal(null, "MASTER"))
@@ -348,6 +366,9 @@ class DefaultRootComponent(
                     navigateToAddSolution = { challengeId -> 
                         navigation.bringToFront(Screens.AddSolution(config.goalId, challengeId)) 
                     },
+                    navigateToSolutionsList = { challengeId ->
+                        navigation.bringToFront(Screens.ListOfSolutions(config.goalId, challengeId))
+                    },
                     navigateToDecision = { challengeId ->
                         navigation.bringToFront(Screens.DecisionForChallenge(config.goalId, challengeId))
                     }
@@ -375,6 +396,9 @@ class DefaultRootComponent(
                     navigateToPreferences = { navigation.bringToFront(Screens.Preferences) },
                     navigateToAddSolution = { challengeId -> 
                         navigation.bringToFront(Screens.AddSolution(config.goalId, challengeId)) 
+                    },
+                    navigateToSolutionsList = { challengeId ->
+                        navigation.bringToFront(Screens.ListOfSolutions(config.goalId, challengeId))
                     },
                     navigateToDecision = { challengeId ->
                         navigation.bringToFront(Screens.DecisionForChallenge(config.goalId, challengeId))

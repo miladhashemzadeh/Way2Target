@@ -18,7 +18,12 @@ class DefaultSChallengeComponent(
     componentContext: ComponentContext,
     storeFactory: SChallengeStoreFactory,
     private val onBack: () -> Unit,
+    private val navigateToHome: () -> Unit = {},
+    private val navigateToProfile: () -> Unit = {},
+    private val navigateToSChallenge: (Long?) -> Unit = {},
+    private val navigateToPreferences: () -> Unit = {},
     private val navigateToAddSolution: (challengeId: Long) -> Unit = {},
+    private val navigateToSolutionsList: (challengeId: Long) -> Unit = {},
     private val navigateToDecision: (challengeId: Long) -> Unit = {}
 ) : SChallengeComponent, ComponentContext by componentContext {
 
@@ -68,6 +73,12 @@ class DefaultSChallengeComponent(
             SChallengeContract.Intent.OnAddSolution -> {
                 state.value.selectedChallenge?.id?.let { navigateToAddSolution(it) }
             }
+            SChallengeContract.Intent.OnViewSolutions -> {
+                state.value.selectedChallenge?.id?.let { navigateToSolutionsList(it) }
+            }
+            is SChallengeContract.Intent.OnViewChallengeSolutions -> {
+                navigateToSolutionsList(intent.challengeId)
+            }
             is SChallengeContract.Intent.OnUpdateStabilityCondition -> {
                 store.accept(SChallengeStore.Intent.UpdateStabilityCondition(intent.conditionId, intent.isMaintained))
             }
@@ -76,4 +87,9 @@ class DefaultSChallengeComponent(
             }
         }
     }
+
+    override fun onNavigateToHome() = navigateToHome()
+    override fun onNavigateToProfile() = navigateToProfile()
+    override fun onNavigateToSChallenge() = navigateToSChallenge(null)
+    override fun onNavigateToPreferences() = navigateToPreferences()
 }

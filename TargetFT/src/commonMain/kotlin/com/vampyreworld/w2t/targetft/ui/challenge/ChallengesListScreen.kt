@@ -47,9 +47,8 @@ fun ChallengesListScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             W2THeader(
-                title = "Challenge Center",
-                subtitle = "Manage your blockers",
-                avatarText = "!"
+                title = "مرکز چالش‌ها",
+                subtitle = "موانع خود را مدیریت کنید"
             )
 
             W2TTabNav(

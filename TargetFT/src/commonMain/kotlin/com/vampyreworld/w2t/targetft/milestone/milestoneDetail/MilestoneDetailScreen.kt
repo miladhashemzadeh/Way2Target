@@ -6,10 +6,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -19,6 +19,7 @@ import com.vampyreworld.w2t.domain.data.model.GoalStatus
 import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MilestoneDetailScreen(
     component: MilestoneDetailContract.Component,
@@ -28,6 +29,10 @@ fun MilestoneDetailScreen(
     val goal = state.selectedGoal ?: return
     val colors = LocalAppColorScheme.current
     
+    var isEditing by remember { mutableStateOf(false) }
+    var editedTitle by remember { mutableStateOf(goal.title) }
+    var editedDescription by remember { mutableStateOf(goal.description) }
+
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(padding),
         contentPadding = PaddingValues(24.dp),
@@ -44,32 +49,69 @@ fun MilestoneDetailScreen(
         item {
             W2TCard {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        W2TStatusChip(text = "Ongoing", backgroundColor = colors.accent)
-                        val parentId = state.parentId
-                        if (parentId != null) {
-                            Text(
-                                text = "Parent Goal ›", 
-                                style = MaterialTheme.typography.bodySmall, 
-                                color = colors.muted,
-                                modifier = Modifier.clickable { component.onIntent(MilestoneDetailContract.Intent.OnGoalClick(parentId, "MASTER")) }
-                            )
+                    if (isEditing) {
+                        OutlinedTextField(
+                            value = editedTitle,
+                            onValueChange = { editedTitle = it },
+                            label = { Text("Title") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = editedDescription,
+                            onValueChange = { editedDescription = it },
+                            label = { Text("Description") },
+                            modifier = Modifier.fillMaxWidth(),
+                            minLines = 3
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Button(
+                                onClick = {
+                                    val updatedGoal = when(goal) {
+                                        is com.vampyreworld.w2t.domain.data.model.MasterGoal -> goal.copy(title = editedTitle, description = editedDescription)
+                                        is com.vampyreworld.w2t.domain.data.model.MilestoneGoal -> goal.copy(title = editedTitle, description = editedDescription)
+                                        is com.vampyreworld.w2t.domain.data.model.ActionGoal -> goal.copy(title = editedTitle, description = editedDescription)
+                                    }
+                                    component.onIntent(MilestoneDetailContract.Intent.UpdateGoal(updatedGoal))
+                                    isEditing = false
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) { Text("Save") }
+                            OutlinedButton(onClick = { isEditing = false }, modifier = Modifier.weight(1f)) { Text("Cancel") }
                         }
+                    } else {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            W2TStatusChip(text = "Ongoing", backgroundColor = colors.accent)
+                            val parentId = state.parentId
+                            if (parentId != null) {
+                                Text(
+                                    text = "Parent Goal ›", 
+                                    style = MaterialTheme.typography.bodySmall, 
+                                    color = colors.muted,
+                                    modifier = Modifier.clickable { component.onIntent(MilestoneDetailContract.Intent.OnGoalClick(parentId, "MASTER")) }
+                                )
+                            }
+                            Spacer(modifier = Modifier.weight(1f))
+                            IconButton(onClick = { isEditing = true }) {
+                                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = colors.accent)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = goal.title,
+                            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        W2TProgressBar(progress = 0.5f, color = colors.accent)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "50% Complete",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = colors.accent,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = goal.title,
-                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    W2TProgressBar(progress = 0.5f, color = colors.accent)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "50% Complete",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = colors.accent,
-                        fontWeight = FontWeight.Medium
-                    )
                 }
             }
         }
