@@ -52,7 +52,7 @@ fun MilestoneDetailScreen(
                                 text = "Parent Goal ›", 
                                 style = MaterialTheme.typography.bodySmall, 
                                 color = colors.muted,
-                                modifier = Modifier.clickable { component.onIntent(MilestoneDetailContract.Intent.OnGoalClick(parentId)) }
+                                modifier = Modifier.clickable { component.onIntent(MilestoneDetailContract.Intent.OnGoalClick(parentId, "MASTER")) }
                             )
                         }
                     }
@@ -83,7 +83,7 @@ fun MilestoneDetailScreen(
             ) {
                 Icon(Icons.Default.FlashOn, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("View Challenges")
+                Text("ساختن چالش برای این هدف")
             }
         }
 
@@ -101,7 +101,7 @@ fun MilestoneDetailScreen(
                                 action.withStatus(if (isChecked) GoalStatus.COMPLETED else GoalStatus.ACTIVE)
                             ))
                         },
-                        onClick = { component.onIntent(MilestoneDetailContract.Intent.OnGoalClick(action.id)) }
+                        onClick = { component.onIntent(MilestoneDetailContract.Intent.OnGoalClick(action.id, "ACTION")) }
                     )
                 }
             }

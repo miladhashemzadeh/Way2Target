@@ -69,7 +69,7 @@ fun MasterDetailScreen(
             ) {
                 Icon(Icons.Default.FlashOn, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("View Challenges")
+                Text("Create Challenges")
             }
         }
 
@@ -88,7 +88,7 @@ fun MasterDetailScreen(
                             icon = "✨", 
                             title = "Milestone: ${milestone.title}", 
                             type = "milestone", 
-                            onClick = { component.onIntent(MasterDetailContract.Intent.OnGoalClick(milestone.id)) }
+                            onClick = { component.onIntent(MasterDetailContract.Intent.OnGoalClick(milestone.id, "MILESTONE")) }
                         ) {
                         }
                     }

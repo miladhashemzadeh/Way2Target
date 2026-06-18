@@ -36,7 +36,7 @@ class DefaultMasterComponent(
     private val onBack: () -> Unit,
     private val navigateToDecision: (Long) -> Unit,
     private val navigateToMood: () -> Unit,
-    private val navigateToGoal: (Long) -> Unit,
+    private val navigateToGoal: (Long, String) -> Unit,
     private val navigateToCreateMilestone: (parentId: Long) -> Unit,
     private val navigateToChallenge: (goalId: Long) -> Unit,
     private val navigateToAppraise: (goalId: Long) -> Unit

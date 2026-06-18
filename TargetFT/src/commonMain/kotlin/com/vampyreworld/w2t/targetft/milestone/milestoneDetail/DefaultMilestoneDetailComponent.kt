@@ -30,7 +30,7 @@ class DefaultMilestoneDetailComponent(
     private val onBack: () -> Unit,
     private val navigateToDecision: (Long) -> Unit,
     private val navigateToMood: () -> Unit,
-    private val navigateToGoal: (Long) -> Unit,
+    private val navigateToGoal: (Long, String) -> Unit,
     private val navigateToCreateAction: (parentId: Long) -> Unit,
     private val navigateToChallenge: (goalId: Long) -> Unit,
     private val navigateToAppraise: (goalId: Long) -> Unit
@@ -82,7 +82,7 @@ class DefaultMilestoneDetailComponent(
             MilestoneDetailContract.Intent.NavigateToChallengeList -> navigateToChallenge(goalId)
             MilestoneDetailContract.Intent.NavigateToAppraise -> navigateToAppraise(goalId)
             MilestoneDetailContract.Intent.NavigateToDefineSteps -> store.accept(TargetStore.Intent.NavigateToDefineSteps)
-            is MilestoneDetailContract.Intent.OnGoalClick -> navigateToGoal(intent.goalId)
+            is MilestoneDetailContract.Intent.OnGoalClick -> navigateToGoal(intent.goalId, intent.tier)
             is MilestoneDetailContract.Intent.DeleteAction -> store.accept(TargetStore.Intent.DeleteSubGoal(intent.goalId))
             is MilestoneDetailContract.Intent.UpdateGoal -> store.accept(TargetStore.Intent.UpdateGoal(intent.goal))
         }

@@ -89,7 +89,7 @@ fun ActionDetailScreen(
             ) {
                 Icon(Icons.Default.FlashOn, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("View Challenges")
+                Text("Create Challenges")
             }
         }
 
