@@ -6,6 +6,7 @@ import com.arkivanov.decompose.value.Value
 import com.vampyreworld.w2t.core.utils.componentScope
 import com.vampyreworld.w2t.domain.usecase.AddMoodUseCase
 import com.vampyreworld.w2t.domain.usecase.GetMoodHistoryUseCase
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -40,7 +41,18 @@ class DefaultMoodAddComponent(
         scope.launch {
             _state.value = _state.value.copy(isLoading = true)
             getMoodHistoryUseCase().collect { history ->
-                _state.value = _state.value.copy(moodHistory = history, isLoading = false)
+                val now = kotlinx.datetime.Clock.System.now()
+                val tz = kotlinx.datetime.TimeZone.currentSystemDefault()
+                val today = now.toLocalDateTime(tz).date
+                val isAlreadyAddedToday = history.any { 
+                    kotlinx.datetime.Instant.fromEpochMilliseconds(it.timestamp)
+                        .toLocalDateTime(tz).date == today
+                }
+                _state.value = _state.value.copy(
+                    moodHistory = history, 
+                    isLoading = false,
+                    isAlreadyAddedToday = isAlreadyAddedToday
+                )
             }
         }
     }

@@ -65,6 +65,7 @@ kotlin {
                 implementation(libs.multiplatform.settings.noarg)
                 implementation(libs.multiplatform.settings.coroutines)
                 implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.datetime)
                 
                 implementation(libs.sqldelight.runtime)
                 implementation(libs.sqldelight.coroutines.extensions)
