@@ -3,6 +3,7 @@ package com.vampyreworld.w2t.domain.usecase.schallenge.impl
 import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.repository.ChallengeRepository
 import com.vampyreworld.w2t.domain.usecase.AddChallengeUseCase
+import com.vampyreworld.w2t.domain.usecase.DeleteChallengeUseCase
 import com.vampyreworld.w2t.domain.usecase.GetChallengeByIdUseCase
 import com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase
 import kotlinx.coroutines.flow.Flow
@@ -30,3 +31,12 @@ class GetChallengeByIdUseCaseImpl(
         return repository.getChallengeById(id)
     }
 }
+
+class DeleteChallengeUseCaseImpl(
+    private val repository: ChallengeRepository
+) : DeleteChallengeUseCase {
+    override suspend fun invoke(id: Long) {
+        repository.deleteChallenge(id)
+    }
+}
+

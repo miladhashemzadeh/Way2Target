@@ -18,6 +18,7 @@ import com.vampyreworld.w2t.shomeft.ui.HomeScreen
 import com.vampyreworld.w2t.moodaddft.ui.MoodAddScreen
 import com.vampyreworld.w2t.onboarding.ui.OnboardingScreen
 import com.vampyreworld.w2t.prefrencesft.ui.PrefrencesScreen
+import com.vampyreworld.w2t.profileft.ui.ProfileScreen
 import com.vampyreworld.w2t.root.RootComponent
 import com.vampyreworld.w2t.schallengeft.ui.SChallengeScreen
 import com.vampyreworld.w2t.schallengeft.ui.create.ChallengeCreateScreen
@@ -57,7 +58,7 @@ fun App(root: RootComponent) {
                     is RootComponent.Child.DecisionMaking -> DecisionMakingScreen(child.component)
                     is RootComponent.Child.Solution -> SolutionScreen(child.component)
                     is RootComponent.Child.Preferences -> PrefrencesScreen(child.component)
-                    is RootComponent.Child.Profile -> PrefrencesScreen(child.component)
+                    is RootComponent.Child.Profile -> ProfileScreen(child.component)
                     is RootComponent.Child.AboutUs -> AboutUsScreen(child.component)
                     is RootComponent.Child.Appraise -> AppraiseScreen(child.component)
                 }

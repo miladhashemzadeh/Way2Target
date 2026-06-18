@@ -14,3 +14,7 @@ interface AddChallengeUseCase {
 interface GetChallengeByIdUseCase {
     operator fun invoke(id: Long): Flow<Challenges?>
 }
+
+interface DeleteChallengeUseCase {
+    suspend operator fun invoke(id: Long)
+}

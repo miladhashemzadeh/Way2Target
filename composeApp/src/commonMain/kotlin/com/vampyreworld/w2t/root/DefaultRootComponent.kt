@@ -17,6 +17,8 @@ import com.vampyreworld.w2t.shomeft.DefaultHomeComponent
 import com.vampyreworld.w2t.moodaddft.DefaultMoodAddComponent
 import com.vampyreworld.w2t.onboarding.DefaultOnboardingComponent
 import com.vampyreworld.w2t.prefrencesft.DefaultPrefrencesComponent
+import com.vampyreworld.w2t.profileft.ProfileContract
+import com.vampyreworld.w2t.profileft.component.DefaultProfileComponent
 import com.vampyreworld.w2t.schallengeft.DefaultSChallengeComponent
 import com.vampyreworld.w2t.schallengeft.ui.create.DefaultChallengeCreateComponent
 import com.vampyreworld.w2t.solutionft.component.DefaultSolutionComponent
@@ -447,10 +449,11 @@ class DefaultRootComponent(
             )
 
             is Screens.Profile -> RootComponent.Child.Profile(
-                DefaultPrefrencesComponent(
+                DefaultProfileComponent(
                     componentContext = componentContext,
-                    getThemeUseCase = get(),
-                    setThemeUseCase = get(),
+                    storeFactory = get(),
+                    getUserProfileUseCase = get(),
+                    saveUserProfileUseCase = get(),
                     onBack = { navigation.pop() }
                 )
             )

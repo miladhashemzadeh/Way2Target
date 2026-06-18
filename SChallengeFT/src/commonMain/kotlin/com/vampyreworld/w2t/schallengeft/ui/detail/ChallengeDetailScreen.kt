@@ -34,7 +34,7 @@ fun ChallengeDetailScreen(
         }
 
         item {
-            ActionRow(component)
+            ActionRow(component, challenge.id)
         }
 
         if (challenge.stabilityConditions.isNotEmpty()) {
@@ -84,29 +84,41 @@ private fun ChallengeHeader(challenge: Challenges) {
 }
 
 @Composable
-private fun ActionRow(component: SChallengeComponent) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Button(
-            onClick = { component.onIntent(SChallengeContract.Intent.OnTakeAiHelp) },
-            modifier = Modifier.weight(1f),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer)
-        ) {
-            Icon(Icons.Default.AutoAwesome, contentDescription = null, modifier = Modifier.size(18.dp))
-            Spacer(modifier = Modifier.width(4.dp))
-            Text("AI Help")
+private fun ActionRow(component: SChallengeComponent, challengeId: Long) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                onClick = { component.onIntent(SChallengeContract.Intent.OnTakeAiHelp) },
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer)
+            ) {
+                Icon(Icons.Default.AutoAwesome, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("AI Help")
+            }
+            Button(
+                onClick = { component.onIntent(SChallengeContract.Intent.OnAddSolution) },
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                Text("Solution")
+            }
+            OutlinedButton(
+                onClick = { component.onIntent(SChallengeContract.Intent.OnMakeDecision) },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Decide")
+            }
         }
-        Button(
-            onClick = { component.onIntent(SChallengeContract.Intent.OnAddSolution) },
-            modifier = Modifier.weight(1f)
+        
+        TextButton(
+            onClick = { component.onIntent(SChallengeContract.Intent.OnDeleteChallenge(challengeId)) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
         ) {
-            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-            Text("Solution")
-        }
-        OutlinedButton(
-            onClick = { component.onIntent(SChallengeContract.Intent.OnMakeDecision) },
-            modifier = Modifier.weight(1f)
-        ) {
-            Text("Decide")
+            Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Delete Challenge")
         }
     }
 }

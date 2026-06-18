@@ -86,6 +86,9 @@ class DefaultSChallengeComponent(
             is SChallengeContract.Intent.OnUpdateStabilityCondition -> {
                 store.accept(SChallengeStore.Intent.UpdateStabilityCondition(intent.conditionId, intent.isMaintained))
             }
+            is SChallengeContract.Intent.OnDeleteChallenge -> {
+                store.accept(SChallengeStore.Intent.DeleteChallenge(intent.id))
+            }
         }
     }
 

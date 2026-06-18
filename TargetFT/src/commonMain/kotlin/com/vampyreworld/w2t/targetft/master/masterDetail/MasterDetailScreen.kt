@@ -137,6 +137,16 @@ fun MasterDetailScreen(
                 Text("Add Milestone")
             }
         }
+
+        item {
+            TextButton(
+                onClick = { component.onIntent(MasterDetailContract.Intent.DeleteGoal) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text("Delete Goal")
+            }
+        }
         
         item { Spacer(modifier = Modifier.height(24.dp)) }
     }

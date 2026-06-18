@@ -119,6 +119,16 @@ fun ActionDetailScreen(
                 onButtonClick = { }
             )
         }
+
+        item {
+            TextButton(
+                onClick = { component.onIntent(ActionDetailContract.Intent.DeleteGoal) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text("Delete Action")
+            }
+        }
         
         item { Spacer(modifier = Modifier.height(24.dp)) }
     }

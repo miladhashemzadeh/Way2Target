@@ -6,6 +6,7 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.usecase.AddChallengeUseCase
+import com.vampyreworld.w2t.domain.usecase.DeleteChallengeUseCase
 import com.vampyreworld.w2t.domain.usecase.GetChallengeByIdUseCase
 import com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase
 import com.vampyreworld.w2t.schallengeft.SChallengeContract
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 class SChallengeStoreFactory(
     private val storeFactory: StoreFactory,
     private val addChallengeUseCase: AddChallengeUseCase,
+    private val deleteChallengeUseCase: DeleteChallengeUseCase,
     private val getChallengesUseCase: GetChallengesUseCase,
     private val getChallengeByIdUseCase: GetChallengeByIdUseCase,
     private val goalId: Long? = null,
@@ -39,9 +41,22 @@ class SChallengeStoreFactory(
                 is SChallengeStore.Intent.OnChallengeClick -> loadChallenge(intent.challengeId)
                 is SChallengeStore.Intent.AddChallenge -> addChallenge(intent.challenge)
                 is SChallengeStore.Intent.UpdateStabilityCondition -> updateStabilityCondition(intent)
+                is SChallengeStore.Intent.DeleteChallenge -> deleteChallenge(intent.id)
                 SChallengeStore.Intent.OnTakeAiHelp -> takeAiHelp()
                 SChallengeStore.Intent.ClearSelectedChallenge -> dispatch(Msg.Loaded(state().challenges, null))
                 else -> {}
+            }
+        }
+
+        private fun deleteChallenge(id: Long) {
+            scope.launch {
+                dispatch(Msg.Loading)
+                try {
+                    deleteChallengeUseCase(id)
+                    loadData()
+                } catch (e: Exception) {
+                    publish(SChallengeStore.Label.Error(e.message ?: "Failed to delete challenge"))
+                }
             }
         }
 

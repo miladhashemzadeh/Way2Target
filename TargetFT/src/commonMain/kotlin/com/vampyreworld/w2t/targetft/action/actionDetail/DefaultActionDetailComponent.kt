@@ -82,6 +82,7 @@ class DefaultActionDetailComponent(
             ActionDetailContract.Intent.NavigateToDefineSteps -> store.accept(TargetStore.Intent.NavigateToDefineSteps)
             is ActionDetailContract.Intent.OnGoalClick -> navigateToGoal(intent.goalId, intent.tier)
             is ActionDetailContract.Intent.UpdateGoal -> store.accept(TargetStore.Intent.UpdateGoal(intent.goal))
+            ActionDetailContract.Intent.DeleteGoal -> store.accept(TargetStore.Intent.DeleteSubGoal(goalId))
         }
     }
 }

@@ -90,9 +90,6 @@ fun MilestoneDetailScreen(
         item {
             W2TCard {
                 W2TSectionTitle("Action Goals (${state.actions.size})")
-                if (state.error != null) {
-                    Text("Error: ${state.error}", color = MaterialTheme.colorScheme.error)
-                }
                 if (state.actions.isEmpty()) {
                     Text(
                         text = "No actions defined for this milestone.",
@@ -122,7 +119,7 @@ fun MilestoneDetailScreen(
         if (state.challenges.isNotEmpty()) {
             item {
                 W2TCard {
-                    W2TSectionTitle("Active Challenges")
+                    W2TSectionTitle("Active Challenges (${state.challenges.size})")
                     state.challenges.forEach { challenge ->
                         W2TChallengeCard(
                             title = challenge.title,
@@ -148,6 +145,16 @@ fun MilestoneDetailScreen(
                 Icon(Icons.Default.Add, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Add Action")
+            }
+        }
+
+        item {
+            TextButton(
+                onClick = { component.onIntent(MilestoneDetailContract.Intent.DeleteGoal) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text("Delete Milestone")
             }
         }
         

@@ -9,6 +9,7 @@ import com.vampyreworld.w2t.shomeft.HomeComponent
 import com.vampyreworld.w2t.moodaddft.MoodAddComponent
 import com.vampyreworld.w2t.onboarding.OnboardingComponent
 import com.vampyreworld.w2t.prefrencesft.PrefrencesComponent
+import com.vampyreworld.w2t.profileft.ProfileContract
 import com.vampyreworld.w2t.schallengeft.SChallengeComponent
 import com.vampyreworld.w2t.schallengeft.ui.create.ChallengeCreateComponent
 import com.vampyreworld.w2t.solutionft.component.SolutionComponent
@@ -36,7 +37,7 @@ interface RootComponent {
         data class DecisionMaking(val component: DecisionMakingComponent) : Child()
         data class Solution(val component: SolutionComponent) : Child()
         data class Preferences(val component: PrefrencesComponent) : Child()
-        data class Profile(val component: PrefrencesComponent) : Child() // Using PrefrencesComponent for Profile for now, or create a new one
+        data class Profile(val component: ProfileContract.Component) : Child()
         data class AboutUs(val component: AboutUsComponent) : Child()
         data class Appraise(val component: AppraiseComponent) : Child()
     }

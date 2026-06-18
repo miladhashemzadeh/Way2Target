@@ -8,6 +8,7 @@ val sChallengeModule = module {
         SChallengeStoreFactory(
             storeFactory = get(),
             addChallengeUseCase = get(),
+            deleteChallengeUseCase = get(),
             getChallengesUseCase = get(),
             getChallengeByIdUseCase = get(),
             goalId = goalId,
@@ -15,4 +16,3 @@ val sChallengeModule = module {
         )
     }
 }
-

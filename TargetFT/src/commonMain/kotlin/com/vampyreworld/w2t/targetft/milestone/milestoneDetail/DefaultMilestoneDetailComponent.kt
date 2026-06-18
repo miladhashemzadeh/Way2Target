@@ -90,6 +90,7 @@ class DefaultMilestoneDetailComponent(
             is MilestoneDetailContract.Intent.OnGoalClick -> navigateToGoal(intent.goalId, intent.tier)
             is MilestoneDetailContract.Intent.DeleteAction -> store.accept(TargetStore.Intent.DeleteSubGoal(intent.goalId))
             is MilestoneDetailContract.Intent.UpdateGoal -> store.accept(TargetStore.Intent.UpdateGoal(intent.goal))
+            MilestoneDetailContract.Intent.DeleteGoal -> store.accept(TargetStore.Intent.DeleteSubGoal(goalId))
         }
     }
 }

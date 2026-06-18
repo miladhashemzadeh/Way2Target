@@ -25,5 +25,6 @@ interface SChallengeContract {
         data object OnMakeDecision : Intent
         data object OnAddSolution : Intent
         data class OnUpdateStabilityCondition(val conditionId: Long, val isMaintained: Boolean) : Intent
+        data class OnDeleteChallenge(val id: Long) : Intent
     }
 }
