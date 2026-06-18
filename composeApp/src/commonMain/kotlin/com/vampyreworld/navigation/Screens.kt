@@ -26,7 +26,7 @@ sealed class Screens {
     @Serializable
     data class AddGoal(val parentId: Long?, val tier: String) : Screens()
     @Serializable
-    data class TargetDetail(val goalId: Long, val tier: String = "MASTER") : Screens()
+    data class TargetDetail(val goalId: Long, val tier: String = "MASTER", val parentId: Long? = null) : Screens()
 
     @Serializable
     data class ListOfChallenges(val goalId: Long?) : Screens()

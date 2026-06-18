@@ -255,10 +255,10 @@ class DefaultRootComponent(
                             saveGoalUseCase = get(),
                             deleteGoalUseCase = get(),
                             getChallengesUseCase = get(),
-                            onBack = { navigation.pop() },
+                            onBack = { navigation.replaceAll(Screens.Home) },
                             navigateToDecision = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
                             navigateToMood = { navigation.bringToFront(Screens.AddMood) },
-                            navigateToGoal = { id, tier -> navigation.bringToFront(Screens.TargetDetail(id, tier)) },
+                            navigateToGoal = { id, tier -> navigation.bringToFront(Screens.TargetDetail(id, tier, config.goalId)) },
                             navigateToCreateMilestone = { parentId ->
                                 navigation.bringToFront(Screens.AddGoal(parentId, "MILESTONE"))
                             },
@@ -274,16 +274,22 @@ class DefaultRootComponent(
                         DefaultMilestoneComponent(
                             componentContext = componentContext,
                             goalId = config.goalId,
-                            parentId = null,
+                            parentId = config.parentId,
                             storeFactory = get(),
                             getGoalsUseCase = get(),
                             saveGoalUseCase = get(),
                             deleteGoalUseCase = get(),
                             getChallengesUseCase = get(),
-                            onBack = { navigation.pop() },
+                            onBack = { 
+                                if (config.parentId != null) {
+                                    navigation.bringToFront(Screens.TargetDetail(config.parentId, "MASTER"))
+                                } else {
+                                    navigation.pop()
+                                }
+                            },
                             navigateToDecision = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
                             navigateToMood = { navigation.bringToFront(Screens.AddMood) },
-                            navigateToGoal = { id, tier -> navigation.bringToFront(Screens.TargetDetail(id, tier)) },
+                            navigateToGoal = { id, tier -> navigation.bringToFront(Screens.TargetDetail(id, tier, config.goalId)) },
                             navigateToCreateAction = { parentId ->
                                 navigation.bringToFront(Screens.AddGoal(parentId, "ACTION"))
                             },
@@ -299,16 +305,22 @@ class DefaultRootComponent(
                         DefaultActionComponent(
                             componentContext = componentContext,
                             goalId = config.goalId,
-                            parentId = null,
+                            parentId = config.parentId,
                             storeFactory = get(),
                             getGoalsUseCase = get(),
                             saveGoalUseCase = get(),
                             deleteGoalUseCase = get(),
                             getChallengesUseCase = get(),
-                            onBack = { navigation.pop() },
+                            onBack = { 
+                                if (config.parentId != null) {
+                                    navigation.bringToFront(Screens.TargetDetail(config.parentId, "MILESTONE"))
+                                } else {
+                                    navigation.pop()
+                                }
+                            },
                             navigateToDecision = { id -> navigation.bringToFront(Screens.DecisionForTarget(id)) },
                             navigateToMood = { navigation.bringToFront(Screens.AddMood) },
-                            navigateToGoal = { id, tier -> navigation.bringToFront(Screens.TargetDetail(id, tier)) },
+                            navigateToGoal = { id, tier -> navigation.bringToFront(Screens.TargetDetail(id, tier, config.goalId)) },
                             navigateToChallenge = { goalId ->
                                 navigation.bringToFront(Screens.AddChallenge(goalId))
                             },

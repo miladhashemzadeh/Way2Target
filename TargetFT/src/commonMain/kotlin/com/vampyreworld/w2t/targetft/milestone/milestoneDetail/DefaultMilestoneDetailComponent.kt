@@ -57,7 +57,9 @@ class DefaultMilestoneDetailComponent(
         MilestoneDetailContract.State(
             isLoading = mviState.isLoading,
             selectedGoal = mviState.selectedGoal,
-            actions = mviState.relatedGoals,
+            actions = mviState.relatedGoals.filter { 
+                it is com.vampyreworld.w2t.domain.data.model.ActionGoal && it.milestoneGoalId == goalId 
+            },
             challenges = mviState.challenges,
             parentId = mviState.parentId,
             error = mviState.error
