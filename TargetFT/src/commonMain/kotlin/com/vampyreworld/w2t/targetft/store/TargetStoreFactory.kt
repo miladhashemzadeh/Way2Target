@@ -137,7 +137,8 @@ class TargetStoreFactory(
                             title = intent.title,
                             description = intent.description,
                             priority = 50,
-                            status = GoalStatus.ACTIVE
+                            status = GoalStatus.ACTIVE,
+                            isLifeGoal = intent.isLifeGoal
                         )
                         GoalTier.MILESTONE -> MilestoneGoal(
                             id = 0,
@@ -145,7 +146,8 @@ class TargetStoreFactory(
                             description = intent.description,
                             priority = 50,
                             status = GoalStatus.ACTIVE,
-                            masterGoalId = state().parentId ?: 0L
+                            masterGoalId = state().parentId ?: 0L,
+                            isSkill = intent.isSkill
                         )
                         GoalTier.ACTION -> ActionGoal(
                             id = 0,
@@ -153,7 +155,9 @@ class TargetStoreFactory(
                             description = intent.description,
                             priority = 50,
                             status = GoalStatus.ACTIVE,
-                            milestoneGoalId = state().parentId ?: 0L
+                            milestoneGoalId = state().parentId ?: 0L,
+                            completionCriteria = intent.completionCriteria,
+                            cost = intent.cost
                         )
                     }
                     saveGoalUseCase(newGoal)

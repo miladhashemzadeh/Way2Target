@@ -17,7 +17,14 @@ interface ActionCreateContract {
 
     sealed class Intent {
         object OnBackClicked : Intent()
-        data class OnSaveGoal(val title: String, val description: String) : Intent()
+        data class OnSaveGoal(
+            val title: String,
+            val description: String,
+            val completionCriteria: String,
+            val energyCost: Int,
+            val timeCost: Int,
+            val moneyCost: Int
+        ) : Intent()
     }
 
     interface Component {

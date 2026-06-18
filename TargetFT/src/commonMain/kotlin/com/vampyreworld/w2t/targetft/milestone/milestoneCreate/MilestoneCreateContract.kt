@@ -17,7 +17,7 @@ interface MilestoneCreateContract {
 
     sealed class Intent {
         object OnBackClicked : Intent()
-        data class OnSaveGoal(val title: String, val description: String) : Intent()
+        data class OnSaveGoal(val title: String, val description: String, val isSkill: Boolean) : Intent()
     }
 
     interface Component {

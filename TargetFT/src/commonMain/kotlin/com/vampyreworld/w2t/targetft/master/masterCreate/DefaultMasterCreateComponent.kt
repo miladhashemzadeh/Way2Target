@@ -68,7 +68,12 @@ class DefaultMasterCreateComponent(
         when (intent) {
             MasterCreateContract.Intent.OnBackClicked -> onBack()
             is MasterCreateContract.Intent.OnSaveGoal -> {
-                store.accept(TargetStore.Intent.SaveGoal(intent.title, intent.description, "MASTER"))
+                store.accept(TargetStore.Intent.SaveGoal(
+                    title = intent.title,
+                    description = intent.description,
+                    tier = "MASTER",
+                    isLifeGoal = intent.isLifeGoal
+                ))
             }
         }
     }

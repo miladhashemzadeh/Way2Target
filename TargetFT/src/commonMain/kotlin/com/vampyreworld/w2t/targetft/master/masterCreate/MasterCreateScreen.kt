@@ -31,6 +31,7 @@ fun MasterCreateScreen(
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var selectedIcon by remember { mutableStateOf("🎯") }
+    var isLifeGoal by remember { mutableStateOf(false) }
 
     val icons = listOf("💻", "📈", "🧘‍♀️", "📚", "💰", "🚀", "🎨", "🏡", "🎯", "✨", "🏃")
 
@@ -124,13 +125,38 @@ fun MasterCreateScreen(
                         }
                     }
                 }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Life Goal",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = colors.muted,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = "Is this a long-term life ambition?",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = colors.muted.copy(alpha = 0.7f)
+                        )
+                    }
+                    Switch(
+                        checked = isLifeGoal,
+                        onCheckedChange = { isLifeGoal = it },
+                        colors = SwitchDefaults.colors(checkedThumbColor = colors.accent)
+                    )
+                }
             }
         }
 
         Button(
             onClick = { 
                 if (title.isNotBlank()) {
-                    component.onIntent(MasterCreateContract.Intent.OnSaveGoal(title, description))
+                    component.onIntent(MasterCreateContract.Intent.OnSaveGoal(title, description, isLifeGoal))
                 }
             },
             modifier = Modifier

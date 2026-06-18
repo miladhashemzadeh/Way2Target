@@ -16,7 +16,7 @@ interface MasterCreateContract {
 
     sealed class Intent {
         object OnBackClicked : Intent()
-        data class OnSaveGoal(val title: String, val description: String) : Intent()
+        data class OnSaveGoal(val title: String, val description: String, val isLifeGoal: Boolean) : Intent()
     }
 
     interface Component {

@@ -32,6 +32,7 @@ fun MilestoneCreateScreen(
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var selectedIcon by remember { mutableStateOf("🎯") }
+    var isSkill by remember { mutableStateOf(false) }
 
     val icons = listOf("💻", "📈", "🧘‍♀️", "📚", "💰", "🚀", "🎨", "🏡", "🎯", "✨", "🏃")
 
@@ -125,13 +126,38 @@ fun MilestoneCreateScreen(
                         }
                     }
                 }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Skill Milestone",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = colors.muted,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = "Does completing this milestone confer a new skill?",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = colors.muted.copy(alpha = 0.7f)
+                        )
+                    }
+                    Switch(
+                        checked = isSkill,
+                        onCheckedChange = { isSkill = it },
+                        colors = SwitchDefaults.colors(checkedThumbColor = colors.accent)
+                    )
+                }
             }
         }
 
         Button(
             onClick = { 
                 if (title.isNotBlank()) {
-                    component.onIntent(MilestoneCreateContract.Intent.OnSaveGoal(title, description))
+                    component.onIntent(MilestoneCreateContract.Intent.OnSaveGoal(title, description, isSkill))
                 }
             },
             modifier = Modifier

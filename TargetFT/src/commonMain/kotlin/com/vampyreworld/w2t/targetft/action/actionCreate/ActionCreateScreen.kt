@@ -31,6 +31,10 @@ fun ActionCreateScreen(
     
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    var completionCriteria by remember { mutableStateOf("") }
+    var energyCost by remember { mutableStateOf(50f) }
+    var timeCost by remember { mutableStateOf(50f) }
+    var moneyCost by remember { mutableStateOf(50f) }
     var selectedIcon by remember { mutableStateOf("🎯") }
 
     val icons = listOf("💻", "📈", "🧘‍♀️", "📚", "💰", "🚀", "🎨", "🏡", "🎯", "✨", "🏃")
@@ -98,6 +102,41 @@ fun ActionCreateScreen(
 
                 Column {
                     Text(
+                        text = "Completion Criteria",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = colors.muted,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = completionCriteria,
+                        onValueChange = { completionCriteria = it },
+                        placeholder = { Text("What does 'done' look like?") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = colors.accent,
+                            unfocusedBorderColor = colors.border,
+                            unfocusedContainerColor = colors.bgLight.copy(alpha = 0.5f)
+                        )
+                    )
+                }
+
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "Estimated Costs (0-100)",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = colors.muted,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    
+                    CostSlider(label = "Energy", value = energyCost, onValueChange = { energyCost = it }, colors = colors)
+                    CostSlider(label = "Time", value = timeCost, onValueChange = { timeCost = it }, colors = colors)
+                    CostSlider(label = "Money", value = moneyCost, onValueChange = { moneyCost = it }, colors = colors)
+                }
+
+                Column {
+                    Text(
                         text = "Select an Icon",
                         style = MaterialTheme.typography.labelLarge,
                         color = colors.muted,
@@ -131,7 +170,14 @@ fun ActionCreateScreen(
         Button(
             onClick = { 
                 if (title.isNotBlank()) {
-                    component.onIntent(ActionCreateContract.Intent.OnSaveGoal(title, description))
+                    component.onIntent(ActionCreateContract.Intent.OnSaveGoal(
+                        title = title,
+                        description = description,
+                        completionCriteria = completionCriteria,
+                        energyCost = energyCost.toInt(),
+                        timeCost = timeCost.toInt(),
+                        moneyCost = moneyCost.toInt()
+                    ))
                 }
             },
             modifier = Modifier
@@ -145,5 +191,33 @@ fun ActionCreateScreen(
         }
         
         Spacer(modifier = Modifier.height(24.dp))
+    }
+}
+
+@Composable
+private fun CostSlider(
+    label: String,
+    value: Float,
+    onValueChange: (Float) -> Unit,
+    colors: com.vampyreworld.w2t.sharedui.theme.color.AppColorScheme
+) {
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = label, style = MaterialTheme.typography.bodySmall, color = colors.muted)
+            Text(text = value.toInt().toString(), style = MaterialTheme.typography.bodySmall, color = colors.accent)
+        }
+        Slider(
+            value = value,
+            onValueChange = onValueChange,
+            valueRange = 0f..100f,
+            colors = SliderDefaults.colors(
+                thumbColor = colors.accent,
+                activeTrackColor = colors.accent,
+                inactiveTrackColor = colors.border
+            )
+        )
     }
 }

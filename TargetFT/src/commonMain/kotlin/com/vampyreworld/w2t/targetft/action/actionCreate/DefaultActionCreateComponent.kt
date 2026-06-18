@@ -10,6 +10,7 @@ import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetGoalsUseCase
 import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.GetChallengesUseCase
+import com.vampyreworld.w2t.domain.data.model.Cost
 import com.vampyreworld.w2t.sharedui.arch.asValue
 import com.vampyreworld.w2t.targetft.store.TargetStore
 import com.vampyreworld.w2t.targetft.store.TargetStoreFactory
@@ -70,7 +71,17 @@ class DefaultActionCreateComponent(
         when (intent) {
             ActionCreateContract.Intent.OnBackClicked -> onBack()
             is ActionCreateContract.Intent.OnSaveGoal -> {
-                store.accept(TargetStore.Intent.SaveGoal(intent.title, intent.description, "ACTION"))
+                store.accept(TargetStore.Intent.SaveGoal(
+                    title = intent.title,
+                    description = intent.description,
+                    tier = "ACTION",
+                    completionCriteria = intent.completionCriteria,
+                    cost = Cost(
+                        energyCost = intent.energyCost,
+                        timeCost = intent.timeCost,
+                        moneyCost = intent.moneyCost
+                    )
+                ))
             }
         }
     }
