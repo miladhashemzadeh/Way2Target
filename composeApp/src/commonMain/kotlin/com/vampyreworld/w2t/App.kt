@@ -28,7 +28,6 @@ import com.vampyreworld.w2t.splash.ui.SplashScreen
 import com.vampyreworld.w2t.targetft.master.MasterScreen
 import com.vampyreworld.w2t.targetft.milestone.MilestoneScreen
 import com.vampyreworld.w2t.targetft.action.ActionScreen
-import com.vampyreworld.w2t.targetft.presentation.screen.TargetMasterScreen
 import org.koin.compose.KoinContext
 
 @Composable
@@ -52,7 +51,6 @@ fun App(root: RootComponent) {
                     is RootComponent.Child.Master -> MasterScreen(child.component)
                     is RootComponent.Child.Milestone -> MilestoneScreen(child.component)
                     is RootComponent.Child.Action -> ActionScreen(child.component)
-                    is RootComponent.Child.TargetMaster -> TargetMasterScreen(child.component)
                     is RootComponent.Child.MoodAdd -> MoodAddScreen(child.component)
                     is RootComponent.Child.SChallenge -> SChallengeScreen(child.component)
                     is RootComponent.Child.ChallengeCreate -> ChallengeCreateScreen(child.component)

@@ -29,6 +29,7 @@ interface ActionDetailContract {
         object NavigateToAppraise : Intent()
         object NavigateToDefineSteps : Intent()
         data class OnGoalClick(val goalId: Long, val tier: String) : Intent()
+        data class OnChallengeClick(val challengeId: Long) : Intent()
         data class UpdateGoal(val goal: Goal) : Intent()
         object DeleteGoal : Intent()
     }

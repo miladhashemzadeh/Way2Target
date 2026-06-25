@@ -39,7 +39,8 @@ class DefaultMasterComponent(
     private val navigateToGoal: (Long, String) -> Unit,
     private val navigateToCreateMilestone: (parentId: Long) -> Unit,
     private val navigateToChallenge: (goalId: Long) -> Unit,
-    private val navigateToAppraise: (goalId: Long) -> Unit
+    private val navigateToAppraise: (goalId: Long) -> Unit,
+    private val navigateToSolution: (goalId: Long, challengeId: Long) -> Unit
 ) : MasterComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<Config>()
@@ -81,7 +82,8 @@ class DefaultMasterComponent(
                     navigateToGoal = navigateToGoal,
                     navigateToCreateMilestone = navigateToCreateMilestone,
                     navigateToChallenge = navigateToChallenge,
-                    navigateToAppraise = navigateToAppraise
+                    navigateToAppraise = navigateToAppraise,
+                    navigateToSolution = navigateToSolution
                 )
             )
         }

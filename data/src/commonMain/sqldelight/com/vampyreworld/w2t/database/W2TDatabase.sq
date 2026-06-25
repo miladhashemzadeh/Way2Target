@@ -242,6 +242,9 @@ SELECT * FROM SolutionEntity;
 selectSolutionById:
 SELECT * FROM SolutionEntity WHERE id = ?;
 
+selectSolutionsByIds:
+SELECT * FROM SolutionEntity WHERE id IN ?;
+
 -- Way Queries
 insertWay:
 INSERT INTO WayEntity (goalId, status)

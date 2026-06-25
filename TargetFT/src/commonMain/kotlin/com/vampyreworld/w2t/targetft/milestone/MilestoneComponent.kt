@@ -40,7 +40,8 @@ class DefaultMilestoneComponent(
     private val navigateToGoal: (Long, String) -> Unit,
     private val navigateToCreateAction: (parentId: Long) -> Unit,
     private val navigateToChallenge: (goalId: Long) -> Unit,
-    private val navigateToAppraise: (goalId: Long) -> Unit
+    private val navigateToAppraise: (goalId: Long) -> Unit,
+    private val navigateToSolution: (goalId: Long, challengeId: Long) -> Unit
 ) : MilestoneComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<Config>()
@@ -84,7 +85,8 @@ class DefaultMilestoneComponent(
                     navigateToGoal = navigateToGoal,
                     navigateToCreateAction = navigateToCreateAction,
                     navigateToChallenge = navigateToChallenge,
-                    navigateToAppraise = navigateToAppraise
+                    navigateToAppraise = navigateToAppraise,
+                    navigateToSolution = navigateToSolution
                 )
             )
         }

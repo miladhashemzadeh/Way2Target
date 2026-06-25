@@ -151,6 +151,7 @@ fun MasterDetailScreen(
                             description = challenge.desc,
                             status = if (challenge.status == GoalStatus.COMPLETED) "Finished" else "Ongoing",
                             modifier = Modifier.clickable { 
+                                component.onIntent(MasterDetailContract.Intent.OnChallengeClick(challenge.id))
                             }
                         )
                         Spacer(modifier = Modifier.height(12.dp))

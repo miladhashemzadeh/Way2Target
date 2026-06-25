@@ -12,12 +12,11 @@ import com.vampyreworld.w2t.prefrencesft.PrefrencesComponent
 import com.vampyreworld.w2t.profileft.ProfileContract
 import com.vampyreworld.w2t.schallengeft.component.SChallengeComponent
 import com.vampyreworld.w2t.schallengeft.ui.create.ChallengeCreateComponent
-import com.vampyreworld.w2t.solutionft.component.SolutionComponent
+import com.vampyreworld.w2t.solutionft.SolutionComponent
 import com.vampyreworld.w2t.splash.SplashComponent
 import com.vampyreworld.w2t.targetft.master.MasterComponent
 import com.vampyreworld.w2t.targetft.milestone.MilestoneComponent
 import com.vampyreworld.w2t.targetft.action.ActionComponent
-import com.vampyreworld.w2t.targetft.presentation.component.TargetMasterComponent
 import com.vampyreworld.w2t.sharedui.theme.UserProfileInfo
 
 interface RootComponent {
@@ -32,7 +31,6 @@ interface RootComponent {
         data class Master(val component: MasterComponent) : Child()
         data class Milestone(val component: MilestoneComponent) : Child()
         data class Action(val component: ActionComponent) : Child()
-        data class TargetMaster(val component: TargetMasterComponent) : Child()
         data class MoodAdd(val component: MoodAddComponent) : Child()
         data class SChallenge(val component: SChallengeComponent) : Child()
         data class ChallengeCreate(val component: ChallengeCreateComponent) : Child()

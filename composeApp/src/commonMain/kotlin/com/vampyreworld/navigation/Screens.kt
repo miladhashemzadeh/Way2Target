@@ -22,8 +22,6 @@ sealed class Screens {
     data class ClearBackStack(val target: Screens) : Screens()
 
     @Serializable
-    data object TargetMaster : Screens()
-    @Serializable
     data class AddGoal(val parentId: Long?, val tier: String) : Screens()
     @Serializable
     data class TargetDetail(val goalId: Long, val tier: String = "MASTER", val parentId: Long? = null) : Screens()

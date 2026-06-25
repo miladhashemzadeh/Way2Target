@@ -28,15 +28,31 @@ class SolutionStoreFactory(
     private sealed interface Msg {
         data object Loading : Msg
         data class Loaded(val solutions: List<Solution>) : Msg
-        data class TextChanged(val text: String) : Msg
+        data class TitleChanged(val title: String) : Msg
+        data class DescriptionChanged(val description: String) : Msg
+        data class SolutionTypeChanged(val type: SolutionType) : Msg
     }
 
     private inner class ExecutorImpl : CoroutineExecutor<SolutionStore.Intent, Nothing, SolutionContract.State, Msg, SolutionStore.Label>() {
         override fun executeIntent(intent: SolutionStore.Intent) {
             when (intent) {
                 SolutionStore.Intent.Refresh -> loadData()
-                is SolutionStore.Intent.ChangeText -> dispatch(Msg.TextChanged(intent.text))
+                is SolutionStore.Intent.ChangeTitle -> dispatch(Msg.TitleChanged(intent.title))
+                is SolutionStore.Intent.ChangeDescription -> dispatch(Msg.DescriptionChanged(intent.description))
+                is SolutionStore.Intent.ChangeSolutionType -> dispatch(Msg.SolutionTypeChanged(intent.type))
                 SolutionStore.Intent.Save -> saveSolution()
+                SolutionStore.Intent.GetAiInsights -> getAiInsights()
+            }
+        }
+
+        private fun getAiInsights() {
+            scope.launch {
+                dispatch(Msg.Loading)
+                // Mock AI delay
+                kotlinx.coroutines.delay(1500)
+                // In a real app, this would call an AI service/use-case
+                // For now, we just reload or show a message
+                loadData()
             }
         }
 
@@ -50,23 +66,26 @@ class SolutionStoreFactory(
         }
 
         private fun saveSolution() {
-            val text = state().solutionText
-            if (text.isBlank()) return
+            val title = state().title
+            val description = state().description
+            val type = state().solutionType
+            if (title.isBlank()) return
 
             scope.launch {
                 dispatch(Msg.Loading)
                 try {
                     val newSolution = Solution(
                         id = 0,
-                        title = text,
-                        desc = "",
-                        solutionType = SolutionType.PLANNING,
+                        title = title,
+                        desc = description,
+                        solutionType = type,
                         cost = Cost(energyCost = 10, timeCost = 10, moneyCost = 0),
                         aidStrength = 50,
                         result = SolutionResult.UNKNOWN
                     )
                     addSolutionUseCase(newSolution)
-                    dispatch(Msg.TextChanged(""))
+                    dispatch(Msg.TitleChanged(""))
+                    dispatch(Msg.DescriptionChanged(""))
                     loadData()
                 } catch (e: Exception) {
                     publish(SolutionStore.Label.Error(e.message ?: "Failed to save solution"))
@@ -80,7 +99,9 @@ class SolutionStoreFactory(
             when (msg) {
                 Msg.Loading -> copy(isLoading = true)
                 is Msg.Loaded -> copy(isLoading = false, solutions = msg.solutions)
-                is Msg.TextChanged -> copy(solutionText = msg.text)
+                is Msg.TitleChanged -> copy(title = msg.title)
+                is Msg.DescriptionChanged -> copy(description = msg.description)
+                is Msg.SolutionTypeChanged -> copy(solutionType = msg.type)
             }
     }
 }
