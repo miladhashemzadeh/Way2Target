@@ -33,6 +33,29 @@ import kotlinx.datetime.toLocalDateTime
 
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+
+private data class ActionPreset(
+    val label: String,
+    val title: String,
+    val description: String,
+    val selectedIcon: String,
+    val scheduleType: String,
+    val completionCriteria: String,
+    val energyCost: Float,
+    val timeCost: Float,
+    val moneyCost: Float,
+    val habitDuration: String = "30",
+    val habitPeriod: String = "1",
+    val habitWeeks: String = "4",
+    val recurringInterval: Long = 86_400_000L,
+    val recurringDays: Set<Int> = emptySet()
+)
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +74,7 @@ fun ActionCreateScreen(
     var timeCost by remember { mutableStateOf(50f) }
     var moneyCost by remember { mutableStateOf(50f) }
     var selectedIcon by remember { mutableStateOf("🎯") }
+    var showAdvanced by remember { mutableStateOf(false) }
     
     // Schedule state
     var scheduleType by remember { mutableStateOf("Once") }
@@ -163,9 +187,91 @@ fun ActionCreateScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
 
+        val presets = listOf(
+            ActionPreset(
+                label = "30m Workout 🏃",
+                title = "30m Workout",
+                description = "Get moving! Do some cardio or strength training.",
+                selectedIcon = "🏃",
+                scheduleType = "Habit",
+                completionCriteria = "Finish workout and log in fitness app",
+                energyCost = 70f,
+                timeCost = 30f,
+                moneyCost = 0f,
+                habitDuration = "30",
+                habitPeriod = "1",
+                habitWeeks = "4"
+            ),
+            ActionPreset(
+                label = "Code 1 Hour 💻",
+                title = "Code 1 Hour",
+                description = "Focus work on personal projects or tutorials.",
+                selectedIcon = "💻",
+                scheduleType = "Habit",
+                completionCriteria = "Commit changes or finish 1 coding lesson",
+                energyCost = 60f,
+                timeCost = 60f,
+                moneyCost = 0f,
+                habitDuration = "60",
+                habitPeriod = "1",
+                habitWeeks = "12"
+            ),
+            ActionPreset(
+                label = "Read 15 Mins 📚",
+                title = "Read 15 Mins",
+                description = "Read a non-fiction or educational book.",
+                selectedIcon = "📚",
+                scheduleType = "Habit",
+                completionCriteria = "Read at least 10 pages",
+                energyCost = 20f,
+                timeCost = 15f,
+                moneyCost = 0f,
+                habitDuration = "15",
+                habitPeriod = "1",
+                habitWeeks = "8"
+            ),
+            ActionPreset(
+                label = "Meditate 10m 🧘‍♀️",
+                title = "Meditate 10m",
+                description = "Breathe in, breathe out. Keep focus on the present.",
+                selectedIcon = "🧘‍♀️",
+                scheduleType = "Habit",
+                completionCriteria = "Complete a 10 minute guided session",
+                energyCost = 10f,
+                timeCost = 10f,
+                moneyCost = 0f,
+                habitDuration = "10",
+                habitPeriod = "1",
+                habitWeeks = "4"
+            ),
+            ActionPreset(
+                label = "Weekly Review 📈",
+                title = "Weekly Review",
+                description = "Look back at this week's progress and schedule next week.",
+                selectedIcon = "📈",
+                scheduleType = "Recurring",
+                completionCriteria = "Review completed actions and milestones",
+                energyCost = 35f,
+                timeCost = 45f,
+                moneyCost = 0f,
+                recurringInterval = 604_800_000L,
+                recurringDays = setOf(7) // Sunday
+            ),
+            ActionPreset(
+                label = "Buy Groceries 🛒",
+                title = "Buy Groceries",
+                description = "Go to store and stock up on healthy ingredients.",
+                selectedIcon = "🛒",
+                scheduleType = "Once",
+                completionCriteria = "Buy everything on shopping list",
+                energyCost = 40f,
+                timeCost = 60f,
+                moneyCost = 50f
+            )
+        )
+
         W2TCard {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                // ... (Existing Title, Description, Criteria fields remain the same)
                 Column {
                     Text(
                         text = "Goal Title",
@@ -186,29 +292,37 @@ fun ActionCreateScreen(
                             unfocusedContainerColor = colors.bgLight.copy(alpha = 0.5f)
                         )
                     )
-                }
-
-                Column {
-                    Text(
-                        text = "Description",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = colors.muted,
-                        fontWeight = FontWeight.SemiBold
-                    )
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = description,
-                        onValueChange = { description = it },
-                        placeholder = { Text("How will you do this?") },
-                        modifier = Modifier.fillMaxWidth(),
-                        minLines = 4,
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = colors.accent,
-                            unfocusedBorderColor = colors.border,
-                            unfocusedContainerColor = colors.bgLight.copy(alpha = 0.5f)
-                        )
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        presets.forEach { preset ->
+                            SuggestionChip(
+                                onClick = {
+                                    title = preset.title
+                                    description = preset.description
+                                    selectedIcon = preset.selectedIcon
+                                    scheduleType = preset.scheduleType
+                                    completionCriteria = preset.completionCriteria
+                                    energyCost = preset.energyCost
+                                    timeCost = preset.timeCost
+                                    moneyCost = preset.moneyCost
+                                    if (preset.scheduleType == "Habit") {
+                                        sessionDurationMins = preset.habitDuration
+                                        habitPeriodDays = preset.habitPeriod
+                                        habitTotalWeeks = preset.habitWeeks
+                                    } else if (preset.scheduleType == "Recurring") {
+                                        intervalMs = preset.recurringInterval
+                                        selectedDays = preset.recurringDays
+                                    }
+                                },
+                                label = { Text(preset.label, style = MaterialTheme.typography.labelMedium) }
+                            )
+                        }
+                    }
                 }
 
                 Column {
@@ -417,66 +531,112 @@ fun ActionCreateScreen(
                     }
                 }
 
-                Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showAdvanced = !showAdvanced }
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = "Completion Criteria",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = colors.muted,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = completionCriteria,
-                        onValueChange = { completionCriteria = it },
-                        placeholder = { Text("What does 'done' look like?") },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = colors.accent,
-                            unfocusedBorderColor = colors.border,
-                            unfocusedContainerColor = colors.bgLight.copy(alpha = 0.5f)
-                        )
+                        text = if (showAdvanced) "Hide Optional Details 🔼" else "Customize Description & Costs 🔽",
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        color = colors.accent
                     )
                 }
 
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = "Estimated Costs (0-100)",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = colors.muted,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    
-                    CostSlider(label = "Energy", value = energyCost, onValueChange = { energyCost = it }, colors = colors)
-                    CostSlider(label = "Time", value = timeCost, onValueChange = { timeCost = it }, colors = colors)
-                    CostSlider(label = "Money", value = moneyCost, onValueChange = { moneyCost = it }, colors = colors)
-                }
+                AnimatedVisibility(
+                    visible = showAdvanced,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Column {
+                            Text(
+                                text = "Description",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = colors.muted,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = description,
+                                onValueChange = { description = it },
+                                placeholder = { Text("How will you do this?") },
+                                modifier = Modifier.fillMaxWidth(),
+                                minLines = 4,
+                                shape = RoundedCornerShape(12.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = colors.accent,
+                                    unfocusedBorderColor = colors.border,
+                                    unfocusedContainerColor = colors.bgLight.copy(alpha = 0.5f)
+                                )
+                            )
+                        }
 
-                Column {
-                    Text(
-                        text = "Select an Icon",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = colors.muted,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    FlowRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        icons.forEach { icon ->
-                            val isSelected = selectedIcon == icon
-                            Box(
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .clip(RoundedCornerShape(14.dp))
-                                    .background(if (isSelected) colors.accent.copy(alpha = 0.1f) else colors.bgLight)
-                                    .border(2.dp, if (isSelected) colors.accent else colors.border, RoundedCornerShape(14.dp))
-                                    .clickable { selectedIcon = icon },
-                                contentAlignment = Alignment.Center
+                        Column {
+                            Text(
+                                text = "Completion Criteria",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = colors.muted,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = completionCriteria,
+                                onValueChange = { completionCriteria = it },
+                                placeholder = { Text("What does 'done' look like?") },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = colors.accent,
+                                    unfocusedBorderColor = colors.border,
+                                    unfocusedContainerColor = colors.bgLight.copy(alpha = 0.5f)
+                                )
+                            )
+                        }
+
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = "Estimated Costs (0-100)",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = colors.muted,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            
+                            CostSlider(label = "Energy", value = energyCost, onValueChange = { energyCost = it }, colors = colors)
+                            CostSlider(label = "Time", value = timeCost, onValueChange = { timeCost = it }, colors = colors)
+                            CostSlider(label = "Money", value = moneyCost, onValueChange = { moneyCost = it }, colors = colors)
+                        }
+
+                        Column {
+                            Text(
+                                text = "Select an Icon",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = colors.muted,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            FlowRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                Text(text = icon, fontSize = 24.sp)
+                                icons.forEach { icon ->
+                                    val isSelected = selectedIcon == icon
+                                    Box(
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .clip(RoundedCornerShape(14.dp))
+                                            .background(if (isSelected) colors.accent.copy(alpha = 0.1f) else colors.bgLight)
+                                            .border(2.dp, if (isSelected) colors.accent else colors.border, RoundedCornerShape(14.dp))
+                                            .clickable { selectedIcon = icon },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(text = icon, fontSize = 24.sp)
+                                    }
+                                }
                             }
                         }
                     }

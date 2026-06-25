@@ -22,7 +22,14 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.sharedui.catalog.W2TCard
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 
-@OptIn(ExperimentalMaterial3Api::class)
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun MilestoneCreateScreen(
     component: MilestoneCreateContract.Component,
@@ -36,8 +43,17 @@ fun MilestoneCreateScreen(
     var description by remember { mutableStateOf("") }
     var selectedIcon by remember { mutableStateOf("🎯") }
     var isSkill by remember { mutableStateOf(false) }
+    var showAdvanced by remember { mutableStateOf(false) }
 
     val icons = listOf("💻", "📈", "🧘‍♀️", "📚", "💰", "🚀", "🎨", "🏡", "🎯", "✨", "🏃")
+    val suggestions = listOf(
+        "Build MVP 🚀" to Triple("Build MVP", "🚀", false),
+        "Learn Basics 📚" to Triple("Learn Basics", "📚", true),
+        "First Sale 💰" to Triple("First Sale", "💰", false),
+        "Hire Team 👥" to Triple("Hire Team", "👥", false),
+        "Launch Beta 📢" to Triple("Launch Beta", "📢", false),
+        "Get Fit 🏃" to Triple("Get Fit", "🏃", true)
+    )
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -84,57 +100,23 @@ fun MilestoneCreateScreen(
                             unfocusedContainerColor = colors.bgLight.copy(alpha = 0.5f)
                         )
                     )
-                }
-
-                Column {
-                    Text(
-                        text = "Description",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = colors.muted,
-                        fontWeight = FontWeight.SemiBold
-                    )
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = description,
-                        onValueChange = { description = it },
-                        placeholder = { Text("What is this milestone about?") },
-                        modifier = Modifier.fillMaxWidth(),
-                        minLines = 4,
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = colors.accent,
-                            unfocusedBorderColor = colors.border,
-                            unfocusedContainerColor = colors.bgLight.copy(alpha = 0.5f)
-                        )
-                    )
-                }
-
-                Column {
-                    Text(
-                        text = "Select an Icon",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = colors.muted,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    FlowRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        icons.forEach { icon ->
-                            val isSelected = selectedIcon == icon
-                            Box(
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .clip(RoundedCornerShape(14.dp))
-                                    .background(if (isSelected) colors.accent.copy(alpha = 0.1f) else colors.bgLight)
-                                    .border(2.dp, if (isSelected) colors.accent else colors.border, RoundedCornerShape(14.dp))
-                                    .clickable { selectedIcon = icon },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(text = icon, fontSize = 24.sp)
-                            }
+                        suggestions.forEach { (label, triple) ->
+                            val (sTitle, sIcon, sIsSkill) = triple
+                            SuggestionChip(
+                                onClick = {
+                                    title = sTitle
+                                    selectedIcon = sIcon
+                                    isSkill = sIsSkill
+                                },
+                                label = { Text(label, style = MaterialTheme.typography.labelMedium) }
+                            )
                         }
                     }
                 }
@@ -162,6 +144,82 @@ fun MilestoneCreateScreen(
                         onCheckedChange = { isSkill = it },
                         colors = SwitchDefaults.colors(checkedThumbColor = colors.accent)
                     )
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showAdvanced = !showAdvanced }
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (showAdvanced) "Hide Optional Details 🔼" else "Customize Icon & Description 🔽",
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        color = colors.accent
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = showAdvanced,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Column {
+                            Text(
+                                text = "Description",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = colors.muted,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = description,
+                                onValueChange = { description = it },
+                                placeholder = { Text("What is this milestone about?") },
+                                modifier = Modifier.fillMaxWidth(),
+                                minLines = 4,
+                                shape = RoundedCornerShape(12.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = colors.accent,
+                                    unfocusedBorderColor = colors.border,
+                                    unfocusedContainerColor = colors.bgLight.copy(alpha = 0.5f)
+                                )
+                            )
+                        }
+
+                        Column {
+                            Text(
+                                text = "Select an Icon",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = colors.muted,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            FlowRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                icons.forEach { icon ->
+                                    val isSelected = selectedIcon == icon
+                                    Box(
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .clip(RoundedCornerShape(14.dp))
+                                            .background(if (isSelected) colors.accent.copy(alpha = 0.1f) else colors.bgLight)
+                                            .border(2.dp, if (isSelected) colors.accent else colors.border, RoundedCornerShape(14.dp))
+                                            .clickable { selectedIcon = icon },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(text = icon, fontSize = 24.sp)
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
