@@ -350,7 +350,7 @@ val LightColorScheme = lightColorScheme(
     error = error100,
     errorContainer = Error80,
     onError = Color.White,
-    surfaceVariant = Color(0xFFF0F2F5)
+    surfaceVariant = Color(0xFFEDE9FE)
 )
 
 val DarkColorScheme = darkColorScheme(

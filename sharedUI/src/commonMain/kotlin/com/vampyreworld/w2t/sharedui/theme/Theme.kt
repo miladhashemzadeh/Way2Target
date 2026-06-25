@@ -302,7 +302,7 @@ fun W2TTheme(
         else -> lightAppColors
     }
     val appShape = AppShapes
-    val typography = createAppTypography()
+    val typography = createAppTypography(isDarkMode)
 
     CompositionLocalProvider(
         LocalAppColorScheme provides extraColors,

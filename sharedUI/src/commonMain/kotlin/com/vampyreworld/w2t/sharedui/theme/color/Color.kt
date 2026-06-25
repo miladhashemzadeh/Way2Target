@@ -164,12 +164,12 @@ val Blue = Color(0xFF2E628C)
 // OPEN DESIGN COLORS
 // ======================================================
 
-val OD_Bg = Color(0xFFF7F9FA)
+val OD_Bg = Color(0xFFF5F3FF)
 val OD_Surface = Color(0xFFFFFFFF)
-val OD_Fg = Color(0xFF12181F)
-val OD_Muted = Color(0xFF747A8A)
-val OD_Border = Color(0xFFE2E4E9)
-val OD_Accent = Color(0xFF540092)
+val OD_Fg = Color(0xFF1C1929)
+val OD_Muted = Color(0xFF7C7B8E)
+val OD_Border = Color(0xFFEBE8F4)
+val OD_Accent = Color(0xFF6366F1)
 val OD_Success = Color(0xFF008C4E)
 val OD_Challenge = Color(0xFFE47500)
 
