@@ -9,6 +9,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import com.vampyreworld.w2t.domain.data.model.SolutionType
@@ -17,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
@@ -32,6 +38,7 @@ fun SolutionScreen(component: SolutionComponent) {
     val state by component.state.subscribeAsState()
     val colors = LocalAppColorScheme.current
     var expandedTypes by remember { mutableStateOf(false) }
+    var showAdvanced by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
@@ -128,7 +135,7 @@ fun SolutionScreen(component: SolutionComponent) {
                         OutlinedTextField(
                             value = state.title,
                             onValueChange = { component.onIntent(SolutionContract.Intent.OnTitleChanged(it)) },
-                            placeholder = { Text("Solution title...") },
+                            placeholder = { Text("Solution title (e.g. Set a strict timer)...") },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
                             shape = RoundedCornerShape(12.dp),
@@ -137,82 +144,106 @@ fun SolutionScreen(component: SolutionComponent) {
                                 unfocusedBorderColor = colors.border
                             )
                         )
-                        OutlinedTextField(
-                            value = state.description,
-                            onValueChange = { component.onIntent(SolutionContract.Intent.OnDescriptionChanged(it)) },
-                            placeholder = { Text("Detailed description (optional)...") },
-                            modifier = Modifier.fillMaxWidth().heightIn(min = 100.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = colors.accent,
-                                unfocusedBorderColor = colors.border
-                            )
-                        )
 
-                        ExposedDropdownMenuBox(
-                            expanded = expandedTypes,
-                            onExpandedChange = { expandedTypes = it }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { showAdvanced = !showAdvanced }
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            OutlinedTextField(
-                                value = state.solutionType.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() },
-                                onValueChange = {},
-                                readOnly = true,
-                                label = { Text("Strategy Type") },
-                                modifier = Modifier.fillMaxWidth().menuAnchor(),
-                                shape = RoundedCornerShape(12.dp),
-                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTypes) },
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = colors.accent,
-                                    unfocusedBorderColor = colors.border
-                                )
+                            Text(
+                                text = if (showAdvanced) "Hide Costs & Strategy Details 🔼" else "Customize Costs & Strategy Details 🔽",
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                color = colors.accent
                             )
-                            ExposedDropdownMenu(
-                                expanded = expandedTypes,
-                                onDismissRequest = { expandedTypes = false }
-                            ) {
-                                SolutionType.values().forEach { type ->
-                                    DropdownMenuItem(
-                                        text = { Text(type.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() }) },
-                                        onClick = {
-                                            component.onIntent(SolutionContract.Intent.OnSolutionTypeChanged(type))
-                                            expandedTypes = false
+                        }
+
+                        AnimatedVisibility(
+                            visible = showAdvanced,
+                            enter = expandVertically() + fadeIn(),
+                            exit = shrinkVertically() + fadeOut()
+                        ) {
+                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                OutlinedTextField(
+                                    value = state.description,
+                                    onValueChange = { component.onIntent(SolutionContract.Intent.OnDescriptionChanged(it)) },
+                                    placeholder = { Text("Detailed description (optional)...") },
+                                    modifier = Modifier.fillMaxWidth().heightIn(min = 100.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = colors.accent,
+                                        unfocusedBorderColor = colors.border
+                                    )
+                                )
+
+                                ExposedDropdownMenuBox(
+                                    expanded = expandedTypes,
+                                    onExpandedChange = { expandedTypes = it }
+                                ) {
+                                    OutlinedTextField(
+                                        value = state.solutionType.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() },
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        label = { Text("Strategy Type") },
+                                        modifier = Modifier.fillMaxWidth().menuAnchor(),
+                                        shape = RoundedCornerShape(12.dp),
+                                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTypes) },
+                                        colors = OutlinedTextFieldDefaults.colors(
+                                            focusedBorderColor = colors.accent,
+                                            unfocusedBorderColor = colors.border
+                                        )
+                                    )
+                                    ExposedDropdownMenu(
+                                        expanded = expandedTypes,
+                                        onDismissRequest = { expandedTypes = false }
+                                    ) {
+                                        SolutionType.values().forEach { type ->
+                                            DropdownMenuItem(
+                                                text = { Text(type.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() }) },
+                                                onClick = {
+                                                    component.onIntent(SolutionContract.Intent.OnSolutionTypeChanged(type))
+                                                    expandedTypes = false
+                                                }
+                                            )
                                         }
+                                    }
+                                }
+
+                                Text(
+                                    "Strategic Strength",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = colors.accent,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Slider(
+                                        value = state.aidStrength.toFloat(),
+                                        onValueChange = { component.onIntent(SolutionContract.Intent.OnAidStrengthChanged(it.toInt())) },
+                                        valueRange = 0f..100f,
+                                        modifier = Modifier.weight(1f),
+                                        colors = SliderDefaults.colors(thumbColor = colors.accent, activeTrackColor = colors.accent)
+                                    )
+                                    Text(
+                                        text = "${state.aidStrength}%",
+                                        modifier = Modifier.width(48.dp),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.End
                                     )
                                 }
+
+                                Text(
+                                    "Estimated Costs (0-100 scale)",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = colors.accent,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                                CostSlider(label = "Energy", value = state.energyCost, onValueChange = { component.onIntent(SolutionContract.Intent.OnEnergyCostChanged(it)) }, colors = colors)
+                                CostSlider(label = "Time", value = state.timeCost, onValueChange = { component.onIntent(SolutionContract.Intent.OnTimeCostChanged(it)) }, colors = colors)
+                                CostSlider(label = "Money", value = state.moneyCost, onValueChange = { component.onIntent(SolutionContract.Intent.OnMoneyCostChanged(it)) }, colors = colors)
                             }
                         }
-
-                        Text(
-                            "Strategic Strength",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = colors.accent,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Slider(
-                                value = state.aidStrength.toFloat(),
-                                onValueChange = { component.onIntent(SolutionContract.Intent.OnAidStrengthChanged(it.toInt())) },
-                                valueRange = 0f..100f,
-                                modifier = Modifier.weight(1f),
-                                colors = SliderDefaults.colors(thumbColor = colors.accent, activeTrackColor = colors.accent)
-                            )
-                            Text(
-                                text = "${state.aidStrength}%",
-                                modifier = Modifier.width(48.dp),
-                                style = MaterialTheme.typography.bodyMedium,
-                                textAlign = androidx.compose.ui.text.style.TextAlign.End
-                            )
-                        }
-
-                        Text(
-                            "Estimated Costs (0-100 scale)",
-                            style = MaterialTheme.typography.titleSmall,
-                            color = colors.accent,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-                        CostSlider(label = "Energy", value = state.energyCost, onValueChange = { component.onIntent(SolutionContract.Intent.OnEnergyCostChanged(it)) }, colors = colors)
-                        CostSlider(label = "Time", value = state.timeCost, onValueChange = { component.onIntent(SolutionContract.Intent.OnTimeCostChanged(it)) }, colors = colors)
-                        CostSlider(label = "Money", value = state.moneyCost, onValueChange = { component.onIntent(SolutionContract.Intent.OnMoneyCostChanged(it)) }, colors = colors)
 
                         Button(
                             onClick = { component.onIntent(SolutionContract.Intent.OnSaveClicked) },
@@ -230,7 +261,35 @@ fun SolutionScreen(component: SolutionComponent) {
                 }
             }
 
-            if (state.solutions.isNotEmpty()) {
+            if (state.solutions.isEmpty()) {
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        "Understanding Solutions",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+                
+                item {
+                    W2TOnboardingItem(
+                        icon = "💡",
+                        title = "Formulate Strategies",
+                        description = "Draft actionable solutions to bypass constraints or hurdles blockading your targets.",
+                        iconBackgroundColor = colors.accent.copy(alpha = 0.85f)
+                    )
+                }
+
+                item {
+                    W2TOnboardingItem(
+                        icon = "📊",
+                        title = "Balance the Costs",
+                        description = "Optimize cost indicators (Energy, Time, Money) to make sustainable and realistic progress.",
+                        iconBackgroundColor = colors.purple.copy(alpha = 0.85f)
+                    )
+                }
+            } else {
                 item {
                     Text(
                         "Existing Solutions",

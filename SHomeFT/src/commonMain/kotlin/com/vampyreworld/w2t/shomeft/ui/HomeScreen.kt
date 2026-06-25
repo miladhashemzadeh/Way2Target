@@ -13,8 +13,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.sharedui.catalog.*
@@ -86,12 +89,74 @@ fun HomeScreen(component: HomeComponent) {
                 W2TCard {
                     W2TSectionTitle("Your Master Goals")
                     if (state.masterGoals.isEmpty()) {
-                        Text(
-                            "No master goals yet. Start by creating one!",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = colors.muted,
-                            modifier = Modifier.padding(vertical = 16.dp)
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Text(
+                                text = "Define Your Vision",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "To target your destination, break down your path into simple steps:",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = colors.muted
+                            )
+
+                            // Step-by-step showcase
+                            val steps = listOf(
+                                Triple("🎯", "Master Goal", "Define your ultimate destination or vision (e.g., Learn Compose)."),
+                                Triple("📍", "Milestones", "Break your goal down into clear roadmap milestones."),
+                                Triple("⚡", "Actions", "Create bite-sized, actionable tasks for your daily routine.")
+                            )
+
+                            steps.forEach { (icon, stepTitle, stepDesc) ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.Top,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .clip(RoundedCornerShape(10.dp))
+                                            .background(colors.accent.copy(alpha = 0.12f)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(icon, style = MaterialTheme.typography.titleMedium)
+                                    }
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = stepTitle,
+                                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = stepDesc,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = colors.muted
+                                        )
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Button(
+                                onClick = { component.onIntent(HomeContract.Intent.CreateMasterGoal) },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
+                                shape = RoundedCornerShape(12.dp),
+                                contentPadding = PaddingValues(vertical = 12.dp)
+                            ) {
+                                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Create Master Goal", fontWeight = FontWeight.Bold)
+                            }
+                        }
                     } else {
                         state.masterGoals.forEach { goal ->
                             val (icon, cleanTitle) = goal.title.extractIcon()
@@ -111,12 +176,31 @@ fun HomeScreen(component: HomeComponent) {
                 W2TCard {
                     W2TSectionTitle("Today's Actions")
                     if (state.todayActions.isEmpty()) {
-                        Text(
-                            "No actions for today. Take some rest!",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = colors.muted,
-                            modifier = Modifier.padding(vertical = 16.dp)
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = "🌴",
+                                fontSize = 36.sp,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                            Text(
+                                text = "All Caught Up!",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "No daily actions scheduled for today. Goals only progress when you assign today's tasks inside your milestones.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = colors.muted,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                        }
                     } else {
                         state.todayActions.forEach { action ->
                             val (icon, cleanTitle) = action.title.extractIcon()
