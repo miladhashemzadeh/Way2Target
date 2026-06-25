@@ -16,3 +16,19 @@ plugins {
     alias(libs.plugins.kotlinAndroid) apply false
 
 }
+
+subprojects {
+    configurations.configureEach {
+        if (name.contains("jvmMain", ignoreCase = true) || 
+            name.contains("jvmTest", ignoreCase = true) || 
+            name.contains("jvmCompile", ignoreCase = true) || 
+            name.contains("jvmRuntime", ignoreCase = true)) {
+            attributes {
+                attribute(
+                    org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.attribute,
+                    org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.jvm
+                )
+            }
+        }
+    }
+}
