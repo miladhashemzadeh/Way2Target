@@ -40,6 +40,7 @@ class DefaultSolutionComponent(
 
     init {
         loadProfile()
+        loadSolutions()
     }
 
     private fun loadProfile() {
@@ -75,6 +76,18 @@ class DefaultSolutionComponent(
             is SolutionContract.Intent.OnSolutionTypeChanged -> {
                 _state.value = _state.value.copy(solutionType = intent.type)
             }
+            is SolutionContract.Intent.OnEnergyCostChanged -> {
+                _state.value = _state.value.copy(energyCost = intent.cost)
+            }
+            is SolutionContract.Intent.OnTimeCostChanged -> {
+                _state.value = _state.value.copy(timeCost = intent.cost)
+            }
+            is SolutionContract.Intent.OnMoneyCostChanged -> {
+                _state.value = _state.value.copy(moneyCost = intent.cost)
+            }
+            is SolutionContract.Intent.OnAidStrengthChanged -> {
+                _state.value = _state.value.copy(aidStrength = intent.strength)
+            }
             SolutionContract.Intent.OnSaveClicked -> {
                 saveSolution()
             }
@@ -96,8 +109,12 @@ class DefaultSolutionComponent(
                     title = currentState.title,
                     desc = currentState.description,
                     solutionType = currentState.solutionType,
-                    cost = Cost(energyCost = 10, timeCost = 10, moneyCost = 0),
-                    aidStrength = 50,
+                    cost = Cost(
+                        energyCost = currentState.energyCost,
+                        timeCost = currentState.timeCost,
+                        moneyCost = currentState.moneyCost
+                    ),
+                    aidStrength = currentState.aidStrength,
                     result = SolutionResult.UNKNOWN
                 )
                 addSolutionUseCase(newSolution, challengeId)
@@ -106,6 +123,10 @@ class DefaultSolutionComponent(
                     title = "",
                     description = "",
                     solutionType = SolutionType.PLANNING,
+                    energyCost = 10,
+                    timeCost = 10,
+                    moneyCost = 0,
+                    aidStrength = 50,
                     isLoading = false
                 )
             } catch (e: Exception) {

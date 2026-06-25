@@ -182,6 +182,38 @@ fun SolutionScreen(component: SolutionComponent) {
                             }
                         }
 
+                        Text(
+                            "Strategic Strength",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = colors.accent,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Slider(
+                                value = state.aidStrength.toFloat(),
+                                onValueChange = { component.onIntent(SolutionContract.Intent.OnAidStrengthChanged(it.toInt())) },
+                                valueRange = 0f..100f,
+                                modifier = Modifier.weight(1f),
+                                colors = SliderDefaults.colors(thumbColor = colors.accent, activeTrackColor = colors.accent)
+                            )
+                            Text(
+                                text = "${state.aidStrength}%",
+                                modifier = Modifier.width(48.dp),
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.End
+                            )
+                        }
+
+                        Text(
+                            "Estimated Costs (0-100 scale)",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = colors.accent,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                        CostSlider(label = "Energy", value = state.energyCost, onValueChange = { component.onIntent(SolutionContract.Intent.OnEnergyCostChanged(it)) }, colors = colors)
+                        CostSlider(label = "Time", value = state.timeCost, onValueChange = { component.onIntent(SolutionContract.Intent.OnTimeCostChanged(it)) }, colors = colors)
+                        CostSlider(label = "Money", value = state.moneyCost, onValueChange = { component.onIntent(SolutionContract.Intent.OnMoneyCostChanged(it)) }, colors = colors)
+
                         Button(
                             onClick = { component.onIntent(SolutionContract.Intent.OnSaveClicked) },
                             modifier = Modifier.align(Alignment.End),
@@ -198,6 +230,27 @@ fun SolutionScreen(component: SolutionComponent) {
                 }
             }
 
+            if (state.solutions.isNotEmpty()) {
+                item {
+                    Text(
+                        "Existing Solutions",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+
+                items(state.solutions.size) { index ->
+                    val solution = state.solutions[index]
+                    W2TSolutionItem(
+                        title = solution.title,
+                        source = solution.solutionType.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() },
+                        isAi = false // Can be determined by logic if needed
+                    )
+                }
+            }
+
             if (state.isLoading) {
                 item {
                     Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
@@ -206,5 +259,30 @@ fun SolutionScreen(component: SolutionComponent) {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun CostSlider(
+    label: String,
+    value: Int,
+    onValueChange: (Int) -> Unit,
+    colors: com.vampyreworld.w2t.sharedui.theme.color.AppColorScheme
+) {
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(label, style = MaterialTheme.typography.labelMedium, color = colors.muted)
+            Text("$value", style = MaterialTheme.typography.labelSmall, color = colors.muted)
+        }
+        Slider(
+            value = value.toFloat(),
+            onValueChange = { onValueChange(it.toInt()) },
+            valueRange = 0f..100f,
+            colors = SliderDefaults.colors(thumbColor = colors.accent, activeTrackColor = colors.accent)
+        )
     }
 }
