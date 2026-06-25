@@ -18,5 +18,6 @@ interface SolutionContract {
         data object OnBackClicked : Intent
         data class OnSolutionTextChanged(val text: String) : Intent
         data object OnSaveClicked : Intent
+        data object OnGetAiInsightsClicked : Intent
     }
 }

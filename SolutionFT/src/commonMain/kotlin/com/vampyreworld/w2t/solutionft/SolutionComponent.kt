@@ -57,6 +57,9 @@ class DefaultSolutionComponent(
             SolutionContract.Intent.OnSaveClicked -> {
                 saveSolution()
             }
+            SolutionContract.Intent.OnGetAiInsightsClicked -> {
+                loadSolutions()
+            }
         }
     }
 

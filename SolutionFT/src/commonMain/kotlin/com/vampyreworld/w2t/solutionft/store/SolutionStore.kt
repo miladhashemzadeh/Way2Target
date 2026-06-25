@@ -8,6 +8,7 @@ interface SolutionStore : Store<SolutionStore.Intent, SolutionContract.State, So
         data object Refresh : Intent
         data class ChangeText(val text: String) : Intent
         data object Save : Intent
+        data object GetAiInsights : Intent
     }
 
     sealed interface Label {

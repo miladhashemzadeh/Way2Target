@@ -51,6 +51,9 @@ class DefaultSolutionComponent(
             SolutionContract.Intent.OnSaveClicked -> {
                 store.accept(SolutionStore.Intent.Save)
             }
+            SolutionContract.Intent.OnGetAiInsightsClicked -> {
+                store.accept(SolutionStore.Intent.GetAiInsights)
+            }
         }
     }
 }

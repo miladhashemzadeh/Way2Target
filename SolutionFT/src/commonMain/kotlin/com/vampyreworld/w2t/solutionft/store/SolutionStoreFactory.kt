@@ -37,6 +37,18 @@ class SolutionStoreFactory(
                 SolutionStore.Intent.Refresh -> loadData()
                 is SolutionStore.Intent.ChangeText -> dispatch(Msg.TextChanged(intent.text))
                 SolutionStore.Intent.Save -> saveSolution()
+                SolutionStore.Intent.GetAiInsights -> getAiInsights()
+            }
+        }
+
+        private fun getAiInsights() {
+            scope.launch {
+                dispatch(Msg.Loading)
+                // Mock AI delay
+                kotlinx.coroutines.delay(1500)
+                // In a real app, this would call an AI service/use-case
+                // For now, we just reload or show a message
+                loadData()
             }
         }
 

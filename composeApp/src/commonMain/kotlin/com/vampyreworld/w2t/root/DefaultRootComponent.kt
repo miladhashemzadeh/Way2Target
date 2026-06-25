@@ -26,8 +26,6 @@ import com.vampyreworld.w2t.splash.DefaultSplashComponent
 import com.vampyreworld.w2t.targetft.master.DefaultMasterComponent
 import com.vampyreworld.w2t.targetft.milestone.DefaultMilestoneComponent
 import com.vampyreworld.w2t.targetft.action.DefaultActionComponent
-import com.vampyreworld.w2t.targetft.presentation.component.DefaultTargetMasterComponent
-import com.vampyreworld.w2t.targetft.presentation.component.TargetMasterComponent
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
 import com.vampyreworld.navigation.Router
@@ -163,30 +161,6 @@ class DefaultRootComponent(
                     navigateToPreferences = { navigation.bringToFront(Screens.Preferences) },
                     navigateToAboutUs = { navigation.bringToFront(Screens.AboutUs) },
                     onExit = onExit
-                )
-            )
-
-            is Screens.TargetMaster -> RootComponent.Child.TargetMaster(
-                DefaultTargetMasterComponent(
-                    componentContext = componentContext,
-                    storeFactory = get(),
-                    getGoalsUseCase = get(),
-                    deleteGoalUseCase = get(),
-                    onOutput = { label ->
-                        when (label) {
-                            TargetMasterComponent.Label.Back -> navigation.pop()
-                            is TargetMasterComponent.Label.NavigateToDetail -> {
-                                val goalId = label.goalId
-                                if (goalId == null) {
-                                    navigation.bringToFront(Screens.AddGoal(null, "MASTER"))
-                                } else {
-                                    navigation.bringToFront(Screens.TargetDetail(goalId, "MASTER"))
-                                }
-                            }
-                            TargetMasterComponent.Label.NavigateToAddMilestone -> 
-                                navigation.bringToFront(Screens.AddGoal(null, "MILESTONE"))
-                        }
-                    }
                 )
             )
 
