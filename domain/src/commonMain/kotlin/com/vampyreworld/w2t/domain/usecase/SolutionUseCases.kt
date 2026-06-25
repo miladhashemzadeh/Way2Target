@@ -8,5 +8,5 @@ interface GetSolutionsUseCase {
 }
 
 interface AddSolutionUseCase {
-    suspend operator fun invoke(solution: Solution)
+    suspend operator fun invoke(solution: Solution, challengeId: Long? = null): Long
 }

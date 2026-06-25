@@ -12,7 +12,7 @@ import com.vampyreworld.w2t.prefrencesft.PrefrencesComponent
 import com.vampyreworld.w2t.profileft.ProfileContract
 import com.vampyreworld.w2t.schallengeft.component.SChallengeComponent
 import com.vampyreworld.w2t.schallengeft.ui.create.ChallengeCreateComponent
-import com.vampyreworld.w2t.solutionft.component.SolutionComponent
+import com.vampyreworld.w2t.solutionft.SolutionComponent
 import com.vampyreworld.w2t.splash.SplashComponent
 import com.vampyreworld.w2t.targetft.master.MasterComponent
 import com.vampyreworld.w2t.targetft.milestone.MilestoneComponent

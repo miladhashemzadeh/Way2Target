@@ -43,7 +43,7 @@ val useCaseModule = module {
 
     // Solutions
     factory<GetSolutionsUseCase> { GetSolutionsUseCaseImpl(get()) }
-    factory<AddSolutionUseCase> { AddSolutionUseCaseImpl(get()) }
+    factory<AddSolutionUseCase> { AddSolutionUseCaseImpl(get(), get()) }
 
     // Challenges
     factory<GetChallengesUseCase> { GetChallengesUseCaseImpl(get()) }

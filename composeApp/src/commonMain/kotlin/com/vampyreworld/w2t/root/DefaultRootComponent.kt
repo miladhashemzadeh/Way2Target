@@ -21,7 +21,7 @@ import com.vampyreworld.w2t.profileft.ProfileContract
 import com.vampyreworld.w2t.profileft.component.DefaultProfileComponent
 import com.vampyreworld.w2t.schallengeft.component.DefaultSChallengeComponent
 import com.vampyreworld.w2t.schallengeft.ui.create.DefaultChallengeCreateComponent
-import com.vampyreworld.w2t.solutionft.component.DefaultSolutionComponent
+import com.vampyreworld.w2t.solutionft.DefaultSolutionComponent
 import com.vampyreworld.w2t.splash.DefaultSplashComponent
 import com.vampyreworld.w2t.targetft.master.DefaultMasterComponent
 import com.vampyreworld.w2t.targetft.milestone.DefaultMilestoneComponent
@@ -383,16 +383,26 @@ class DefaultRootComponent(
             is Screens.ListOfSolutions -> RootComponent.Child.Solution(
                 DefaultSolutionComponent(
                     componentContext = componentContext,
-                    storeFactory = get { parametersOf(config.goalId, config.challengeId) },
-                    onBack = { navigation.pop() }
+                    addSolutionUseCase = get(),
+                    getSolutionsUseCase = get(),
+                    getUserProfileUseCase = get(),
+                    goalId = config.goalId,
+                    challengeId = config.challengeId,
+                    onBack = { navigation.pop() },
+                    onProfile = { navigation.bringToFront(Screens.Profile) }
                 )
             )
 
             is Screens.AddSolution -> RootComponent.Child.Solution(
                 DefaultSolutionComponent(
                     componentContext = componentContext,
-                    storeFactory = get { parametersOf(config.goalId, config.challengeId) },
-                    onBack = { navigation.pop() }
+                    addSolutionUseCase = get(),
+                    getSolutionsUseCase = get(),
+                    getUserProfileUseCase = get(),
+                    goalId = config.goalId,
+                    challengeId = config.challengeId,
+                    onBack = { navigation.pop() },
+                    onProfile = { navigation.bringToFront(Screens.Profile) }
                 )
             )
 
