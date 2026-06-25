@@ -470,7 +470,10 @@ class DefaultRootComponent(
                     componentContext = componentContext,
                     getThemeUseCase = get(),
                     setThemeUseCase = get(),
-                    onBack = { navigation.pop() }
+                    onBack = { navigation.pop() },
+                    navigateToHome = { navigation.bringToFront(Screens.Home) },
+                    navigateToProfile = { navigation.bringToFront(Screens.Profile) },
+                    navigateToSChallenge = { navigation.bringToFront(Screens.ListOfChallenges(null)) }
                 )
             )
 
@@ -480,7 +483,10 @@ class DefaultRootComponent(
                     storeFactory = get(),
                     getUserProfileUseCase = get(),
                     saveUserProfileUseCase = get(),
-                    onBack = { navigation.pop() }
+                    onBack = { navigation.pop() },
+                    navigateToHome = { navigation.bringToFront(Screens.Home) },
+                    navigateToSChallenge = { navigation.bringToFront(Screens.ListOfChallenges(null)) },
+                    navigateToPreferences = { navigation.bringToFront(Screens.Preferences) }
                 )
             )
 

@@ -29,5 +29,9 @@ interface ProfileContract {
         val state: Value<State>
         val sideEffects: Flow<SideEffect>
         fun onIntent(intent: Intent)
+        fun onNavigateToHome() {}
+        fun onNavigateToProfile() {}
+        fun onNavigateToSChallenge() {}
+        fun onNavigateToPreferences() {}
     }
 }

@@ -47,6 +47,17 @@ fun ProfileScreen(component: ProfileContract.Component) {
                     }
                 }
             )
+        },
+        bottomBar = {
+            if (!state.isEditMode) {
+                com.vampyreworld.w2t.sharedui.catalog.W2TBottomNavigation(
+                    onHomeClick = { component.onNavigateToHome() },
+                    onProfileClick = { },
+                    onChallengesClick = { component.onNavigateToSChallenge() },
+                    onSettingsClick = { component.onNavigateToPreferences() },
+                    selectedTab = 1
+                )
+            }
         }
     ) { padding ->
         if (state.isLoading) {

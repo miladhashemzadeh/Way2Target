@@ -18,14 +18,27 @@ interface PrefrencesComponent {
     val sideEffects: Flow<PrefrencesContract.SideEffect>
     
     fun onIntent(intent: PrefrencesContract.Intent)
+
+    fun onNavigateToHome() {}
+    fun onNavigateToProfile() {}
+    fun onNavigateToSChallenge() {}
+    fun onNavigateToPreferences() {}
 }
 
 class DefaultPrefrencesComponent(
     componentContext: ComponentContext,
     private val getThemeUseCase: GetThemeUseCase,
     private val setThemeUseCase: SetThemeUseCase,
-    private val onBack: () -> Unit
+    private val onBack: () -> Unit,
+    private val navigateToHome: () -> Unit = {},
+    private val navigateToProfile: () -> Unit = {},
+    private val navigateToSChallenge: () -> Unit = {}
 ) : PrefrencesComponent, ComponentContext by componentContext {
+
+    override fun onNavigateToHome() = navigateToHome()
+    override fun onNavigateToProfile() = navigateToProfile()
+    override fun onNavigateToSChallenge() = navigateToSChallenge()
+    override fun onNavigateToPreferences() {}
 
     private val _state = MutableValue(PrefrencesContract.State())
     override val state: Value<PrefrencesContract.State> = _state
