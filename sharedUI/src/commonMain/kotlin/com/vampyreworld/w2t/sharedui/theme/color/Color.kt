@@ -44,7 +44,7 @@ val White5 = white100.copy(alpha = .05f)
 // BACKGROUNDS
 // ======================================================
 
-val BgLight = Color(0xFFF8F9FF)
+val BgLight = Color(0xFFECE9F7)
 val BgSecondary = Color(0xFFECEDF4)
 val BgCool = Color(0xFFE7E8EE)
 
@@ -164,7 +164,7 @@ val Blue = Color(0xFF2E628C)
 // OPEN DESIGN COLORS
 // ======================================================
 
-val OD_Bg = Color(0xFFF5F3FF)
+val OD_Bg = Color(0xFFE2DFF5)
 val OD_Surface = Color(0xFFFFFFFF)
 val OD_Fg = Color(0xFF1C1929)
 val OD_Muted = Color(0xFF7C7B8E)

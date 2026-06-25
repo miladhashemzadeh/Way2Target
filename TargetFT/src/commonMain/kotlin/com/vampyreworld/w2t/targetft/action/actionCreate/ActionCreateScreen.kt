@@ -31,6 +31,9 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.ui.graphics.Color
+
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ActionCreateScreen(
@@ -137,18 +140,28 @@ fun ActionCreateScreen(
 
     val icons = listOf("💻", "📈", "🧘‍♀️", "📚", "💰", "🚀", "🎨", "🏡", "🎯", "✨", "🏃")
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding)
-            .verticalScroll(scrollState)
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        W2THeader(
-            title = "ایجاد گام اجرایی",
-            subtitle = if (state.parentId != null) "زیرمجموعه هدف #${state.parentId}" else "گام عملیاتی خود را تعریف کنید"
-        )
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = { Text("Create Action Goal", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
+                navigationIcon = {
+                    IconButton(onClick = { component.onIntent(ActionCreateContract.Intent.OnBackClicked) }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(scrollState)
+                .padding(horizontal = 24.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
 
         W2TCard {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -536,6 +549,7 @@ fun ActionCreateScreen(
         
         Spacer(modifier = Modifier.height(24.dp))
     }
+}
 }
 
 @Composable

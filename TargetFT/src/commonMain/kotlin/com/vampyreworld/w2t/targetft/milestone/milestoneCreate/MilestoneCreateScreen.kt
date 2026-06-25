@@ -15,11 +15,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.ui.graphics.Color
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.sharedui.catalog.W2TCard
-import com.vampyreworld.w2t.sharedui.catalog.W2THeader
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MilestoneCreateScreen(
     component: MilestoneCreateContract.Component,
@@ -36,19 +39,28 @@ fun MilestoneCreateScreen(
 
     val icons = listOf("💻", "📈", "🧘‍♀️", "📚", "💰", "🚀", "🎨", "🏡", "🎯", "✨", "🏃")
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding)
-            .verticalScroll(scrollState)
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        W2THeader(
-            title = "Create Milestone Goal",
-            subtitle = if (state.parentId != null) "As child of Target #${state.parentId}" else "Define your sub-target",
-            avatarText = "+"
-        )
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = { Text("Create Milestone Goal", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
+                navigationIcon = {
+                    IconButton(onClick = { component.onIntent(MilestoneCreateContract.Intent.OnBackClicked) }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(scrollState)
+                .padding(horizontal = 24.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
 
         W2TCard {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -172,4 +184,5 @@ fun MilestoneCreateScreen(
         
         Spacer(modifier = Modifier.height(24.dp))
     }
+}
 }

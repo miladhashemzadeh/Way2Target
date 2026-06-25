@@ -20,6 +20,9 @@ import com.vampyreworld.w2t.domain.data.model.GoalStatus
 import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.ui.graphics.Color
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActionDetailScreen(
@@ -34,18 +37,25 @@ fun ActionDetailScreen(
     var editedTitle by remember { mutableStateOf(goal.title) }
     var editedDescription by remember { mutableStateOf(goal.description) }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(padding),
-        contentPadding = PaddingValues(24.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        item {
-            W2THeader(
-                title = "Action Detail",
-                subtitle = "Consistency is key",
-                avatarText = "A"
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = { Text(goal.title, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
+                navigationIcon = {
+                    IconButton(onClick = { component.onIntent(ActionDetailContract.Intent.OnBackClicked) }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
 
         item {
             W2TCard {
@@ -179,3 +189,5 @@ fun ActionDetailScreen(
         item { Spacer(modifier = Modifier.height(24.dp)) }
     }
 }
+}
+

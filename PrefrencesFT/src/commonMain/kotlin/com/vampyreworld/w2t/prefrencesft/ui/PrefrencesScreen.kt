@@ -3,11 +3,14 @@ package com.vampyreworld.w2t.prefrencesft.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
@@ -17,6 +20,7 @@ import com.vampyreworld.w2t.sharedui.catalog.W2TCard
 import com.vampyreworld.w2t.sharedui.catalog.W2TBottomNavigation
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrefrencesScreen(component: PrefrencesComponent) {
     val state by component.state.subscribeAsState()
@@ -24,6 +28,17 @@ fun PrefrencesScreen(component: PrefrencesComponent) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = { Text("Settings", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
+                navigationIcon = {
+                    IconButton(onClick = { component.onIntent(PrefrencesContract.Intent.OnBackClicked) }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+            )
+        },
         bottomBar = {
             W2TBottomNavigation(
                 onHomeClick = { component.onNavigateToHome() },
@@ -42,13 +57,6 @@ fun PrefrencesScreen(component: PrefrencesComponent) {
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Settings",
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            
             W2TCard {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -80,3 +88,4 @@ fun PrefrencesScreen(component: PrefrencesComponent) {
         }
     }
 }
+
