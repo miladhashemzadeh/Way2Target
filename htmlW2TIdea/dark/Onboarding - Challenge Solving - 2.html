@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>W2T Onboarding - Mood & AI (Dark)</title>
+    <style>
+        :root {
+            --bg: oklch(95% 0.005 240);
+            --surface: oklch(100% 0 0);
+            --fg: oklch(20% 0.02 240);
+            --muted: oklch(50% 0.018 240);
+            --border: oklch(90% 0.006 240);
+            --accent: oklch(35% 0.22 290);
+            --success: oklch(55% 0.15 140);
+            --challenge: oklch(65% 0.18 55);
+            --failed: oklch(70% 0.18 25);
+
+            --glass-bg-base: rgba(255, 255, 255, 0.15);
+            --glass-border-color: rgba(255, 255, 255, 0.3);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --glass-glow: 0 0 20px oklch(35% 0.22 290 / 0.1);
+
+            --mood-high-energy-start: oklch(75% 0.15 260);
+            --mood-high-energy-end: oklch(80% 0.12 280);
+            --mood-focused-start: oklch(70% 0.18 160);
+            --mood-focused-end: oklch(75% 0.15 180);
+
+            --font-display: 'Inter', system-ui, sans-serif;
+            --font-body: 'Inter', system-ui, sans-serif;
+
+            --card-radius: 24px;
+            --button-radius: 999px;
+            --input-radius: 16px;
+        }
+
+        body.dark-theme {
+            --bg: oklch(10% 0.02 260);
+            --surface: oklch(15% 0.03 260);
+            --fg: oklch(90% 0.01 240);
+            --muted: oklch(60% 0.01 240);
+            --border: oklch(20% 0.02 260);
+            --accent: oklch(70% 0.2 290);
+            --success: oklch(65% 0.18 140);
+            --challenge: oklch(75% 0.2 55);
+            --failed: oklch(80% 0.2 25);
+
+            --glass-bg-base: rgba(255, 255, 255, 0.05);
+            --glass-border-color: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --glass-glow: 0 0 20px oklch(70% 0.2 290 / 0.3);
+
+            --mood-high-energy-start: oklch(65% 0.18 260);
+            --mood-high-energy-end: oklch(70% 0.15 280);
+            --mood-focused-start: oklch(60% 0.2 160);
+            --mood-focused-end: oklch(65% 0.18 180);
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--fg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100vh;
+            padding: 32px 24px;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .header h1 {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .header p {
+            font-size: 1rem;
+            color: var(--muted);
+        }
+
+        .mood-ai-features {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .feature-card {
+            background: var(--glass-bg-base);
+            border: 1px solid var(--glass-border-color);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--card-radius);
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: all 0.2s ease-out;
+        }
+        .feature-card:hover {
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1), 0 0 10px oklch(var(--accent) / 0.1);
+            transform: translateY(-2px);
+        }
+
+        .feature-card .icon-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            color: var(--surface);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .feature-card.mood .icon-circle {
+            background: linear-gradient(135deg, var(--mood-high-energy-start), var(--mood-high-energy-end));
+        }
+        .feature-card.ai .icon-circle {
+            background: linear-gradient(135deg, var(--mood-focused-start), var(--mood-focused-end));
+        }
+
+        .feature-card h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+            color: var(--fg);
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navigation .dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .navigation .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--border);
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+
+        .navigation .dot.active {
+            background: var(--accent);
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .navigation button {
+            background: var(--accent);
+            color: var(--surface);
+            border: none;
+            border-radius: var(--button-radius);
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 6px 16px oklch(var(--accent) / 0.3);
+            transition: all 0.2s ease;
+        }
+        .navigation button:hover {
+            background: oklch(var(--accent) / 1.1);
+            box-shadow: 0 8px 20px oklch(var(--accent) / 0.4);
+        }
+        .navigation button.skip {
+            background: transparent;
+            color: var(--muted);
+            box-shadow: none;
+        }
+        .navigation button.skip:hover {
+            color: var(--fg);
+            background: rgba(var(--surface-rgb, 255 255 255 / 0.1));
+        }
+    </style>
+</head>
+<body class="dark-theme">
+    <div class="header">
+        <h1>Intelligent Decisions, Powered by You</h1>
+        <p>Leverage your inner state and AI for optimal strategic choices.</p>
+    </div>
+
+    <div class="mood-ai-features">
+        <div class="feature-card mood">
+            <div class="icon-circle">😊</div>
+            <div>
+                <h2>Mood Integration</h2>
+                <p>Reflect on your energy & focus for better decision timing.</p>
+            </div>
+        </div>
+        <div class="feature-card ai">
+            <div class="icon-circle">🤖</div>
+            <div>
+                <h2>AI Helper</h2>
+                <p>Receive intelligent strategies and solutions for complex challenges.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="skip">Back</button>
+        <div class="dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot active"></div>
+        </div>
+        <button>Get Started</button>
+    </div>
+</body>
+</html>

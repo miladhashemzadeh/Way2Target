@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>W2T Challenge Detail (Redesigned)</title>
+    <style>
+        :root {
+            --bg: oklch(95% 0.005 240);
+            --surface: oklch(100% 0 0);
+            --fg: oklch(20% 0.02 240);
+            --muted: oklch(50% 0.018 240);
+            --border: oklch(90% 0.006 240);
+            --accent: oklch(35% 0.22 290);
+            --success: oklch(55% 0.15 140);
+            --challenge: oklch(65% 0.18 55);
+            --failed: oklch(70% 0.18 25);
+
+            --glass-bg-base: rgba(255, 255, 255, 0.15);
+            --glass-border-color: rgba(255, 255, 255, 0.3);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --glass-glow: 0 0 20px oklch(35% 0.22 290 / 0.1);
+
+            --mood-high-energy-start: oklch(75% 0.15 260);
+            --mood-high-energy-end: oklch(80% 0.12 280);
+            --mood-focused-start: oklch(70% 0.18 160);
+            --mood-focused-end: oklch(75% 0.15 180);
+
+            --font-display: 'Inter', system-ui, sans-serif;
+            --font-body: 'Inter', system-ui, sans-serif;
+
+            --card-radius: 24px;
+            --button-radius: 999px;
+            --input-radius: 16px;
+        }
+
+        body.dark-theme {
+            --bg: oklch(10% 0.02 260);
+            --surface: oklch(15% 0.03 260);
+            --fg: oklch(90% 0.01 240);
+            --muted: oklch(60% 0.01 240);
+            --border: oklch(20% 0.02 260);
+            --accent: oklch(70% 0.2 290);
+            --success: oklch(65% 0.18 140);
+            --challenge: oklch(75% 0.2 55);
+            --failed: oklch(80% 0.2 25);
+
+            --glass-bg-base: rgba(255, 255, 255, 0.05);
+            --glass-border-color: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --glass-glow: 0 0 20px oklch(70% 0.2 290 / 0.3);
+
+            --mood-high-energy-start: oklch(65% 0.18 260);
+            --mood-high-energy-end: oklch(70% 0.15 280);
+            --mood-focused-start: oklch(60% 0.2 160);
+            --mood-focused-end: oklch(65% 0.18 180);
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--fg);
+            margin: 0;
+            padding: 24px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            height: 100vh;
+            overflow-y: auto;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .header-bar .back-button, .header-bar .menu-button {
+            background: var(--glass-bg-base);
+            border: 1px solid var(--glass-border-color);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            font-size: 1.2rem;
+            color: var(--fg);
+            cursor: pointer;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .challenge-header h1 {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            color: var(--fg);
+        }
+        .challenge-header .metadata {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .challenge-header .metadata .status-chip {
+            background: var(--challenge);
+            color: var(--surface);
+            border-radius: var(--button-radius);
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .challenge-header .metadata .goal-link {
+            font-size: 0.9rem;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .challenge-header p {
+            font-size: 1rem;
+            color: var(--fg);
+            margin: 0 0 24px 0;
+            line-height: 1.5;
+        }
+
+        .glass-card {
+            background: var(--glass-bg-base);
+            border: 1px solid var(--glass-border-color);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--card-radius);
+            box-shadow: var(--glass-shadow), var(--glass-glow);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: all 0.3s ease-out;
+        }
+        .glass-card:hover {
+            box-shadow: var(--glass-shadow), 0 0 30px var(--accent);
+        }
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--fg);
+        }
+
+        .solutions-list .solution-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        .solutions-list .solution-item:last-child {
+            margin-bottom: 0;
+        }
+        .solutions-list .solution-item.preferred {
+            border-color: var(--success);
+            background: oklch(var(--success) / 0.1);
+        }
+        .solutions-list .solution-item .solution-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .solutions-list .solution-item h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--fg);
+        }
+        .solutions-list .solution-item .source-chip {
+            background: var(--muted);
+            color: var(--surface);
+            border-radius: var(--button-radius);
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        .solutions-list .solution-item.preferred .source-chip {
+            background: var(--success);
+        }
+        .solutions-list .solution-item p {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .ai-recommendation-card {
+            background: linear-gradient(135deg, var(--mood-focused-start), var(--mood-focused-end));
+            color: var(--surface);
+            border-radius: var(--card-radius);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: var(--glass-shadow), 0 6px 16px oklch(var(--mood-focused-start) / 0.3);
+            margin-top: 20px;
+        }
+        .ai-recommendation-card h2 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .ai-recommendation-card p {
+            font-size: 0.95rem;
+            margin: 0;
+            opacity: 0.95;
+            line-height: 1.5;
+        }
+        .ai-recommendation-card button {
+            background: var(--surface);
+            color: var(--mood-focused-start);
+            border: none;
+            border-radius: var(--button-radius);
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            align-self: flex-start;
+            margin-top: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .add-solution-button {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0;
+            align-self: flex-end;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <button class="back-button">←</button>
+        <button class="menu-button">⋮</button>
+    </div>
+
+    <div class="challenge-header">
+        <h1>Stuck on complex data structures</h1>
+        <div class="metadata">
+            <span class="status-chip ongoing">Ongoing</span>
+            <a href="#" class="goal-link">Goal: Learn Programming ›</a>
+        </div>
+        <p>Encountered a block while trying to implement advanced tree algorithms. Need clearer resources or a different approach to proceed with the 'Master Data Structures' milestone.</p>
+    </div>
+
+    <div class="glass-card">
+        <h2 class="section-title">Solutions</h2>
+        <div class="solutions-list">
+            <div class="solution-item preferred">
+                <div class="solution-header">
+                    <h3>Break down into smaller sub-problems</h3>
+                    <span class="source-chip">AI Preferred</span>
+                </div>
+                <p>AI suggests dissecting complex algorithms into foundational components to understand each piece individually before re-assembling.</p>
+            </div>
+            <div class="solution-item">
+                <div class="solution-header">
+                    <h3>Explore visual tutorials on YouTube</h3>
+                    <span class="source-chip">User Suggestion</span>
+                </div>
+                <p>Find video explanations and animations of tree traversals and graph algorithms.</p>
+            </div>
+            <div class="solution-item">
+                <div class="solution-header">
+                    <h3>Connect with a mentor for guidance</h3>
+                    <span class="source-chip">User Suggestion</span>
+                </div>
+                <p>Seek advice from someone experienced in data structures and algorithms.</p>
+            </div>
+        </div>
+        <button class="add-solution-button">Add New Solution ›</button>
+    </div>
+
+    <div class="ai-recommendation-card">
+        <h2><span class="icon">🤖</span> AI Strategy Recommendation</h2>
+        <p>Your current progress on "Master Data Structures" suggests a "bottom-up" learning approach. Start by solidifying basic concepts like nodes and edges, then visualize simple trees (binary search trees), and gradually introduce more complex structures and operations. Practice on platforms like LeetCode with easy problems first.</p>
+        <button class="secondary-button">Implement Strategy</button>
+    </div>
+</body>
+</html>

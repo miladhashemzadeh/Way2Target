@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>W2T Create Master Goal (Dark)</title>
+    <style>
+        :root {
+            --bg: oklch(95% 0.005 240);
+            --surface: oklch(100% 0 0);
+            --fg: oklch(20% 0.02 240);
+            --muted: oklch(50% 0.018 240);
+            --border: oklch(90% 0.006 240);
+            --accent: oklch(35% 0.22 290);
+            --success: oklch(55% 0.15 140);
+            --challenge: oklch(65% 0.18 55);
+            --failed: oklch(70% 0.18 25);
+
+            --glass-bg-base: rgba(255, 255, 255, 0.15);
+            --glass-border-color: rgba(255, 255, 255, 0.3);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --glass-glow: 0 0 20px oklch(35% 0.22 290 / 0.1);
+
+            --mood-high-energy-start: oklch(75% 0.15 260);
+            --mood-high-energy-end: oklch(80% 0.12 280);
+            --mood-focused-start: oklch(70% 0.18 160);
+            --mood-focused-end: oklch(75% 0.15 180);
+
+            --font-display: 'Inter', system-ui, sans-serif;
+            --font-body: 'Inter', system-ui, sans-serif;
+
+            --card-radius: 24px;
+            --button-radius: 999px;
+            --input-radius: 16px;
+        }
+
+        body.dark-theme {
+            --bg: oklch(10% 0.02 260);
+            --surface: oklch(15% 0.03 260);
+            --fg: oklch(90% 0.01 240);
+            --muted: oklch(60% 0.01 240);
+            --border: oklch(20% 0.02 260);
+            --accent: oklch(70% 0.2 290);
+            --success: oklch(65% 0.18 140);
+            --challenge: oklch(75% 0.2 55);
+            --failed: oklch(80% 0.2 25);
+
+            --glass-bg-base: rgba(255, 255, 255, 0.05);
+            --glass-border-color: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --glass-glow: 0 0 20px oklch(70% 0.2 290 / 0.3);
+
+            --mood-high-energy-start: oklch(65% 0.18 260);
+            --mood-high-energy-end: oklch(70% 0.15 280);
+            --mood-focused-start: oklch(60% 0.2 160);
+            --mood-focused-end: oklch(65% 0.18 180);
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--fg);
+            margin: 0;
+            padding: 24px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            height: 100vh;
+            overflow-y: auto;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .header-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .header-bar .back-button {
+            background: var(--glass-bg-base);
+            border: 1px solid var(--glass-border-color);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            font-size: 1.2rem;
+            color: var(--fg);
+            cursor: pointer;
+            box-shadow: var(--glass-shadow);
+        }
+        .header-bar h1 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0 0 0 16px;
+            color: var(--fg);
+        }
+
+        .glass-card {
+            background: var(--glass-bg-base);
+            border: 1px solid var(--glass-border-color);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--card-radius);
+            box-shadow: var(--glass-shadow), var(--glass-glow);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: all 0.3s ease-out;
+        }
+        .glass-card:hover {
+            box-shadow: var(--glass-shadow), 0 0 30px var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 8px;
+            display: block;
+        }
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--input-radius);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--fg);
+            background: var(--surface);
+            box-sizing: border-box;
+            transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23707070%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.6-6.4H19.4c-4.4%200-8.5%201.7-11.7%204.9-3.2%203.2-4.9%207.3-4.9%2011.7v13.6a17.6%2017.6%200%200%200%206.4%2013.6l127.9%20127.9c3.2%203.2%207.3%204.9%2011.7%204.9s8.5-1.7%2011.7-4.9L287%2090.6c3.2-3.2%204.9-7.3%204.9-11.7V83c0-4.4-1.7-8.5-4.9-11.7z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 12px;
+        }
+        input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px oklch(var(--accent) / 0.2);
+            background: var(--surface);
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-group .char-count {
+            font-size: 0.8rem;
+            color: var(--muted);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .icon-selector {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .icon-selector .icon-option {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            display: grid;
+            place-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+        }
+        .icon-selector .icon-option.selected {
+            border-color: var(--accent);
+            background: oklch(var(--accent) / 0.1);
+            color: var(--accent);
+            box-shadow: 0 2px 8px oklch(var(--accent) / 0.15);
+        }
+        .icon-selector .icon-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        button.primary-button {
+            background: var(--accent);
+            color: var(--surface);
+            box-shadow: 0 8px 24px oklch(var(--accent) / 0.4);
+            width: 100%;
+        }
+        button.primary-button:hover {
+            background: oklch(var(--accent) / 1.1);
+            box-shadow: 0 10px 28px oklch(var(--accent) / 0.5);
+        }
+
+        /* Status Chips */
+        .status-chip {
+            border-radius: var(--button-radius);
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--surface);
+        }
+        .status-chip.ongoing { background: var(--challenge); }
+        .status-chip.finished { background: var(--success); }
+        .status-chip.failed { background: var(--failed); }
+    </style>
+</head>
+<body class="dark-theme">
+    <div class="header-bar">
+        <button class="back-button">←</button>
+        <h1>Create Master Goal</h1>
+    </div>
+
+    <div class="glass-card">
+        <div class="form-group">
+            <label for="goal-title">Goal Title</label>
+            <input type="text" id="goal-title" placeholder="e.g., Learn Programming" value="Learn Programming">
+        </div>
+
+        <div class="form-group">
+            <label for="goal-description">Description</label>
+            <textarea id="goal-description" placeholder="What does achieving this goal mean to you?"></textarea>
+            <div class="char-count">0/200 chars</div>
+        </div>
+
+        <div class="form-group">
+            <label for="goal-icon">Select an Icon</label>
+            <div class="icon-selector">
+                <div class="icon-option selected">💻</div>
+                <div class="icon-option">📈</div>
+                <div class="icon-option">🧘‍♀️</div>
+                <div class="icon-option">📚</div>
+                <div class="icon-option">💰</div>
+                <div class="icon-option">🚀</div>
+                <div class="icon-option">🎨</div>
+                <div class="icon-option">🏡</div>
+            </div>
+        </div>
+
+        <button class="primary-button">Create Master Goal</button>
+    </div>
+</body>
+</html>
