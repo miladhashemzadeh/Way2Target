@@ -32,7 +32,8 @@ class DefaultActionDetailComponent(
     private val navigateToMood: () -> Unit,
     private val navigateToGoal: (Long, String) -> Unit,
     private val navigateToChallenge: (goalId: Long) -> Unit,
-    private val navigateToAppraise: (goalId: Long) -> Unit
+    private val navigateToAppraise: (goalId: Long) -> Unit,
+    private val navigateToSolution: (goalId: Long, challengeId: Long) -> Unit
 ) : ActionDetailContract.Component, ComponentContext by componentContext {
 
     private val store = instanceKeeper.getStore {
@@ -81,6 +82,7 @@ class DefaultActionDetailComponent(
             ActionDetailContract.Intent.NavigateToAppraise -> navigateToAppraise(goalId)
             ActionDetailContract.Intent.NavigateToDefineSteps -> store.accept(TargetStore.Intent.NavigateToDefineSteps)
             is ActionDetailContract.Intent.OnGoalClick -> navigateToGoal(intent.goalId, intent.tier)
+            is ActionDetailContract.Intent.OnChallengeClick -> navigateToSolution(goalId, intent.challengeId)
             is ActionDetailContract.Intent.UpdateGoal -> store.accept(TargetStore.Intent.UpdateGoal(intent.goal))
             ActionDetailContract.Intent.DeleteGoal -> store.accept(TargetStore.Intent.DeleteSubGoal(goalId))
         }

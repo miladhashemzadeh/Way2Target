@@ -168,7 +168,9 @@ fun MilestoneDetailScreen(
                             goalTitle = goal.title,
                             description = challenge.desc,
                             status = if (challenge.status == GoalStatus.COMPLETED) "Finished" else "Ongoing",
-                            modifier = Modifier.clickable { }
+                            modifier = Modifier.clickable { 
+                                component.onIntent(MilestoneDetailContract.Intent.OnChallengeClick(challenge.id))
+                            }
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                     }

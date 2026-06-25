@@ -187,6 +187,9 @@ class DefaultRootComponent(
                             },
                             navigateToAppraise = { goalId ->
                                 navigation.bringToFront(Screens.AppraiseTarget(goalId))
+                            },
+                            navigateToSolution = { goalId, challengeId ->
+                                navigation.bringToFront(Screens.AddSolution(goalId, challengeId))
                             }
                         )
                     )
@@ -212,6 +215,9 @@ class DefaultRootComponent(
                             },
                             navigateToAppraise = { goalId ->
                                 navigation.bringToFront(Screens.AppraiseTarget(goalId))
+                            },
+                            navigateToSolution = { goalId, challengeId ->
+                                navigation.bringToFront(Screens.AddSolution(goalId, challengeId))
                             }
                         )
                     )
@@ -234,6 +240,9 @@ class DefaultRootComponent(
                             },
                             navigateToAppraise = { goalId ->
                                 navigation.bringToFront(Screens.AppraiseTarget(goalId))
+                            },
+                            navigateToSolution = { goalId, challengeId ->
+                                navigation.bringToFront(Screens.AddSolution(goalId, challengeId))
                             }
                         )
                     )
@@ -263,6 +272,9 @@ class DefaultRootComponent(
                             },
                             navigateToAppraise = { goalId ->
                                 navigation.bringToFront(Screens.AppraiseTarget(goalId))
+                            },
+                            navigateToSolution = { goalId, challengeId ->
+                                navigation.bringToFront(Screens.AddSolution(goalId, challengeId))
                             }
                         )
                     )
@@ -294,6 +306,9 @@ class DefaultRootComponent(
                             },
                             navigateToAppraise = { goalId ->
                                 navigation.bringToFront(Screens.AppraiseTarget(goalId))
+                            },
+                            navigateToSolution = { goalId, challengeId ->
+                                navigation.bringToFront(Screens.AddSolution(goalId, challengeId))
                             }
                         )
                     )
@@ -322,6 +337,9 @@ class DefaultRootComponent(
                             },
                             navigateToAppraise = { goalId ->
                                 navigation.bringToFront(Screens.AppraiseTarget(goalId))
+                            },
+                            navigateToSolution = { goalId, challengeId ->
+                                navigation.bringToFront(Screens.AddSolution(goalId, challengeId))
                             }
                         )
                     )

@@ -39,7 +39,8 @@ class DefaultActionComponent(
     private val navigateToMood: () -> Unit,
     private val navigateToGoal: (Long, String) -> Unit,
     private val navigateToChallenge: (goalId: Long) -> Unit,
-    private val navigateToAppraise: (goalId: Long) -> Unit
+    private val navigateToAppraise: (goalId: Long) -> Unit,
+    private val navigateToSolution: (goalId: Long, challengeId: Long) -> Unit
 ) : ActionComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<Config>()
@@ -82,7 +83,8 @@ class DefaultActionComponent(
                     navigateToMood = navigateToMood,
                     navigateToGoal = navigateToGoal,
                     navigateToChallenge = navigateToChallenge,
-                    navigateToAppraise = navigateToAppraise
+                    navigateToAppraise = navigateToAppraise,
+                    navigateToSolution = navigateToSolution
                 )
             )
         }
