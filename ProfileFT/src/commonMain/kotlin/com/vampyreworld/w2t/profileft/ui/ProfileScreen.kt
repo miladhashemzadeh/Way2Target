@@ -45,7 +45,8 @@ fun ProfileScreen(component: ProfileContract.Component) {
                             Icon(Icons.Default.Edit, contentDescription = "ویرایش")
                         }
                     }
-                }
+                },
+                colors = com.vampyreworld.w2t.sharedui.catalog.w2tTopAppBarColors()
             )
         },
         bottomBar = {

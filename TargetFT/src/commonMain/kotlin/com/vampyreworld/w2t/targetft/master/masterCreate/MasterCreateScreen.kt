@@ -65,7 +65,7 @@ fun MasterCreateScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                colors = com.vampyreworld.w2t.sharedui.catalog.w2tTopAppBarColors()
             )
         }
     ) { paddingValues ->
@@ -224,7 +224,8 @@ fun MasterCreateScreen(
         Button(
             onClick = { 
                 if (title.isNotBlank()) {
-                    component.onIntent(MasterCreateContract.Intent.OnSaveGoal(title, description, isLifeGoal))
+                    val finalTitle = if (title.startsWith(selectedIcon)) title else "$selectedIcon $title"
+                    component.onIntent(MasterCreateContract.Intent.OnSaveGoal(finalTitle, description, isLifeGoal))
                 }
             },
             modifier = Modifier

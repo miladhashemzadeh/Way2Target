@@ -995,6 +995,44 @@ fun W2TDetailRow(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun w2tTopAppBarColors(): TopAppBarColors {
+    val colors = LocalAppColorScheme.current
+    val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
+    val containerColor = if (isLight) {
+        Color(0xFFD4D0F0).copy(alpha = 0.9f)
+    } else {
+        Color(0xFF0F0B20).copy(alpha = 0.9f)
+    }
+    return TopAppBarDefaults.topAppBarColors(
+        containerColor = containerColor,
+        scrolledContainerColor = containerColor,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        navigationIconContentColor = colors.accent,
+        actionIconContentColor = colors.accent
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun w2tCenterAlignedTopAppBarColors(): TopAppBarColors {
+    val colors = LocalAppColorScheme.current
+    val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
+    val containerColor = if (isLight) {
+        Color(0xFFD4D0F0).copy(alpha = 0.9f)
+    } else {
+        Color(0xFF0F0B20).copy(alpha = 0.9f)
+    }
+    return TopAppBarDefaults.topAppBarColors(
+        containerColor = containerColor,
+        scrolledContainerColor = containerColor,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        navigationIconContentColor = colors.accent,
+        actionIconContentColor = colors.accent
+    )
+}
+
 @Composable
 fun W2TBottomNavigation(
     onHomeClick: () -> Unit,
@@ -1005,84 +1043,102 @@ fun W2TBottomNavigation(
 ) {
     val colors = LocalAppColorScheme.current
     val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
-    val containerColor = MaterialTheme.colorScheme.surface.copy(alpha = if (isLight) 0.8f else 0.35f)
+    val containerColor = if (isLight) {
+        Color(0xFFD4D0F0).copy(alpha = 0.9f)
+    } else {
+        Color(0xFF0F0B20).copy(alpha = 0.9f)
+    }
     val borderBrush = if (isLight) {
         Brush.linearGradient(
             colors = listOf(
-                Color.White.copy(alpha = 0.6f),
-                Color.Transparent
+                Color.White.copy(alpha = 0.8f),
+                colors.accent.copy(alpha = 0.3f),
+                Color.White.copy(alpha = 0.2f)
             )
         )
     } else {
         Brush.linearGradient(
             colors = listOf(
-                Color.White.copy(alpha = 0.15f),
-                Color.Transparent
+                Color.White.copy(alpha = 0.25f),
+                colors.accent.copy(alpha = 0.4f),
+                Color.White.copy(alpha = 0.05f)
             )
         )
     }
 
-    NavigationBar(
-        containerColor = containerColor,
-        tonalElevation = 0.dp,
-        modifier = Modifier.border(
-            width = 1.dp,
-            brush = borderBrush,
-            shape = RoundedCornerShape(0.dp)
-        )
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = 24.dp, vertical = 12.dp),
+        contentAlignment = Alignment.Center
     ) {
-        NavigationBarItem(
-            selected = selectedTab == 0,
-            onClick = onHomeClick,
-            icon = { Icon(Icons.Default.Home, contentDescription = null) },
-            label = { Text("Home") },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = colors.accent,
-                selectedTextColor = colors.accent,
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted,
-                indicatorColor = colors.accent.copy(alpha = 0.1f)
+        NavigationBar(
+            containerColor = containerColor,
+            tonalElevation = 8.dp,
+            modifier = Modifier
+                .height(68.dp)
+                .clip(RoundedCornerShape(32.dp))
+                .border(
+                    width = 1.5.dp,
+                    brush = borderBrush,
+                    shape = RoundedCornerShape(32.dp)
+                ),
+            windowInsets = WindowInsets(0.dp)
+        ) {
+            NavigationBarItem(
+                selected = selectedTab == 0,
+                onClick = onHomeClick,
+                icon = { Icon(Icons.Default.Home, contentDescription = null, modifier = Modifier.size(24.dp)) },
+                label = { Text("Home", style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Medium)) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = colors.accent,
+                    selectedTextColor = colors.accent,
+                    unselectedIconColor = colors.muted,
+                    unselectedTextColor = colors.muted,
+                    indicatorColor = colors.accent.copy(alpha = 0.15f)
+                )
             )
-        )
-        NavigationBarItem(
-            selected = selectedTab == 1,
-            onClick = onProfileClick,
-            icon = { Icon(Icons.Default.Person, contentDescription = null) },
-            label = { Text("Profile") },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = colors.accent,
-                selectedTextColor = colors.accent,
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted,
-                indicatorColor = colors.accent.copy(alpha = 0.1f)
+            NavigationBarItem(
+                selected = selectedTab == 1,
+                onClick = onProfileClick,
+                icon = { Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(24.dp)) },
+                label = { Text("Profile", style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Medium)) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = colors.accent,
+                    selectedTextColor = colors.accent,
+                    unselectedIconColor = colors.muted,
+                    unselectedTextColor = colors.muted,
+                    indicatorColor = colors.accent.copy(alpha = 0.15f)
+                )
             )
-        )
-        NavigationBarItem(
-            selected = selectedTab == 2,
-            onClick = onChallengesClick,
-            icon = { Icon(Icons.Default.Flag, contentDescription = null) },
-            label = { Text("Challenges") },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = colors.accent,
-                selectedTextColor = colors.accent,
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted,
-                indicatorColor = colors.accent.copy(alpha = 0.1f)
+            NavigationBarItem(
+                selected = selectedTab == 2,
+                onClick = onChallengesClick,
+                icon = { Icon(Icons.Default.Flag, contentDescription = null, modifier = Modifier.size(24.dp)) },
+                label = { Text("Challenges", style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Medium)) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = colors.accent,
+                    selectedTextColor = colors.accent,
+                    unselectedIconColor = colors.muted,
+                    unselectedTextColor = colors.muted,
+                    indicatorColor = colors.accent.copy(alpha = 0.15f)
+                )
             )
-        )
-        NavigationBarItem(
-            selected = selectedTab == 3,
-            onClick = onSettingsClick,
-            icon = { Icon(Icons.Default.Settings, contentDescription = null) },
-            label = { Text("Settings") },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = colors.accent,
-                selectedTextColor = colors.accent,
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted,
-                indicatorColor = colors.accent.copy(alpha = 0.1f)
+            NavigationBarItem(
+                selected = selectedTab == 3,
+                onClick = onSettingsClick,
+                icon = { Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(24.dp)) },
+                label = { Text("Settings", style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 3) FontWeight.Bold else FontWeight.Medium)) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = colors.accent,
+                    selectedTextColor = colors.accent,
+                    unselectedIconColor = colors.muted,
+                    unselectedTextColor = colors.muted,
+                    indicatorColor = colors.accent.copy(alpha = 0.15f)
+                )
             )
-        )
+        }
     }
 }
 
@@ -1150,4 +1206,15 @@ fun W2TTreePreview() {
             }
         }
     }
+}
+
+fun String.extractIcon(): Pair<String, String> {
+    val icons = listOf("💻", "📈", "🧘‍♀️", "📚", "💰", "🚀", "🎨", "🏡", "🎯", "✨", "🏃", "🛒", "👥", "📢")
+    for (icon in icons) {
+        if (this.startsWith(icon)) {
+            val remaining = this.substring(icon.length).trim()
+            return Pair(icon, remaining)
+        }
+    }
+    return Pair("", this)
 }

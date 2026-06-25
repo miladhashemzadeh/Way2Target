@@ -40,14 +40,15 @@ fun ActionDetailScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
+            val (icon, cleanTitle) = goal.title.extractIcon()
             TopAppBar(
-                title = { Text(goal.title, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
+                title = { Text(if (icon.isNotEmpty()) "$icon $cleanTitle" else cleanTitle, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(ActionDetailContract.Intent.OnBackClicked) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                colors = com.vampyreworld.w2t.sharedui.catalog.w2tTopAppBarColors()
             )
         }
     ) { paddingValues ->

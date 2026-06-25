@@ -94,9 +94,10 @@ fun HomeScreen(component: HomeComponent) {
                         )
                     } else {
                         state.masterGoals.forEach { goal ->
+                            val (icon, cleanTitle) = goal.title.extractIcon()
                             W2TGoalItem(
-                                icon = "🎯",
-                                title = goal.title,
+                                icon = icon.ifEmpty { "🎯" },
+                                title = cleanTitle,
                                 progress = 0.7f, // Mock progress for now
                                 progressText = "70% Complete",
                                 onClick = { component.onIntent(HomeContract.Intent.OnMasterGoalClick(goal.id)) }
@@ -118,8 +119,9 @@ fun HomeScreen(component: HomeComponent) {
                         )
                     } else {
                         state.todayActions.forEach { action ->
+                            val (icon, cleanTitle) = action.title.extractIcon()
                             W2TActionItem(
-                                title = action.title,
+                                title = if (icon.isNotEmpty()) "$icon $cleanTitle" else cleanTitle,
                                 subtitle = "From your milestones",
                                 time = "10:00 AM",
                                 checked = false,

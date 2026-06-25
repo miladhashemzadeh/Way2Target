@@ -27,7 +27,8 @@ fun SChallengeScreen(component: SChallengeComponent) {
                     IconButton(onClick = { component.onIntent(SChallengeContract.Intent.OnBackClicked) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
+                colors = com.vampyreworld.w2t.sharedui.catalog.w2tCenterAlignedTopAppBarColors()
             )
         },
         bottomBar = {

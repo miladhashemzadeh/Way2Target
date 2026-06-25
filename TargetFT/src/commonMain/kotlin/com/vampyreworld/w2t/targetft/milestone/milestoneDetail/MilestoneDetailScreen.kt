@@ -39,14 +39,15 @@ fun MilestoneDetailScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
+            val (icon, cleanTitle) = goal.title.extractIcon()
             TopAppBar(
-                title = { Text(goal.title, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
+                title = { Text(if (icon.isNotEmpty()) "$icon $cleanTitle" else cleanTitle, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(MilestoneDetailContract.Intent.OnBackClicked) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                colors = com.vampyreworld.w2t.sharedui.catalog.w2tTopAppBarColors()
             )
         }
     ) { paddingValues ->
@@ -151,9 +152,11 @@ fun MilestoneDetailScreen(
                     )
                 } else {
                     state.actions.forEach { action ->
+                        val (actionIcon, actionCleanTitle) = action.title.extractIcon()
+                        val (_, milestoneCleanTitle) = goal.title.extractIcon()
                         W2TActionItem(
-                            title = action.title,
-                            subtitle = goal.title,
+                            title = if (actionIcon.isNotEmpty()) "$actionIcon $actionCleanTitle" else actionCleanTitle,
+                            subtitle = milestoneCleanTitle,
                             time = if (action.status == GoalStatus.COMPLETED) "Completed" else "Due Tomorrow",
                             checked = action.status == GoalStatus.COMPLETED,
                             onCheckedChange = { isChecked ->

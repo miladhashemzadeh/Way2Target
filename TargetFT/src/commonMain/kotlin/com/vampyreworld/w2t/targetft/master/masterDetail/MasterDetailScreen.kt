@@ -38,14 +38,15 @@ fun MasterDetailScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
+            val (icon, cleanTitle) = goal.title.extractIcon()
             TopAppBar(
-                title = { Text(goal.title, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
+                title = { Text(if (icon.isNotEmpty()) "$icon $cleanTitle" else cleanTitle, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(MasterDetailContract.Intent.OnBackClicked) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                colors = com.vampyreworld.w2t.sharedui.catalog.w2tTopAppBarColors()
             )
         }
     ) { paddingValues ->
@@ -132,16 +133,18 @@ fun MasterDetailScreen(
             W2TCard {
                 W2TSectionTitle("Goal Breakdown")
                 
+                val (masterIcon, masterCleanTitle) = goal.title.extractIcon()
                 W2TTreeNode(
-                    icon = "🎯", 
-                    title = "Master Goal: ${goal.title}", 
+                    icon = masterIcon.ifEmpty { "🎯" }, 
+                    title = "Master Goal: $masterCleanTitle", 
                     type = "master", 
                     onClick = { /* Already here */ }
                 ) {
                     state.milestones.forEach { milestone ->
+                        val (milestoneIcon, milestoneCleanTitle) = milestone.title.extractIcon()
                         W2TTreeNode(
-                            icon = "✨", 
-                            title = "Milestone: ${milestone.title}", 
+                            icon = milestoneIcon.ifEmpty { "✨" }, 
+                            title = "Milestone: $milestoneCleanTitle", 
                             type = "milestone", 
                             onClick = { component.onIntent(MasterDetailContract.Intent.OnGoalClick(milestone.id, "MILESTONE")) }
                         ) {

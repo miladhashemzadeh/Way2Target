@@ -174,7 +174,7 @@ fun ActionCreateScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                colors = com.vampyreworld.w2t.sharedui.catalog.w2tTopAppBarColors()
             )
         }
     ) { paddingValues ->
@@ -686,8 +686,9 @@ fun ActionCreateScreen(
                         }
                         else -> null
                     }
+                    val finalTitle = if (title.startsWith(selectedIcon)) title else "$selectedIcon $title"
                     component.onIntent(ActionCreateContract.Intent.OnSaveGoal(
-                        title = title,
+                        title = finalTitle,
                         description = description,
                         completionCriteria = completionCriteria,
                         energyCost = energyCost.toInt(),
