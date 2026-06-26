@@ -20,27 +20,25 @@ import com.vampyreworld.w2t.appraiseft.component.AppraiseComponent
 import com.vampyreworld.w2t.sharedui.catalog.W2TCard
 import com.vampyreworld.w2t.sharedui.catalog.W2TSectionTitle
 import com.vampyreworld.w2t.sharedui.catalog.W2TStatusChip
+import com.vampyreworld.w2t.sharedui.catalog.W2THeader
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChallengeAppraiseScreen(component: AppraiseComponent) {
     val state by component.state.subscribeAsState()
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     var expandedStatus by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        "Appraise Challenge",
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                },
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(AppraiseContract.Intent.OnBackClicked) }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = strings.goBack)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -56,20 +54,27 @@ fun ChallengeAppraiseScreen(component: AppraiseComponent) {
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
+            W2THeader(
+                title = strings.appraisingChallenge,
+                subtitle = state.challenge?.title ?: strings.unknown,
+                avatarText = "📊"
+            )
+
             // Challenge Overview
             Column {
                 Text(
-                    text = state.challenge?.title ?: "Stuck on complex data structures",
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
-                )
-                Text(
-                    text = "Goal: ${state.goal?.title ?: "Learn Programming"}",
+                    text = strings.goalLabel.format(state.goal?.title ?: strings.unknown),
                     style = MaterialTheme.typography.bodyMedium,
                     color = colors.muted
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 W2TStatusChip(
-                    text = state.challengeStatus,
+                    text = when(state.challengeStatus) {
+                        "Ongoing" -> strings.ongoing
+                        "Finished" -> strings.finished
+                        "Failed" -> strings.failed
+                        else -> state.challengeStatus
+                    },
                     backgroundColor = when(state.challengeStatus) {
                         "Ongoing" -> colors.challengeColor
                         "Finished" -> colors.success
@@ -81,13 +86,19 @@ fun ChallengeAppraiseScreen(component: AppraiseComponent) {
 
             // Update Status Card
             W2TCard {
-                W2TSectionTitle("Update Status")
+                W2TSectionTitle(strings.updateStatus)
                 ExposedDropdownMenuBox(
                     expanded = expandedStatus,
                     onExpandedChange = { expandedStatus = it }
                 ) {
+                    val currentStatusDisp = when(state.challengeStatus) {
+                        "Ongoing" -> strings.ongoing
+                        "Finished" -> strings.finished
+                        "Failed" -> strings.failed
+                        else -> state.challengeStatus
+                    }
                     OutlinedTextField(
-                        value = state.challengeStatus,
+                        value = currentStatusDisp,
                         onValueChange = {},
                         readOnly = true,
                         modifier = Modifier.fillMaxWidth().menuAnchor(),
@@ -105,8 +116,14 @@ fun ChallengeAppraiseScreen(component: AppraiseComponent) {
                         onDismissRequest = { expandedStatus = false }
                     ) {
                         listOf("Ongoing", "Finished", "Failed").forEach { status ->
+                            val disp = when(status) {
+                                "Ongoing" -> strings.ongoing
+                                "Finished" -> strings.finished
+                                "Failed" -> strings.failed
+                                else -> status
+                            }
                             DropdownMenuItem(
-                                text = { Text(status) },
+                                text = { Text(disp) },
                                 onClick = {
                                     component.onIntent(AppraiseContract.Intent.OnChallengeStatusChanged(status))
                                     expandedStatus = false
@@ -119,9 +136,9 @@ fun ChallengeAppraiseScreen(component: AppraiseComponent) {
 
             // Select Preferred Solution Card
             W2TCard {
-                W2TSectionTitle("Select Preferred Solution")
+                W2TSectionTitle(strings.selectPreferredSolution)
                 Text(
-                    "Which solution are you actively pursuing or found most helpful?",
+                    strings.solutionPrompt,
                     style = MaterialTheme.typography.bodySmall,
                     color = colors.muted,
                     modifier = Modifier.padding(top = -8.dp, bottom = 8.dp)
@@ -145,7 +162,7 @@ fun ChallengeAppraiseScreen(component: AppraiseComponent) {
                             modifier = Modifier.weight(1f)
                         )
                         Text(
-                            text = "(User)", // In a real app, this would come from the solution source
+                            text = strings.userLabel,
                             style = MaterialTheme.typography.labelSmall,
                             color = colors.muted
                         )
@@ -162,7 +179,7 @@ fun ChallengeAppraiseScreen(component: AppraiseComponent) {
                 shape = RoundedCornerShape(28.dp)
             ) {
                 Text(
-                    "Update Challenge",
+                    strings.updateChallenge,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
             }

@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.vampyreworld.w2t.sharedui.catalog.W2THeader
 import com.vampyreworld.w2t.sharedui.catalog.W2TOnboardingItem
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,15 +26,16 @@ fun DecissionScreen(
     onMakeDecission: () -> Unit
 ) {
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(title, fontWeight = FontWeight.Bold) },
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = strings.goBack)
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -52,8 +54,8 @@ fun DecissionScreen(
         ) {
             item {
                 W2THeader(
-                    title = "Decision Analysis",
-                    subtitle = "Navigate complex choices with confidence using structured logic and AI insights.",
+                    title = strings.decisionAnalysis,
+                    subtitle = strings.decisionDesc,
                     avatarText = "D",
                     avatarUrl = null
                 )
@@ -61,7 +63,7 @@ fun DecissionScreen(
 
             item {
                 Text(
-                    text = "How it works:",
+                    text = strings.howItWorks,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onBackground
                 )
@@ -70,8 +72,8 @@ fun DecissionScreen(
             item {
                 W2TOnboardingItem(
                     icon = "🤔",
-                    title = "1. Define the Dilemma",
-                    description = "Clearly formulate the choice you need to make or options you want to weigh.",
+                    title = strings.defineDilemma,
+                    description = strings.defineDilemmaDesc,
                     iconBackgroundColor = colors.accent.copy(alpha = 0.85f)
                 )
             }
@@ -79,8 +81,8 @@ fun DecissionScreen(
             item {
                 W2TOnboardingItem(
                     icon = "⚖️",
-                    title = "2. Weigh the Options",
-                    description = "Identify pros, cons, and custom weight values for each alternative solution.",
+                    title = strings.weighOptions,
+                    description = strings.weighOptionsDesc,
                     iconBackgroundColor = colors.purple.copy(alpha = 0.85f)
                 )
             }
@@ -88,8 +90,8 @@ fun DecissionScreen(
             item {
                 W2TOnboardingItem(
                     icon = "🤖",
-                    title = "3. AI Strategy Recommendations",
-                    description = "Receive weighted scores and strategic guidance to target the best possible path.",
+                    title = strings.aiStrategy,
+                    description = strings.aiStrategyDesc,
                     iconBackgroundColor = colors.greenBlue.copy(alpha = 0.85f)
                 )
             }
@@ -104,7 +106,7 @@ fun DecissionScreen(
                     contentPadding = PaddingValues(vertical = 16.dp)
                 ) {
                     Text(
-                        "Start Decision Analysis",
+                        strings.startDecision,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                     )
                 }

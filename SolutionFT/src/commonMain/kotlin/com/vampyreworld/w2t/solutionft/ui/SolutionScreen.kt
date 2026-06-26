@@ -28,6 +28,7 @@ import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 import com.vampyreworld.w2t.solutionft.SolutionContract
 import com.vampyreworld.w2t.solutionft.SolutionComponent
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 import coil3.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.draw.clip
@@ -37,6 +38,7 @@ import androidx.compose.ui.draw.clip
 fun SolutionScreen(component: SolutionComponent) {
     val state by component.state.subscribeAsState()
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     var expandedTypes by remember { mutableStateOf(false) }
     var showAdvanced by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -62,38 +64,15 @@ fun SolutionScreen(component: SolutionComponent) {
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Solutions") },
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(SolutionContract.Intent.OnBackClicked) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.goBack)
                     }
                 },
-                actions = {
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 16.dp)
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(colors.accent.copy(alpha = 0.1f))
-                            .clickable { component.onIntent(SolutionContract.Intent.OnProfileClicked) },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (state.avatarUrl != null) {
-                            AsyncImage(
-                                model = state.avatarUrl,
-                                contentDescription = "Profile",
-                                modifier = Modifier.fillMaxSize().clip(CircleShape),
-                                contentScale = ContentScale.Crop
-                            )
-                        } else {
-                            Text(
-                                text = state.userName.take(1).uppercase().ifEmpty { "U" },
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                color = colors.accent
-                            )
-                        }
-                    }
-                }
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         },
         floatingActionButton = {
@@ -117,8 +96,8 @@ fun SolutionScreen(component: SolutionComponent) {
         ) {
             item {
                 W2THeader(
-                    title = "New Solution",
-                    subtitle = "Define a strategy to overcome your challenge",
+                    title = strings.newSolution,
+                    subtitle = strings.defineStrategy,
                     avatarText = state.userName.take(1).uppercase().ifEmpty { "S" },
                     avatarUrl = state.avatarUrl
                 )
@@ -128,14 +107,14 @@ fun SolutionScreen(component: SolutionComponent) {
                 W2TCard {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text(
-                            "Solution Details",
+                            strings.solutionDetails,
                             style = MaterialTheme.typography.titleSmall,
                             color = colors.accent
                         )
                         OutlinedTextField(
                             value = state.title,
                             onValueChange = { component.onIntent(SolutionContract.Intent.OnTitleChanged(it)) },
-                            placeholder = { Text("Solution title (e.g. Set a strict timer)...") },
+                            placeholder = { Text(strings.solutionTitlePlaceholder) },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
                             shape = RoundedCornerShape(12.dp),
@@ -154,7 +133,7 @@ fun SolutionScreen(component: SolutionComponent) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = if (showAdvanced) "Hide Costs & Strategy Details 🔼" else "Customize Costs & Strategy Details 🔽",
+                                text = if (showAdvanced) strings.hideCosts else strings.customizeCosts,
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                                 color = colors.accent
                             )
@@ -169,7 +148,7 @@ fun SolutionScreen(component: SolutionComponent) {
                                 OutlinedTextField(
                                     value = state.description,
                                     onValueChange = { component.onIntent(SolutionContract.Intent.OnDescriptionChanged(it)) },
-                                    placeholder = { Text("Detailed description (optional)...") },
+                                    placeholder = { Text(strings.detailedDescription) },
                                     modifier = Modifier.fillMaxWidth().heightIn(min = 100.dp),
                                     shape = RoundedCornerShape(12.dp),
                                     colors = OutlinedTextFieldDefaults.colors(
@@ -186,7 +165,7 @@ fun SolutionScreen(component: SolutionComponent) {
                                         value = state.solutionType.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() },
                                         onValueChange = {},
                                         readOnly = true,
-                                        label = { Text("Strategy Type") },
+                                        label = { Text(strings.strategyType) },
                                         modifier = Modifier.fillMaxWidth().menuAnchor(),
                                         shape = RoundedCornerShape(12.dp),
                                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTypes) },
@@ -212,7 +191,7 @@ fun SolutionScreen(component: SolutionComponent) {
                                 }
 
                                 Text(
-                                    "Strategic Strength",
+                                    strings.strategicStrength,
                                     style = MaterialTheme.typography.titleSmall,
                                     color = colors.accent,
                                     modifier = Modifier.padding(top = 8.dp)
@@ -234,14 +213,14 @@ fun SolutionScreen(component: SolutionComponent) {
                                 }
 
                                 Text(
-                                    "Estimated Costs (0-100 scale)",
+                                    strings.estimatedCosts,
                                     style = MaterialTheme.typography.titleSmall,
                                     color = colors.accent,
                                     modifier = Modifier.padding(top = 8.dp)
                                 )
-                                CostSlider(label = "Energy", value = state.energyCost, onValueChange = { component.onIntent(SolutionContract.Intent.OnEnergyCostChanged(it)) }, colors = colors)
-                                CostSlider(label = "Time", value = state.timeCost, onValueChange = { component.onIntent(SolutionContract.Intent.OnTimeCostChanged(it)) }, colors = colors)
-                                CostSlider(label = "Money", value = state.moneyCost, onValueChange = { component.onIntent(SolutionContract.Intent.OnMoneyCostChanged(it)) }, colors = colors)
+                                CostSlider(label = strings.energy, value = state.energyCost, onValueChange = { component.onIntent(SolutionContract.Intent.OnEnergyCostChanged(it)) }, colors = colors)
+                                CostSlider(label = strings.time, value = state.timeCost, onValueChange = { component.onIntent(SolutionContract.Intent.OnTimeCostChanged(it)) }, colors = colors)
+                                CostSlider(label = strings.money, value = state.moneyCost, onValueChange = { component.onIntent(SolutionContract.Intent.OnMoneyCostChanged(it)) }, colors = colors)
                             }
                         }
 
@@ -254,7 +233,7 @@ fun SolutionScreen(component: SolutionComponent) {
                             if (state.isLoading) {
                                 CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                             } else {
-                                Text("Save Solution")
+                                Text(strings.saveSolution)
                             }
                         }
                     }
@@ -265,7 +244,7 @@ fun SolutionScreen(component: SolutionComponent) {
                 item {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "Understanding Solutions",
+                        strings.understandingSolutions,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
@@ -275,8 +254,8 @@ fun SolutionScreen(component: SolutionComponent) {
                 item {
                     W2TOnboardingItem(
                         icon = "💡",
-                        title = "Formulate Strategies",
-                        description = "Draft actionable solutions to bypass constraints or hurdles blockading your targets.",
+                        title = strings.formulateStrategies,
+                        description = strings.formulateStrategiesDesc,
                         iconBackgroundColor = colors.accent.copy(alpha = 0.85f)
                     )
                 }
@@ -284,15 +263,15 @@ fun SolutionScreen(component: SolutionComponent) {
                 item {
                     W2TOnboardingItem(
                         icon = "📊",
-                        title = "Balance the Costs",
-                        description = "Optimize cost indicators (Energy, Time, Money) to make sustainable and realistic progress.",
+                        title = strings.balanceCosts,
+                        description = strings.balanceCostsDesc,
                         iconBackgroundColor = colors.purple.copy(alpha = 0.85f)
                     )
                 }
             } else {
                 item {
                     Text(
-                        "Existing Solutions",
+                        strings.existingSolutions,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground,

@@ -18,6 +18,7 @@ import com.vampyreworld.w2t.domain.data.model.GoalStatus
 import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.ui.graphics.Color
 
@@ -30,6 +31,7 @@ fun MasterDetailScreen(
     val state by component.state.subscribeAsState()
     val goal = state.selectedGoal ?: return
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     
     var isEditing by remember { mutableStateOf(false) }
     var editedTitle by remember { mutableStateOf(goal.title) }
@@ -43,7 +45,7 @@ fun MasterDetailScreen(
                 title = { Text(if (icon.isNotEmpty()) "$icon $cleanTitle" else cleanTitle, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(MasterDetailContract.Intent.OnBackClicked) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.goBack)
                     }
                 },
                 colors = com.vampyreworld.w2t.sharedui.catalog.w2tTopAppBarColors()
@@ -63,14 +65,14 @@ fun MasterDetailScreen(
                         OutlinedTextField(
                             value = editedTitle,
                             onValueChange = { editedTitle = it },
-                            label = { Text("Title") },
+                            label = { Text(strings.titleLabel) },
                             modifier = Modifier.fillMaxWidth()
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
                             value = editedDescription,
                             onValueChange = { editedDescription = it },
-                            label = { Text("Description") },
+                            label = { Text(strings.description) },
                             modifier = Modifier.fillMaxWidth(),
                             minLines = 3
                         )
@@ -87,8 +89,8 @@ fun MasterDetailScreen(
                                     isEditing = false
                                 },
                                 modifier = Modifier.weight(1f)
-                            ) { Text("Save") }
-                            OutlinedButton(onClick = { isEditing = false }, modifier = Modifier.weight(1f)) { Text("Cancel") }
+                            ) { Text(strings.save) }
+                            OutlinedButton(onClick = { isEditing = false }, modifier = Modifier.weight(1f)) { Text(strings.cancel) }
                         }
                     } else {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -98,7 +100,7 @@ fun MasterDetailScreen(
                                 modifier = Modifier.weight(1f)
                             )
                             IconButton(onClick = { isEditing = true }) {
-                                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = colors.accent)
+                                Icon(Icons.Default.Edit, contentDescription = strings.edit, tint = colors.accent)
                             }
                         }
                         Text(text = goal.description, style = MaterialTheme.typography.bodyMedium, color = colors.muted)
@@ -106,7 +108,7 @@ fun MasterDetailScreen(
                         W2TProgressBar(progress = 0.7f, color = colors.accent)
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "70% Complete",
+                            text = strings.percentComplete.format(70),
                             style = MaterialTheme.typography.bodySmall,
                             color = colors.accent,
                             fontWeight = FontWeight.Medium
@@ -125,18 +127,18 @@ fun MasterDetailScreen(
             ) {
                 Icon(Icons.Default.FlashOn, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Create Challenges")
+                Text(strings.createChallenges)
             }
         }
 
         item {
             W2TCard {
-                W2TSectionTitle("Goal Breakdown")
+                W2TSectionTitle(strings.goalBreakdown)
                 
                 val (masterIcon, masterCleanTitle) = goal.title.extractIcon()
                 W2TTreeNode(
                     icon = masterIcon.ifEmpty { "🎯" }, 
-                    title = "Master Goal: $masterCleanTitle", 
+                    title = strings.masterGoalPrefix.format(masterCleanTitle), 
                     type = "master", 
                     onClick = { /* Already here */ }
                 ) {
@@ -144,7 +146,7 @@ fun MasterDetailScreen(
                         val (milestoneIcon, milestoneCleanTitle) = milestone.title.extractIcon()
                         W2TTreeNode(
                             icon = milestoneIcon.ifEmpty { "✨" }, 
-                            title = "Milestone: $milestoneCleanTitle", 
+                            title = strings.milestonePrefix.format(milestoneCleanTitle), 
                             type = "milestone", 
                             onClick = { component.onIntent(MasterDetailContract.Intent.OnGoalClick(milestone.id, "MILESTONE")) }
                         ) {
@@ -157,13 +159,13 @@ fun MasterDetailScreen(
         if (state.challenges.isNotEmpty()) {
             item {
                 W2TCard {
-                    W2TSectionTitle("Active Challenges")
+                    W2TSectionTitle(strings.activeChallenges)
                     state.challenges.forEach { challenge ->
                         W2TChallengeCard(
                             title = challenge.title,
                             goalTitle = goal.title,
                             description = challenge.desc,
-                            status = if (challenge.status == GoalStatus.COMPLETED) "Finished" else "Ongoing",
+                            status = if (challenge.status == GoalStatus.COMPLETED) strings.finished else strings.ongoing,
                             modifier = Modifier.clickable { 
                                 component.onIntent(MasterDetailContract.Intent.OnChallengeClick(challenge.id))
                             }
@@ -176,9 +178,9 @@ fun MasterDetailScreen(
 
         item {
             W2TAiInsightsCard(
-                title = "AI Insights",
-                description = "Your current progress suggests focusing on practical projects for faster skill acquisition.",
-                buttonText = "View Strategy",
+                title = strings.aiInsights,
+                description = strings.focus5dayStreak,
+                buttonText = strings.viewStrategy,
                 onButtonClick = { }
             )
         }
@@ -193,7 +195,7 @@ fun MasterDetailScreen(
             ) {
                 Icon(Icons.Default.Add, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Add Milestone")
+                Text(strings.addMilestone)
             }
         }
 
@@ -203,7 +205,7 @@ fun MasterDetailScreen(
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
             ) {
-                Text("Delete Goal")
+                Text(strings.deleteGoal)
             }
         }
         

@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,25 +20,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vampyreworld.w2t.onboarding.OnboardingComponent
 import com.vampyreworld.w2t.onboarding.OnboardingContract
-import com.vampyreworld.w2t.sharedui.catalog.W2TOnboardingItem
+import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 import kotlinx.coroutines.launch
 
 @Composable
 fun OnboardingScreen(component: OnboardingComponent) {
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     val pagerState = rememberPagerState(pageCount = { 3 })
     val scope = rememberCoroutineScope()
 
     val pageTitles = listOf(
-        "Structure Your Ambition",
-        "Overcome Any Obstacle",
-        "Optimize Your Performance"
+        strings.onboardingTitle1,
+        strings.onboardingTitle2,
+        strings.onboardingTitle3
     )
     val pageSubtitles = listOf(
-        "Break down big dreams into achievable steps.",
-        "Turn blockers into breakthroughs with a powerful challenge system.",
-        "Use AI-driven insights and mood tracking to reach your peak potential."
+        strings.onboardingSub1,
+        strings.onboardingSub2,
+        strings.onboardingSub3
     )
 
     Column(
@@ -76,48 +79,48 @@ fun OnboardingScreen(component: OnboardingComponent) {
                     0 -> {
                         W2TOnboardingItem(
                             icon = "🎯",
-                            title = "Master Goal",
-                            description = "Your long-term strategic vision.",
+                            title = strings.onboardingMasterGoal,
+                            description = strings.onboardingMasterGoalDesc,
                             iconBackgroundColor = colors.accent
                         )
                         W2TOnboardingItem(
                             icon = "✨",
-                            title = "Milestone Goal",
-                            description = "Measurable checkpoints on your path.",
+                            title = strings.onboardingMilestone,
+                            description = strings.onboardingMilestoneDesc,
                             iconBackgroundColor = Color(0xFF815512)
                         )
                         W2TOnboardingItem(
                             icon = "✅",
-                            title = "Action Goal",
-                            description = "Small, executable daily tasks with reminders.",
+                            title = strings.onboardingAction,
+                            description = strings.onboardingActionDesc,
                             iconBackgroundColor = colors.success
                         )
                     }
                     1 -> {
                         W2TOnboardingItem(
                             icon = "🚧",
-                            title = "Challenge System",
-                            description = "Create challenges when you feel blocked on a goal.",
+                            title = strings.onboardingChallenge,
+                            description = strings.onboardingChallengeDesc,
                             iconBackgroundColor = colors.challengeColor
                         )
                         W2TOnboardingItem(
                             icon = "💡",
-                            title = "Solution Engine",
-                            description = "Explore multiple solutions, powered by AI.",
+                            title = strings.onboardingSolution,
+                            description = strings.onboardingSolutionDesc,
                             iconBackgroundColor = colors.success
                         )
                     }
                     2 -> {
                         W2TOnboardingItem(
                             icon = "🤖",
-                            title = "AI Insights",
-                            description = "Get smart recommendations based on your progress.",
+                            title = strings.onboardingAiInsights,
+                            description = strings.onboardingAiInsightsDesc,
                             iconBackgroundColor = colors.moodHighEnergyStart
                         )
                         W2TOnboardingItem(
                             icon = "🧠",
-                            title = "Mood Stability",
-                            description = "Track your mental state to optimize decisions.",
+                            title = strings.onboardingMood,
+                            description = strings.onboardingMoodDesc,
                             iconBackgroundColor = colors.moodFocusedStart
                         )
                     }
@@ -130,17 +133,20 @@ fun OnboardingScreen(component: OnboardingComponent) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val backInteractionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
             TextButton(
-                onClick = { 
+                onClick = {
                     if (pagerState.currentPage > 0) {
                         scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) }
                     } else {
                         component.onIntent(OnboardingContract.Intent.OnFinishClicked)
                     }
                 },
+                interactionSource = backInteractionSource,
+                modifier = Modifier.bounce(backInteractionSource),
                 colors = ButtonDefaults.textButtonColors(contentColor = colors.muted)
             ) {
-                Text(if (pagerState.currentPage > 0) "Back" else "Skip", fontWeight = FontWeight.SemiBold)
+                Text(if (pagerState.currentPage > 0) strings.goBack else strings.skip, fontWeight = FontWeight.SemiBold)
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -156,6 +162,7 @@ fun OnboardingScreen(component: OnboardingComponent) {
                 }
             }
 
+            val nextInteractionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
             Button(
                 onClick = {
                     if (pagerState.currentPage < 2) {
@@ -164,12 +171,14 @@ fun OnboardingScreen(component: OnboardingComponent) {
                         component.onIntent(OnboardingContract.Intent.OnFinishClicked)
                     }
                 },
+                interactionSource = nextInteractionSource,
+                modifier = Modifier.bounce(nextInteractionSource),
                 colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
                 shape = RoundedCornerShape(28.dp),
                 contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
             ) {
                 Text(
-                    text = if (pagerState.currentPage < 2) "Next" else "Get Started",
+                    text = if (pagerState.currentPage < 2) strings.next else strings.getStarted,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )

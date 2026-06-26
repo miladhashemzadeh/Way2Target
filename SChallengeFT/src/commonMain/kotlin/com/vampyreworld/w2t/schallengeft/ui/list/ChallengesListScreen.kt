@@ -17,6 +17,7 @@ import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.data.model.GoalStatus
 import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 import com.vampyreworld.w2t.schallengeft.SChallengeContract
 import com.vampyreworld.w2t.schallengeft.component.SChallengeComponent
 
@@ -27,8 +28,9 @@ fun ChallengesListScreen(
     padding: PaddingValues
 ) {
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Ongoing", "Finished", "Failed")
+    val tabs = listOf(strings.ongoing, strings.finished, strings.failed)
 
     Column(
         modifier = Modifier
@@ -39,9 +41,9 @@ fun ChallengesListScreen(
         W2TTabNav(
             tabs = tabs.map { tab ->
                 val count = when (tab) {
-                    "Ongoing" -> state.challenges.count { it.status == GoalStatus.ACTIVE }
-                    "Finished" -> state.challenges.count { it.status == GoalStatus.COMPLETED }
-                    "Failed" -> state.challenges.count { it.status == GoalStatus.CANCELLED }
+                    strings.ongoing -> state.challenges.count { it.status == GoalStatus.ACTIVE }
+                    strings.finished -> state.challenges.count { it.status == GoalStatus.COMPLETED }
+                    strings.failed -> state.challenges.count { it.status == GoalStatus.CANCELLED }
                     else -> 0
                 }
                 "$tab ($count)"
@@ -68,15 +70,15 @@ fun ChallengesListScreen(
             items(filteredChallenges) { challenge ->
                 W2TChallengeCard(
                     title = challenge.title,
-                    goalTitle = "Learn Programming", // Should come from state
+                    goalTitle = strings.goalLabel.format(challenge.parentGoalId?.toString() ?: strings.unknown),
                     description = challenge.desc,
                     status = when (challenge.status) {
-                        GoalStatus.ACTIVE -> "Ongoing"
-                        GoalStatus.COMPLETED -> "Finished"
-                        GoalStatus.CANCELLED -> "Failed"
-                        else -> "Ongoing"
+                        GoalStatus.ACTIVE -> strings.ongoing
+                        GoalStatus.COMPLETED -> strings.finished
+                        GoalStatus.CANCELLED -> strings.failed
+                        else -> strings.ongoing
                     },
-                    modifier = Modifier.clickable {
+                    modifier = Modifier.bounceClick {
                         println("ChallengesListScreen: clicked challenge ${challenge.id}")
                         component.onIntent(SChallengeContract.Intent.OnChallengeClick(challenge.id))
                     }
@@ -84,7 +86,7 @@ fun ChallengesListScreen(
                     // Show some solutions or AI strategy if expanded or in list
                     if (challenge.status == GoalStatus.ACTIVE) {
                         W2TStrategyCard(
-                            description = "Focus on one data structure at a time, implement basic operations, then move to complex algorithms.",
+                            description = strings.defaultStrategyRecommendation,
                             onButtonClick = { 
                                 println("ChallengesListScreen: strategy clicked for challenge ${challenge.id}")
                                 component.onIntent(SChallengeContract.Intent.OnViewChallengeSolutions(challenge.id))
@@ -98,7 +100,7 @@ fun ChallengesListScreen(
                 item {
                     Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = androidx.compose.ui.Alignment.Center) {
                         Text(
-                            text = "No challenges found in this category.",
+                            text = strings.noChallenges,
                             style = MaterialTheme.typography.bodyMedium,
                             color = colors.muted
                         )

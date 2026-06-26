@@ -19,30 +19,31 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.domain.data.model.MentalType
 import com.vampyreworld.w2t.domain.data.model.Worldview
 import com.vampyreworld.w2t.profileft.ProfileContract
-import com.vampyreworld.w2t.sharedui.catalog.W2TCard
-import com.vampyreworld.w2t.sharedui.catalog.W2THeader
+import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(component: ProfileContract.Component) {
     val state by component.state.subscribeAsState()
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("پروفایل کاربر") },
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(ProfileContract.Intent.OnBackClicked) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "برگشت")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.goBack)
                     }
                 },
                 actions = {
                     if (!state.isEditMode) {
                         IconButton(onClick = { component.onIntent(ProfileContract.Intent.SetEditMode(true)) }) {
-                            Icon(Icons.Default.Edit, contentDescription = "ویرایش")
+                            Icon(Icons.Default.Edit, contentDescription = strings.edit)
                         }
                     }
                 },
@@ -75,16 +76,16 @@ fun ProfileScreen(component: ProfileContract.Component) {
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 W2THeader(
-                    title = state.profile.name.ifEmpty { "کاربر عزیز" },
-                    subtitle = "اطلاعات شخصی برای شخصی‌سازی تجربه شما",
+                    title = state.profile.name.ifEmpty { strings.dearUser },
+                    subtitle = strings.profileSubtitle,
                     avatarText = state.profile.name.take(1).uppercase().ifEmpty { "U" },
                     avatarUrl = state.profile.avatarUrl
                 )
 
                 if (state.isEditMode) {
-                    ProfileEditView(component, state)
+                    ProfileEditView(component, state, strings)
                 } else {
-                    ProfileReadView(state)
+                    ProfileReadView(state, strings)
                 }
 
                 if (state.isEditMode) {
@@ -92,17 +93,21 @@ fun ProfileScreen(component: ProfileContract.Component) {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
+                        val cancelInteractionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
                         OutlinedButton(
                             onClick = { component.onIntent(ProfileContract.Intent.SetEditMode(false)) },
-                            modifier = Modifier.weight(1f).height(56.dp),
+                            interactionSource = cancelInteractionSource,
+                            modifier = Modifier.weight(1f).height(56.dp).bounce(cancelInteractionSource),
                             shape = RoundedCornerShape(28.dp)
                         ) {
-                            Text("انصراف")
+                            Text(strings.cancel)
                         }
 
+                        val saveInteractionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
                         Button(
                             onClick = { component.onIntent(ProfileContract.Intent.SaveProfile) },
-                            modifier = Modifier.weight(1f).height(56.dp),
+                            interactionSource = saveInteractionSource,
+                            modifier = Modifier.weight(1f).height(56.dp).bounce(saveInteractionSource),
                             colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
                             shape = RoundedCornerShape(28.dp),
                             enabled = !state.isSaving
@@ -110,20 +115,22 @@ fun ProfileScreen(component: ProfileContract.Component) {
                             if (state.isSaving) {
                                 CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
                             } else {
-                                Text("ذخیره تغییرات", fontWeight = FontWeight.Bold)
+                                Text(strings.saveChanges, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
                 } else {
+                    val editInteractionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
                     Button(
                         onClick = { component.onIntent(ProfileContract.Intent.SetEditMode(true)) },
-                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        interactionSource = editInteractionSource,
+                        modifier = Modifier.fillMaxWidth().height(56.dp).bounce(editInteractionSource),
                         colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
                         shape = RoundedCornerShape(28.dp)
                     ) {
                         Icon(Icons.Default.Edit, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("ویرایش پروفایل", fontWeight = FontWeight.Bold)
+                        Text(strings.editProfile, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -132,14 +139,14 @@ fun ProfileScreen(component: ProfileContract.Component) {
 }
 
 @Composable
-private fun ProfileReadView(state: ProfileContract.State) {
+private fun ProfileReadView(state: ProfileContract.State, strings: com.vampyreworld.w2t.sharedui.localization.AppStrings) {
     val colors = LocalAppColorScheme.current
     W2TCard {
         Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            InfoRow(label = "نام", value = state.profile.name.ifEmpty { "ثبت نشده" }, colors = colors)
-            InfoRow(label = "سن", value = state.profile.age?.toString() ?: "ثبت نشده", colors = colors)
-            InfoRow(label = "تایپ روحی", value = state.profile.mentalType.displayName, colors = colors)
-            InfoRow(label = "نوع دیدگاه", value = state.profile.worldview.displayName, colors = colors)
+            InfoRow(label = strings.name, value = state.profile.name.ifEmpty { strings.notRegistered }, colors = colors)
+            InfoRow(label = strings.age, value = state.profile.age?.toString() ?: strings.notRegistered, colors = colors)
+            InfoRow(label = strings.mentalTypeLabel, value = state.profile.mentalType.getLocalizedName(strings), colors = colors)
+            InfoRow(label = strings.worldviewLabel, value = state.profile.worldview.getLocalizedName(strings), colors = colors)
         }
     }
 }
@@ -155,26 +162,30 @@ private fun InfoRow(label: String, value: String, colors: com.vampyreworld.w2t.s
 }
 
 @Composable
-private fun ProfileEditView(component: ProfileContract.Component, state: ProfileContract.State) {
+private fun ProfileEditView(
+    component: ProfileContract.Component, 
+    state: ProfileContract.State, 
+    strings: com.vampyreworld.w2t.sharedui.localization.AppStrings
+) {
     val colors = LocalAppColorScheme.current
     W2TCard {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             ProfileTextField(
-                label = "نام",
+                label = strings.name,
                 value = state.profile.name,
                 onValueChange = { component.onIntent(ProfileContract.Intent.UpdateProfile(state.profile.copy(name = it))) },
                 colors = colors
             )
 
             ProfileTextField(
-                label = "آدرس تصویر پروفایل (URL)",
+                label = strings.profilePictureUrl,
                 value = state.profile.avatarUrl ?: "",
                 onValueChange = { component.onIntent(ProfileContract.Intent.UpdateProfile(state.profile.copy(avatarUrl = it))) },
                 colors = colors
             )
 
             ProfileTextField(
-                label = "سن",
+                label = strings.age,
                 value = state.profile.age?.toString() ?: "",
                 onValueChange = { 
                     val age = it.toIntOrNull()
@@ -184,20 +195,20 @@ private fun ProfileEditView(component: ProfileContract.Component, state: Profile
             )
 
             EnumSelector(
-                label = "تایپ روحی",
+                label = strings.mentalTypeLabel,
                 options = MentalType.entries,
                 selectedOption = state.profile.mentalType,
                 onOptionSelected = { component.onIntent(ProfileContract.Intent.UpdateProfile(state.profile.copy(mentalType = it))) },
-                displayName = { it.displayName },
+                displayName = { it.getLocalizedName(strings) },
                 colors = colors
             )
 
             EnumSelector(
-                label = "نوع دیدگاه",
+                label = strings.worldviewLabel,
                 options = Worldview.entries,
                 selectedOption = state.profile.worldview,
                 onOptionSelected = { component.onIntent(ProfileContract.Intent.UpdateProfile(state.profile.copy(worldview = it))) },
-                displayName = { it.displayName },
+                displayName = { it.getLocalizedName(strings) },
                 colors = colors
             )
         }
@@ -228,7 +239,7 @@ private fun <T> EnumSelector(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(colors.bgLight.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
-                .clickable { expanded = true }
+                .bounceClick { expanded = true }
                 .padding(16.dp)
         ) {
             Text(text = displayName(selectedOption), style = MaterialTheme.typography.bodyLarge)
@@ -278,4 +289,22 @@ private fun ProfileTextField(
             )
         )
     }
+}
+
+private fun MentalType.getLocalizedName(strings: com.vampyreworld.w2t.sharedui.localization.AppStrings): String = when (this) {
+    MentalType.ANALYTICAL -> strings.mentalAnalytical
+    MentalType.CREATIVE -> strings.mentalCreative
+    MentalType.DRIVEN -> strings.mentalDriven
+    MentalType.STRATEGIC -> strings.mentalStrategic
+    MentalType.EMPATHETIC -> strings.mentalEmpathetic
+    MentalType.UNKNOWN -> strings.unknown
+}
+
+private fun Worldview.getLocalizedName(strings: com.vampyreworld.w2t.sharedui.localization.AppStrings): String = when (this) {
+    Worldview.STOIC -> strings.worldviewStoic
+    Worldview.OPTIMIST -> strings.worldviewOptimist
+    Worldview.REALIST -> strings.worldviewRealist
+    Worldview.PRAGMATIC -> strings.worldviewPragmatic
+    Worldview.IDEALIST -> strings.worldviewIdealist
+    Worldview.UNKNOWN -> strings.unknown
 }

@@ -22,6 +22,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.domain.data.model.Goal
 import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 import com.vampyreworld.w2t.shomeft.HomeComponent
 import com.vampyreworld.w2t.shomeft.HomeContract
 
@@ -30,6 +31,7 @@ import com.vampyreworld.w2t.shomeft.HomeContract
 fun HomeScreen(component: HomeComponent) {
     val state by component.state.subscribeAsState()
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     var showDeleteSheet by remember { mutableStateOf<Goal?>(null) }
     var deleteGoalName by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -68,9 +70,14 @@ fun HomeScreen(component: HomeComponent) {
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             item {
+                val greetingText = if (strings.english == "English") {
+                    "${strings.morningGreeting}, ${state.userName}!"
+                } else {
+                    "${strings.morningGreeting}، ${state.userName}!"
+                }
                 W2THeader(
-                    title = "صبح بخیر، ${state.userName}!",
-                    subtitle = "آماده‌ای برای رسیدن به اهدافت؟",
+                    title = greetingText,
+                    subtitle = strings.readyForGoals,
                     avatarText = state.userName.take(1).uppercase(),
                     avatarUrl = state.avatarUrl
                 )
@@ -78,16 +85,16 @@ fun HomeScreen(component: HomeComponent) {
 
             item {
                 W2TMoodWidget(
-                    title = "How are you feeling?",
-                    description = "Quick check to optimize your decision-making.",
-                    buttonText = "Check Mood",
+                    title = strings.howAreYouFeeling,
+                    description = strings.moodCheckDesc,
+                    buttonText = strings.checkMood,
                     onButtonClick = { component.onIntent(HomeContract.Intent.OnCheckMoodClick) }
                 )
             }
 
             item {
                 W2TCard {
-                    W2TSectionTitle("Your Master Goals")
+                    W2TSectionTitle(strings.masterGoals)
                     if (state.masterGoals.isEmpty()) {
                         Column(
                             modifier = Modifier
@@ -96,21 +103,21 @@ fun HomeScreen(component: HomeComponent) {
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             Text(
-                                text = "Define Your Vision",
+                                text = strings.defineVision,
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "To target your destination, break down your path into simple steps:",
+                                text = strings.breakdownPath,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = colors.muted
                             )
 
                             // Step-by-step showcase
                             val steps = listOf(
-                                Triple("🎯", "Master Goal", "Define your ultimate destination or vision (e.g., Learn Compose)."),
-                                Triple("📍", "Milestones", "Break your goal down into clear roadmap milestones."),
-                                Triple("⚡", "Actions", "Create bite-sized, actionable tasks for your daily routine.")
+                                Triple("🎯", strings.masterGoal, strings.masterGoalDesc),
+                                Triple("📍", strings.milestones, strings.milestonesDesc),
+                                Triple("⚡", strings.actions, strings.actionsDesc)
                             )
 
                             steps.forEach { (icon, stepTitle, stepDesc) ->
@@ -154,7 +161,7 @@ fun HomeScreen(component: HomeComponent) {
                             ) {
                                 Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Create Master Goal", fontWeight = FontWeight.Bold)
+                                Text(strings.createMasterGoal, fontWeight = FontWeight.Bold)
                             }
                         }
                     } else {
@@ -164,7 +171,7 @@ fun HomeScreen(component: HomeComponent) {
                                 icon = icon.ifEmpty { "🎯" },
                                 title = cleanTitle,
                                 progress = 0.7f, // Mock progress for now
-                                progressText = "70% Complete",
+                                progressText = strings.percentComplete.format(70),
                                 onClick = { component.onIntent(HomeContract.Intent.OnMasterGoalClick(goal.id)) }
                             )
                         }
@@ -174,14 +181,14 @@ fun HomeScreen(component: HomeComponent) {
 
             item {
                 W2TCard {
-                    W2TSectionTitle("Today's Actions")
+                    W2TSectionTitle(strings.todayActions)
                     if (state.todayActions.isEmpty()) {
                         Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                             modifier = Modifier
+                                 .fillMaxWidth()
+                                 .padding(vertical = 16.dp),
+                             horizontalAlignment = Alignment.CenterHorizontally,
+                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
                                 text = "🌴",
@@ -189,12 +196,12 @@ fun HomeScreen(component: HomeComponent) {
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
                             Text(
-                                text = "All Caught Up!",
+                                text = strings.allCaughtUp,
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "No daily actions scheduled for today. Goals only progress when you assign today's tasks inside your milestones.",
+                                text = strings.noActionsToday,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = colors.muted,
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -206,7 +213,7 @@ fun HomeScreen(component: HomeComponent) {
                             val (icon, cleanTitle) = action.title.extractIcon()
                             W2TActionItem(
                                 title = if (icon.isNotEmpty()) "$icon $cleanTitle" else cleanTitle,
-                                subtitle = "From your milestones",
+                                subtitle = strings.fromYourMilestones,
                                 time = "10:00 AM",
                                 checked = false,
                                 onCheckedChange = { isChecked ->
@@ -220,9 +227,9 @@ fun HomeScreen(component: HomeComponent) {
 
             item {
                 W2TAiInsightsCard(
-                    title = "AI Insights",
-                    description = "Your current progress suggests focusing on practical projects for faster skill acquisition.",
-                    buttonText = "View Strategy",
+                    title = strings.aiInsights,
+                    description = strings.focus5dayStreak,
+                    buttonText = strings.viewStrategy,
                     onButtonClick = { }
                 )
             }
@@ -234,41 +241,42 @@ fun HomeScreen(component: HomeComponent) {
         }
 
         if (showDeleteSheet != null) {
+            val expectedConfirmText = strings.deleteGoalPlaceholder.format(showDeleteSheet?.id)
             ModalBottomSheet(onDismissRequest = { showDeleteSheet = null }) {
                 Column(
                     modifier = Modifier.padding(24.dp).fillMaxWidth().padding(bottom = 32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Delete Master Goal?", style = MaterialTheme.typography.headlineSmall)
+                    Text(strings.deleteMasterGoalTitle, style = MaterialTheme.typography.headlineSmall)
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "This action cannot be undone. All milestones and actions will be lost.",
+                        strings.deleteMasterGoalConfirm,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("Type 'Goal #${showDeleteSheet?.id}' to confirm", style = MaterialTheme.typography.labelLarge)
+                    Text(strings.deleteGoalTypeToConfirm.format(showDeleteSheet?.id), style = MaterialTheme.typography.labelLarge)
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = deleteGoalName,
                         onValueChange = { deleteGoalName = it },
-                        placeholder = { Text("Goal #${showDeleteSheet?.id}") },
+                        placeholder = { Text(expectedConfirmText) },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                     Button(
                         onClick = {
-                            if (deleteGoalName == "Goal #${showDeleteSheet?.title}") {
+                            if (deleteGoalName == expectedConfirmText) {
                                 component.onIntent(HomeContract.Intent.DeleteMasterGoal(showDeleteSheet!!.id))
                                 showDeleteSheet = null
                                 deleteGoalName = ""
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                        enabled = deleteGoalName == "Goal #${showDeleteSheet?.title}",
+                        enabled = deleteGoalName == expectedConfirmText,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Delete Permanently")
+                        Text(strings.deletePermanently)
                     }
                 }
             }

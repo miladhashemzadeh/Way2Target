@@ -12,13 +12,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,6 +35,16 @@ import com.vampyreworld.w2t.sharedui.theme.W2TTheme
 import com.vampyreworld.w2t.sharedui.theme.LocalUserProfile
 import coil3.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.detectTapGestures
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+
+
 
 @Composable
 fun W2TCard(
@@ -278,7 +295,7 @@ fun W2TGoalItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .bounceClick(onClick = onClick)
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -334,7 +351,7 @@ fun W2TActionItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+            .then(if (onClick != null) Modifier.bounceClick(onClick = onClick) else Modifier)
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -461,7 +478,7 @@ fun W2TTreeNode(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+                .then(if (onClick != null) Modifier.bounceClick(onClick = onClick) else Modifier)
                 .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -493,7 +510,7 @@ fun W2TTreeNode(
                         brush = borderBrush,
                         shape = RoundedCornerShape(12.dp)
                     )
-                    .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+                    .then(if (onClick != null) Modifier.bounceClick(onClick = onClick) else Modifier)
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -559,26 +576,26 @@ fun W2TTabNav(
     ) {
         tabs.forEachIndexed { index, title ->
             val isSelected = selectedTabIndex == index
+            val bgColor by animateColorAsState(
+                targetValue = if (isSelected) colors.accent else Color.Transparent,
+                animationSpec = tween(durationMillis = 250)
+            )
+            val textColor by animateColorAsState(
+                targetValue = if (isSelected) Color.White else colors.muted,
+                animationSpec = tween(durationMillis = 250)
+            )
             Box(
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(
-                        if (isSelected) {
-                            Brush.linearGradient(
-                                colors = listOf(colors.accent, colors.accent.copy(alpha = 0.8f))
-                            )
-                        } else {
-                            Brush.linearGradient(colors = listOf(Color.Transparent, Color.Transparent))
-                        }
-                    )
-                    .clickable { onTabSelected(index) }
+                    .background(bgColor)
+                    .bounceClick { onTabSelected(index) }
                     .padding(vertical = 10.dp, horizontal = 12.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = title,
-                    color = if (isSelected) Color.White else colors.muted,
+                    color = textColor,
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold)
                 )
             }
@@ -888,7 +905,7 @@ fun W2TSelectableItem(
                 },
                 shape = RoundedCornerShape(16.dp)
             )
-            .clickable(onClick = onClick)
+            .bounceClick(onClick = onClick)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -1086,11 +1103,12 @@ fun W2TBottomNavigation(
                 ),
             windowInsets = WindowInsets(0.dp)
         ) {
+            val strings = LocalAppStrings.current
             NavigationBarItem(
                 selected = selectedTab == 0,
                 onClick = onHomeClick,
                 icon = { Icon(Icons.Default.Home, contentDescription = null, modifier = Modifier.size(24.dp)) },
-                label = { Text("Home", style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Medium)) },
+                label = { Text(strings.home, style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Medium)) },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = colors.accent,
                     selectedTextColor = colors.accent,
@@ -1103,7 +1121,7 @@ fun W2TBottomNavigation(
                 selected = selectedTab == 1,
                 onClick = onProfileClick,
                 icon = { Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(24.dp)) },
-                label = { Text("Profile", style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Medium)) },
+                label = { Text(strings.profile, style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Medium)) },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = colors.accent,
                     selectedTextColor = colors.accent,
@@ -1116,7 +1134,7 @@ fun W2TBottomNavigation(
                 selected = selectedTab == 2,
                 onClick = onChallengesClick,
                 icon = { Icon(Icons.Default.Flag, contentDescription = null, modifier = Modifier.size(24.dp)) },
-                label = { Text("Challenges", style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Medium)) },
+                label = { Text(strings.challenges, style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Medium)) },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = colors.accent,
                     selectedTextColor = colors.accent,
@@ -1129,7 +1147,7 @@ fun W2TBottomNavigation(
                 selected = selectedTab == 3,
                 onClick = onSettingsClick,
                 icon = { Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(24.dp)) },
-                label = { Text("Settings", style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 3) FontWeight.Bold else FontWeight.Medium)) },
+                label = { Text(strings.settings, style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 3) FontWeight.Bold else FontWeight.Medium)) },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = colors.accent,
                     selectedTextColor = colors.accent,
@@ -1218,3 +1236,50 @@ fun String.extractIcon(): Pair<String, String> {
     }
     return Pair("", this)
 }
+
+fun Modifier.bounceClick(
+    enabled: Boolean = true,
+    onClick: () -> Unit
+): Modifier = composed {
+    var isPressed by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.94f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
+
+    this.pointerInput(enabled) {
+        if (enabled) {
+            detectTapGestures(
+                onPress = {
+                    isPressed = true
+                    tryAwaitRelease()
+                    isPressed = false
+                },
+                onTap = { onClick() }
+            )
+        }
+    }.graphicsLayer {
+        scaleX = scale
+        scaleY = scale
+    }
+}
+
+fun Modifier.bounce(interactionSource: androidx.compose.foundation.interaction.InteractionSource): Modifier = composed {
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.94f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
+    this.graphicsLayer {
+        scaleX = scale
+        scaleY = scale
+    }
+}
+
+

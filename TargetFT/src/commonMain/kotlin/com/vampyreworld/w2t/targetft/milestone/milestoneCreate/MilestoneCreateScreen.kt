@@ -20,7 +20,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.ui.graphics.Color
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.sharedui.catalog.W2TCard
+import com.vampyreworld.w2t.sharedui.catalog.W2THeader
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.animation.AnimatedVisibility
@@ -37,6 +39,7 @@ fun MilestoneCreateScreen(
 ) {
     val state by component.state.subscribeAsState()
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     val scrollState = rememberScrollState()
     
     var title by remember { mutableStateOf("") }
@@ -47,22 +50,22 @@ fun MilestoneCreateScreen(
 
     val icons = listOf("💻", "📈", "🧘‍♀️", "📚", "💰", "🚀", "🎨", "🏡", "🎯", "✨", "🏃")
     val suggestions = listOf(
-        "Build MVP 🚀" to Triple("Build MVP", "🚀", false),
-        "Learn Basics 📚" to Triple("Learn Basics", "📚", true),
-        "First Sale 💰" to Triple("First Sale", "💰", false),
-        "Hire Team 👥" to Triple("Hire Team", "👥", false),
-        "Launch Beta 📢" to Triple("Launch Beta", "📢", false),
-        "Get Fit 🏃" to Triple("Get Fit", "🏃", true)
+        strings.milestoneSuggestMvp to Triple(strings.milestoneSuggestMvp.removeSuffix(" 🚀"), "🚀", false),
+        strings.milestoneSuggestBasics to Triple(strings.milestoneSuggestBasics.removeSuffix(" 📚"), "📚", true),
+        strings.milestoneSuggestSale to Triple(strings.milestoneSuggestSale.removeSuffix(" 💰"), "💰", false),
+        strings.milestoneSuggestTeam to Triple(strings.milestoneSuggestTeam.removeSuffix(" 👥"), "👥", false),
+        strings.milestoneSuggestBeta to Triple(strings.milestoneSuggestBeta.removeSuffix(" 📢"), "📢", false),
+        strings.milestoneSuggestFit to Triple(strings.milestoneSuggestFit.removeSuffix(" 🏃"), "🏃", true)
     )
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Create Milestone Goal", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(MilestoneCreateContract.Intent.OnBackClicked) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.goBack)
                     }
                 },
                 colors = com.vampyreworld.w2t.sharedui.catalog.w2tTopAppBarColors()
@@ -78,11 +81,17 @@ fun MilestoneCreateScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
 
+        W2THeader(
+            title = strings.createMilestoneGoal,
+            subtitle = strings.milestonesDesc,
+            avatarText = "🏁"
+        )
+
         W2TCard {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Column {
                     Text(
-                        text = "Goal Title",
+                        text = strings.goalTitle,
                         style = MaterialTheme.typography.labelLarge,
                         color = colors.muted,
                         fontWeight = FontWeight.SemiBold
@@ -91,7 +100,7 @@ fun MilestoneCreateScreen(
                     OutlinedTextField(
                         value = title,
                         onValueChange = { title = it },
-                        placeholder = { Text("e.g., Reach German B1") },
+                        placeholder = { Text(strings.milestoneTitlePlaceholder) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -128,13 +137,13 @@ fun MilestoneCreateScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Skill Milestone",
+                            text = strings.skillMilestone,
                             style = MaterialTheme.typography.labelLarge,
                             color = colors.muted,
                             fontWeight = FontWeight.SemiBold
                         )
                         Text(
-                            text = "Does completing this milestone confer a new skill?",
+                            text = strings.conferNewSkill,
                             style = MaterialTheme.typography.bodySmall,
                             color = colors.muted.copy(alpha = 0.7f)
                         )
@@ -155,7 +164,7 @@ fun MilestoneCreateScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = if (showAdvanced) "Hide Optional Details 🔼" else "Customize Icon & Description 🔽",
+                        text = if (showAdvanced) strings.hideOptionalDetails else strings.customizeIconDescription,
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                         color = colors.accent
                     )
@@ -169,7 +178,7 @@ fun MilestoneCreateScreen(
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         Column {
                             Text(
-                                text = "Description",
+                                text = strings.description,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = colors.muted,
                                 fontWeight = FontWeight.SemiBold
@@ -178,7 +187,7 @@ fun MilestoneCreateScreen(
                             OutlinedTextField(
                                 value = description,
                                 onValueChange = { description = it },
-                                placeholder = { Text("What is this milestone about?") },
+                                placeholder = { Text(strings.whatIsMilestoneAbout) },
                                 modifier = Modifier.fillMaxWidth(),
                                 minLines = 4,
                                 shape = RoundedCornerShape(12.dp),
@@ -192,7 +201,7 @@ fun MilestoneCreateScreen(
 
                         Column {
                             Text(
-                                text = "Select an Icon",
+                                text = strings.selectIcon,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = colors.muted,
                                 fontWeight = FontWeight.SemiBold
@@ -238,7 +247,7 @@ fun MilestoneCreateScreen(
             colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
             shape = RoundedCornerShape(28.dp)
         ) {
-            Text("Create Milestone Goal", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+            Text(strings.createMilestoneGoal, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
         }
         
         Spacer(modifier = Modifier.height(24.dp))

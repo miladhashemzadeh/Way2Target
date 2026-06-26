@@ -20,8 +20,10 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.ui.graphics.Color
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.sharedui.catalog.W2TCard
+import com.vampyreworld.w2t.sharedui.catalog.W2THeader
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
 
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 import androidx.compose.foundation.horizontalScroll
 
 import androidx.compose.animation.AnimatedVisibility
@@ -37,6 +39,7 @@ fun MasterCreateScreen(
     padding: PaddingValues
 ) {
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     val scrollState = rememberScrollState()
     
     var title by remember { mutableStateOf("") }
@@ -47,22 +50,22 @@ fun MasterCreateScreen(
 
     val icons = listOf("💻", "📈", "🧘‍♀️", "📚", "💰", "🚀", "🎨", "🏡", "🎯", "✨", "🏃")
     val suggestions = listOf(
-        "Learn Code 💻" to ("Learn Programming" to "💻"),
-        "Get Fit 🏃" to ("Get Fit & Healthy" to "🏃"),
-        "Save Money 💰" to ("Save Money" to "💰"),
-        "Read Books 📚" to ("Read Books" to "📚"),
-        "Launch App 🚀" to ("Start My Project" to "🚀"),
-        "Meditate 🧘‍♀️" to ("Daily Meditation" to "🧘‍♀️")
+        strings.presetCodeLabel to (strings.presetCodeTitle to "💻"),
+        strings.presetWorkoutLabel to (strings.presetWorkoutTitle to "🏃"),
+        strings.presetGroceriesLabel to (strings.presetGroceriesTitle to "💰"),
+        strings.presetReadLabel to (strings.presetReadTitle to "📚"),
+        strings.presetReviewLabel to (strings.presetReviewTitle to "🚀"),
+        strings.presetMeditateLabel to (strings.presetMeditateTitle to "🧘‍♀️")
     )
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Create Master Goal", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(MasterCreateContract.Intent.OnBackClicked) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.goBack)
                     }
                 },
                 colors = com.vampyreworld.w2t.sharedui.catalog.w2tTopAppBarColors()
@@ -77,12 +80,17 @@ fun MasterCreateScreen(
                 .padding(horizontal = 24.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
+            W2THeader(
+                title = strings.createMasterGoal,
+                subtitle = strings.masterGoalDesc,
+                avatarText = "🎯"
+            )
 
         W2TCard {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Column {
                     Text(
-                        text = "Goal Title",
+                        text = strings.goalTitle,
                         style = MaterialTheme.typography.labelLarge,
                         color = colors.muted,
                         fontWeight = FontWeight.SemiBold
@@ -91,7 +99,7 @@ fun MasterCreateScreen(
                     OutlinedTextField(
                         value = title,
                         onValueChange = { title = it },
-                        placeholder = { Text("e.g., Learn Programming") },
+                        placeholder = { Text(strings.challengeTitlePlaceholder) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -125,13 +133,13 @@ fun MasterCreateScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Life Goal",
+                            text = strings.lifeGoalLabel,
                             style = MaterialTheme.typography.labelLarge,
                             color = colors.muted,
                             fontWeight = FontWeight.SemiBold
                         )
                         Text(
-                            text = "Is this a long-term life ambition?",
+                            text = strings.isThisLongTermAmbition,
                             style = MaterialTheme.typography.bodySmall,
                             color = colors.muted.copy(alpha = 0.7f)
                         )
@@ -152,7 +160,7 @@ fun MasterCreateScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = if (showAdvanced) "Hide Optional Details 🔼" else "Customize Icon & Description 🔽",
+                        text = if (showAdvanced) strings.hideOptionalDetails else strings.customizeIconDescription,
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                         color = colors.accent
                     )
@@ -166,7 +174,7 @@ fun MasterCreateScreen(
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         Column {
                             Text(
-                                text = "Description",
+                                text = strings.description,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = colors.muted,
                                 fontWeight = FontWeight.SemiBold
@@ -175,7 +183,7 @@ fun MasterCreateScreen(
                             OutlinedTextField(
                                 value = description,
                                 onValueChange = { description = it },
-                                placeholder = { Text("What does achieving this goal mean to you?") },
+                                placeholder = { Text(strings.whatDoesAchievingMean) },
                                 modifier = Modifier.fillMaxWidth(),
                                 minLines = 4,
                                 shape = RoundedCornerShape(12.dp),
@@ -189,7 +197,7 @@ fun MasterCreateScreen(
 
                         Column {
                             Text(
-                                text = "Select an Icon",
+                                text = strings.selectIcon,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = colors.muted,
                                 fontWeight = FontWeight.SemiBold
@@ -235,7 +243,7 @@ fun MasterCreateScreen(
             colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
             shape = RoundedCornerShape(28.dp)
         ) {
-            Text("Create Master Goal", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+            Text(strings.createMasterGoal, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
         }
         
         Spacer(modifier = Modifier.height(24.dp))

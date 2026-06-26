@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import com.vampyreworld.w2t.sharedui.theme.color.*
+import com.vampyreworld.w2t.sharedui.localization.*
 
 private val lightAppColors = AppColorScheme(
 
@@ -277,8 +278,8 @@ private val darkAppColors = AppColorScheme(
     blue = customColor3Dark,
     brightRed = errorContainerDarkMediumContrast,
     accent = OD_Accent,
-    muted = OD_Muted,
-    border = OD_Border,
+    muted = lowText,
+    border = outlineVariantDark,
     moodHighEnergyStart = OD_Mood_HighEnergy_Start,
     moodHighEnergyEnd = OD_Mood_HighEnergy_End,
     moodFocusedStart = OD_Mood_Focused_Start,
@@ -290,6 +291,7 @@ private val darkAppColors = AppColorScheme(
 @Composable
 fun W2TTheme(
     isDarkMode: Boolean = true,
+    language: String = "en",
     userProfileInfo: UserProfileInfo = UserProfileInfo(),
     content: @Composable () -> Unit,
 ) {
@@ -303,12 +305,22 @@ fun W2TTheme(
     }
     val appShape = AppShapes
     val typography = createAppTypography(isDarkMode)
+    
+    val appStrings = when (language) {
+        "fa" -> FaStrings
+        else -> EnStrings
+    }
+    val layoutDirection = when (language) {
+        "fa" -> LayoutDirection.Rtl
+        else -> LayoutDirection.Ltr
+    }
 
     CompositionLocalProvider(
         LocalAppColorScheme provides extraColors,
         LocalAppDimens provides DefaultAppDimens,
-        LocalLayoutDirection provides LayoutDirection.Ltr,
-        LocalUserProfile provides userProfileInfo
+        LocalLayoutDirection provides layoutDirection,
+        LocalUserProfile provides userProfileInfo,
+        LocalAppStrings provides appStrings
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

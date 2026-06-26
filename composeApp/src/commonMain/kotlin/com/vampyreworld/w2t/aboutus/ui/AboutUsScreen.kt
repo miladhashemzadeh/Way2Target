@@ -13,20 +13,22 @@ import androidx.compose.ui.unit.dp
 import com.vampyreworld.w2t.aboutus.AboutUsComponent
 import com.vampyreworld.w2t.aboutus.AboutUsContract
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutUsScreen(component: AboutUsComponent) {
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("About Us", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
+                title = { Text(strings.aboutUs, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(AboutUsContract.Intent.OnBackClicked) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.goBack)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -43,7 +45,7 @@ fun AboutUsScreen(component: AboutUsComponent) {
                 onClick = { component.onIntent(AboutUsContract.Intent.OnBackClicked) },
                 colors = ButtonDefaults.buttonColors(containerColor = colors.accent)
             ) {
-                Text("About Us Screen - Go Back")
+                Text(strings.aboutUsScreenGoBack)
             }
         }
     }

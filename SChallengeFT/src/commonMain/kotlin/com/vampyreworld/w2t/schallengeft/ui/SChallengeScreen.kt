@@ -18,14 +18,15 @@ import com.vampyreworld.w2t.sharedui.catalog.W2TBottomNavigation
 fun SChallengeScreen(component: SChallengeComponent) {
     val state by component.state.subscribeAsState()
     val challenge = state.selectedChallenge
+    val strings = com.vampyreworld.w2t.sharedui.localization.LocalAppStrings.current
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(challenge?.title ?: "Challenges") },
+                title = { Text(if (challenge == null) strings.challenges else "") },
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(SChallengeContract.Intent.OnBackClicked) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.goBack)
                     }
                 },
                 colors = com.vampyreworld.w2t.sharedui.catalog.w2tCenterAlignedTopAppBarColors()

@@ -21,26 +21,24 @@ import com.vampyreworld.w2t.appraiseft.component.AppraiseComponent
 import com.vampyreworld.w2t.sharedui.catalog.W2TCard
 import com.vampyreworld.w2t.sharedui.catalog.W2TProgressBar
 import com.vampyreworld.w2t.sharedui.catalog.W2TSectionTitle
+import com.vampyreworld.w2t.sharedui.catalog.W2THeader
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GoalAppraiseScreen(component: AppraiseComponent) {
     val state by component.state.subscribeAsState()
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        "Appraise Goal",
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                },
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(AppraiseContract.Intent.OnBackClicked) }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = strings.goBack)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -56,30 +54,29 @@ fun GoalAppraiseScreen(component: AppraiseComponent) {
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Text(
-                text = "\"${state.goal?.title ?: "Learn Programming"}\"",
-                style = MaterialTheme.typography.bodyMedium,
-                color = colors.muted,
-                modifier = Modifier.padding(top = -16.dp, start = 8.dp)
+            W2THeader(
+                title = strings.appraiseGoal,
+                subtitle = state.goal?.title ?: strings.unknown,
+                avatarText = "📈"
             )
 
             // Goal Summary Card
             W2TCard {
-                W2TSectionTitle("Goal Summary")
+                W2TSectionTitle(strings.goalSummary)
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        text = state.goal?.title ?: "Learn Programming",
+                        text = state.goal?.title ?: strings.unknown,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
                     )
                     W2TProgressBar(progress = 0.7f)
                     Text(
-                        text = "70% Complete",
+                        text = strings.percentComplete.format(70),
                         style = MaterialTheme.typography.labelSmall,
                         color = colors.accent,
                         modifier = Modifier.align(androidx.compose.ui.Alignment.End)
                     )
                     Text(
-                        text = "You've made significant progress. Challenges encountered have been mostly resolved. Keep up the momentum!",
+                        text = strings.goalSummaryPrompt,
                         style = MaterialTheme.typography.bodySmall,
                         color = colors.muted,
                         lineHeight = 20.sp
@@ -89,11 +86,11 @@ fun GoalAppraiseScreen(component: AppraiseComponent) {
 
             // Reflection Card
             W2TCard {
-                W2TSectionTitle("Your Reflection")
+                W2TSectionTitle(strings.yourReflection)
                 OutlinedTextField(
                     value = state.reflection,
                     onValueChange = { component.onIntent(AppraiseContract.Intent.OnReflectionChanged(it)) },
-                    placeholder = { Text("What did you learn? What went well or poorly?") },
+                    placeholder = { Text(strings.reflectionPlaceholder) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 120.dp),
@@ -117,7 +114,7 @@ fun GoalAppraiseScreen(component: AppraiseComponent) {
                     shape = RoundedCornerShape(28.dp)
                 ) {
                     Text(
-                        "Mark as Complete",
+                        strings.markAsComplete,
                         style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                     )
                 }
@@ -131,7 +128,7 @@ fun GoalAppraiseScreen(component: AppraiseComponent) {
                     border = ButtonDefaults.outlinedButtonBorder.copy(brush = androidx.compose.ui.graphics.SolidColor(colors.border))
                 ) {
                     Text(
-                        "Archive Goal",
+                        strings.archiveGoal,
                         style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                     )
                 }

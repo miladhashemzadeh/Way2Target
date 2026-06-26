@@ -19,6 +19,8 @@ import com.vampyreworld.w2t.moodaddft.MoodAddComponent
 import com.vampyreworld.w2t.moodaddft.MoodAddContract
 import com.vampyreworld.w2t.moodaddft.ui.components.MoodSlider
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
+import com.vampyreworld.w2t.sharedui.catalog.*
 import kotlinx.datetime.Clock
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,6 +28,7 @@ import kotlinx.datetime.Clock
 fun MoodAddScreen(component: MoodAddComponent) {
     val state by component.state.subscribeAsState()
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     var energy by remember { mutableStateOf(70f) }
     var focus by remember { mutableStateOf(60f) }
 
@@ -35,13 +38,13 @@ fun MoodAddScreen(component: MoodAddComponent) {
             TopAppBar(
                 title = {
                     Text(
-                        "Quick Check-in",
+                        strings.quickCheckIn,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(MoodAddContract.Intent.OnBackClicked) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.goBack)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -57,12 +60,12 @@ fun MoodAddScreen(component: MoodAddComponent) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                "Quick Check-in",
+                strings.quickCheckIn,
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                "How's your current state of mind?",
+                strings.howsYourMind,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -78,27 +81,29 @@ fun MoodAddScreen(component: MoodAddComponent) {
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    "You've already checked in today!",
+                    strings.alreadyCheckedIn,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    "Come back tomorrow for your next check-in.",
+                    strings.checkInTomorrow,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(48.dp))
+                val backInteractionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
                 Button(
                     onClick = { component.onIntent(MoodAddContract.Intent.OnBackClicked) },
-                    modifier = Modifier.fillMaxWidth(),
+                    interactionSource = backInteractionSource,
+                    modifier = Modifier.fillMaxWidth().bounce(backInteractionSource),
                     contentPadding = PaddingValues(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colors.accent)
                 ) {
-                    Text("Go Back", style = MaterialTheme.typography.titleMedium)
+                    Text(strings.goBack, style = MaterialTheme.typography.titleMedium)
                 }
             } else {
                 MoodSlider(
-                    label = "Energy Level",
+                    label = strings.energyLevel,
                     value = energy,
                     onValueChange = { energy = it },
                     icon = Icons.Default.Bolt
@@ -107,7 +112,7 @@ fun MoodAddScreen(component: MoodAddComponent) {
                 Spacer(modifier = Modifier.height(24.dp))
                 
                 MoodSlider(
-                    label = "Focus & Concentration",
+                    label = strings.focusConcentration,
                     value = focus,
                     onValueChange = { focus = it },
                     icon = Icons.Default.Psychology
@@ -115,6 +120,7 @@ fun MoodAddScreen(component: MoodAddComponent) {
                 
                 Spacer(modifier = Modifier.height(48.dp))
                 
+                val saveInteractionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
                 Button(
                     onClick = { 
                         component.onIntent(MoodAddContract.Intent.OnAddMood(
@@ -129,18 +135,21 @@ fun MoodAddScreen(component: MoodAddComponent) {
                         ))
                         component.onIntent(MoodAddContract.Intent.OnBackClicked) 
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    interactionSource = saveInteractionSource,
+                    modifier = Modifier.fillMaxWidth().bounce(saveInteractionSource),
                     contentPadding = PaddingValues(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = colors.accent)
                 ) {
-                    Text("Save & Continue", style = MaterialTheme.typography.titleMedium)
+                    Text(strings.saveContinue, style = MaterialTheme.typography.titleMedium)
                 }
 
                 TextButton(
                     onClick = { component.onIntent(MoodAddContract.Intent.OnBackClicked) },
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier.padding(top = 8.dp).bounceClick {
+                        component.onIntent(MoodAddContract.Intent.OnBackClicked)
+                    }
                 ) {
-                    Text("I'll do this later", color = colors.muted)
+                    Text(strings.doThisLater, color = colors.muted)
                 }
             }
         }
