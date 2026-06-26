@@ -31,6 +31,33 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+
+private data class ActionPreset(
+    val label: String,
+    val title: String,
+    val description: String,
+    val selectedIcon: String,
+    val scheduleType: String,
+    val completionCriteria: String,
+    val energyCost: Float,
+    val timeCost: Float,
+    val moneyCost: Float,
+    val habitDuration: String = "30",
+    val habitPeriod: String = "1",
+    val habitWeeks: String = "4",
+    val recurringInterval: Long = 86_400_000L,
+    val recurringDays: Set<Int> = emptySet()
+)
+
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ActionCreateScreen(
@@ -39,6 +66,7 @@ fun ActionCreateScreen(
 ) {
     val state by component.state.subscribeAsState()
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     val scrollState = rememberScrollState()
     
     var title by remember { mutableStateOf("") }
@@ -48,6 +76,7 @@ fun ActionCreateScreen(
     var timeCost by remember { mutableStateOf(50f) }
     var moneyCost by remember { mutableStateOf(50f) }
     var selectedIcon by remember { mutableStateOf("🎯") }
+    var showAdvanced by remember { mutableStateOf(false) }
     
     // Schedule state
     var scheduleType by remember { mutableStateOf("Once") }
@@ -89,10 +118,10 @@ fun ActionCreateScreen(
                         "habit_start" -> habitStartTime = selected
                     }
                     showDatePickerFor = ""
-                }) { Text("OK") }
+                }) { Text(strings.saveChanges) }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePickerFor = "" }) { Text("Cancel") }
+                TextButton(onClick = { showDatePickerFor = "" }) { Text(strings.cancel) }
             }
         ) {
             DatePicker(state = datePickerState)
@@ -106,28 +135,10 @@ fun ActionCreateScreen(
                 TextButton(onClick = {
                     recurringStartTime = LocalTime(timePickerState.hour, timePickerState.minute)
                     showTimePicker = false
-                }) { Text("OK") }
+                }) { Text(strings.saveChanges) }
             },
             dismissButton = {
-                TextButton(onClick = { showTimePicker = false }) { Text("Cancel") }
-            },
-            text = {
-                TimePicker(state = timePickerState)
-            }
-        )
-    }
-
-    if (showTimePicker) {
-        AlertDialog(
-            onDismissRequest = { showTimePicker = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    recurringStartTime = LocalTime(timePickerState.hour, timePickerState.minute)
-                    showTimePicker = false
-                }) { Text("OK") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showTimePicker = false }) { Text("Cancel") }
+                TextButton(onClick = { showTimePicker = false }) { Text(strings.cancel) }
             },
             text = {
                 TimePicker(state = timePickerState)
@@ -137,25 +148,122 @@ fun ActionCreateScreen(
 
     val icons = listOf("💻", "📈", "🧘‍♀️", "📚", "💰", "🚀", "🎨", "🏡", "🎯", "✨", "🏃")
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding)
-            .verticalScroll(scrollState)
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        W2THeader(
-            title = "ایجاد گام اجرایی",
-            subtitle = if (state.parentId != null) "زیرمجموعه هدف #${state.parentId}" else "گام عملیاتی خود را تعریف کنید"
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(onClick = { component.onIntent(ActionCreateContract.Intent.OnBackClicked) }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.goBack)
+                    }
+                },
+                colors = com.vampyreworld.w2t.sharedui.catalog.w2tTopAppBarColors()
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(scrollState)
+                .padding(horizontal = 24.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            W2THeader(
+                title = strings.createActionGoal,
+                subtitle = strings.actionsDesc,
+                avatarText = "⚡"
+            )
+
+        val presets = listOf(
+            ActionPreset(
+                label = strings.presetWorkoutLabel,
+                title = strings.presetWorkoutTitle,
+                description = strings.presetWorkoutDesc,
+                selectedIcon = "🏃",
+                scheduleType = "Habit",
+                completionCriteria = strings.presetWorkoutCriteria,
+                energyCost = 70f,
+                timeCost = 30f,
+                moneyCost = 0f,
+                habitDuration = "30",
+                habitPeriod = "1",
+                habitWeeks = "4"
+            ),
+            ActionPreset(
+                label = strings.presetCodeLabel,
+                title = strings.presetCodeTitle,
+                description = strings.presetCodeDesc,
+                selectedIcon = "💻",
+                scheduleType = "Habit",
+                completionCriteria = strings.presetCodeCriteria,
+                energyCost = 60f,
+                timeCost = 60f,
+                moneyCost = 0f,
+                habitDuration = "60",
+                habitPeriod = "1",
+                habitWeeks = "12"
+            ),
+            ActionPreset(
+                label = strings.presetReadLabel,
+                title = strings.presetReadTitle,
+                description = strings.presetReadDesc,
+                selectedIcon = "📚",
+                scheduleType = "Habit",
+                completionCriteria = strings.presetReadCriteria,
+                energyCost = 20f,
+                timeCost = 15f,
+                moneyCost = 0f,
+                habitDuration = "15",
+                habitPeriod = "1",
+                habitWeeks = "8"
+            ),
+            ActionPreset(
+                label = strings.presetMeditateLabel,
+                title = strings.presetMeditateTitle,
+                description = strings.presetMeditateDesc,
+                selectedIcon = "🧘‍♀️",
+                scheduleType = "Habit",
+                completionCriteria = strings.presetMeditateCriteria,
+                energyCost = 10f,
+                timeCost = 10f,
+                moneyCost = 0f,
+                habitDuration = "10",
+                habitPeriod = "1",
+                habitWeeks = "4"
+            ),
+            ActionPreset(
+                label = strings.presetReviewLabel,
+                title = strings.presetReviewTitle,
+                description = strings.presetReviewDesc,
+                selectedIcon = "📈",
+                scheduleType = "Recurring",
+                completionCriteria = strings.presetReviewCriteria,
+                energyCost = 35f,
+                timeCost = 45f,
+                moneyCost = 0f,
+                recurringInterval = 604_800_000L,
+                recurringDays = setOf(7) // Sunday
+            ),
+            ActionPreset(
+                label = strings.presetGroceriesLabel,
+                title = strings.presetGroceriesTitle,
+                description = strings.presetGroceriesDesc,
+                selectedIcon = "🛒",
+                scheduleType = "Once",
+                completionCriteria = strings.presetGroceriesCriteria,
+                energyCost = 40f,
+                timeCost = 60f,
+                moneyCost = 50f
+            )
         )
 
         W2TCard {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                // ... (Existing Title, Description, Criteria fields remain the same)
                 Column {
                     Text(
-                        text = "Goal Title",
+                        text = strings.goalTitle,
                         style = MaterialTheme.typography.labelLarge,
                         color = colors.muted,
                         fontWeight = FontWeight.SemiBold
@@ -164,7 +272,7 @@ fun ActionCreateScreen(
                     OutlinedTextField(
                         value = title,
                         onValueChange = { title = it },
-                        placeholder = { Text("e.g., Study 30 min/day") },
+                        placeholder = { Text(strings.actionTitlePlaceholder) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -172,35 +280,43 @@ fun ActionCreateScreen(
                             unfocusedBorderColor = colors.border,
                             unfocusedContainerColor = colors.bgLight.copy(alpha = 0.5f)
                         )
-                    )
-                }
-
-                Column {
-                    Text(
-                        text = "Description",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = colors.muted,
-                        fontWeight = FontWeight.SemiBold
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = description,
-                        onValueChange = { description = it },
-                        placeholder = { Text("How will you do this?") },
-                        modifier = Modifier.fillMaxWidth(),
-                        minLines = 4,
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = colors.accent,
-                            unfocusedBorderColor = colors.border,
-                            unfocusedContainerColor = colors.bgLight.copy(alpha = 0.5f)
-                        )
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        presets.forEach { preset ->
+                            SuggestionChip(
+                                onClick = {
+                                    title = preset.title
+                                    description = preset.description
+                                    selectedIcon = preset.selectedIcon
+                                    scheduleType = preset.scheduleType
+                                    completionCriteria = preset.completionCriteria
+                                    energyCost = preset.energyCost
+                                    timeCost = preset.timeCost
+                                    moneyCost = preset.moneyCost
+                                    if (preset.scheduleType == "Habit") {
+                                        sessionDurationMins = preset.habitDuration
+                                        habitPeriodDays = preset.habitPeriod
+                                        habitTotalWeeks = preset.habitWeeks
+                                    } else if (preset.scheduleType == "Recurring") {
+                                        intervalMs = preset.recurringInterval
+                                        selectedDays = preset.recurringDays
+                                    }
+                                },
+                                label = { Text(preset.label, style = MaterialTheme.typography.labelMedium) }
+                            )
+                        }
+                    }
                 }
 
                 Column {
                     Text(
-                        text = "Schedule Type",
+                        text = strings.scheduleType,
                         style = MaterialTheme.typography.labelLarge,
                         color = colors.muted,
                         fontWeight = FontWeight.SemiBold
@@ -210,11 +326,15 @@ fun ActionCreateScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        listOf("Once", "Recurring", "Habit").forEach { type ->
+                        listOf(
+                            "Once" to strings.scheduleOnce,
+                            "Recurring" to strings.scheduleRecurring,
+                            "Habit" to strings.scheduleHabit
+                        ).forEach { (type, labelText) ->
                             FilterChip(
                                 selected = scheduleType == type,
                                 onClick = { scheduleType = type },
-                                label = { Text(type) },
+                                label = { Text(labelText) },
                                 modifier = Modifier.weight(1f)
                             )
                         }
@@ -223,7 +343,7 @@ fun ActionCreateScreen(
 
                 if (scheduleType == "Once") {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text("Task Timing", style = MaterialTheme.typography.labelLarge, color = colors.muted, fontWeight = FontWeight.SemiBold)
+                        Text(strings.taskTiming, style = MaterialTheme.typography.labelLarge, color = colors.muted, fontWeight = FontWeight.SemiBold)
                         
                         // Start Time
                         OutlinedCard(
@@ -238,8 +358,8 @@ fun ActionCreateScreen(
                                     text = if (onceStartTime != null) {
                                         val date = Instant.fromEpochMilliseconds(onceStartTime!!)
                                             .toLocalDateTime(TimeZone.currentSystemDefault()).date
-                                        "Starts: ${date.dayOfMonth}/${date.monthNumber}/${date.year}"
-                                    } else "Start Date (Optional)",
+                                        strings.startsOnDate.format("${date.dayOfMonth}/${date.monthNumber}/${date.year}")
+                                    } else strings.startDateOptional,
                                     color = if (onceStartTime != null) MaterialTheme.colorScheme.onSurface else colors.muted
                                 )
                             }
@@ -258,8 +378,8 @@ fun ActionCreateScreen(
                                     text = if (deadline != null) {
                                         val date = Instant.fromEpochMilliseconds(deadline!!)
                                             .toLocalDateTime(TimeZone.currentSystemDefault()).date
-                                        "Deadline: ${date.dayOfMonth}/${date.monthNumber}/${date.year}"
-                                    } else "Deadline Date",
+                                        strings.deadlineText.format("${date.dayOfMonth}/${date.monthNumber}/${date.year}")
+                                    } else strings.deadlineDate,
                                     color = if (deadline != null) MaterialTheme.colorScheme.onSurface else colors.muted
                                 )
                             }
@@ -268,7 +388,7 @@ fun ActionCreateScreen(
                         OutlinedTextField(
                             value = onceReminderMins,
                             onValueChange = { onceReminderMins = it },
-                            label = { Text("Reminder (mins before)") },
+                            label = { Text(strings.reminderBefore) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
                             keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
@@ -278,14 +398,14 @@ fun ActionCreateScreen(
 
                 if (scheduleType == "Recurring") {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text("Repeat Settings", style = MaterialTheme.typography.labelLarge, color = colors.muted, fontWeight = FontWeight.SemiBold)
+                        Text(strings.repeatSettings, style = MaterialTheme.typography.labelLarge, color = colors.muted, fontWeight = FontWeight.SemiBold)
                         
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             RadioButton(selected = intervalMs == 86_400_000L, onClick = { intervalMs = 86_400_000L })
-                            Text("Daily", style = MaterialTheme.typography.bodyMedium)
+                            Text(strings.daily, style = MaterialTheme.typography.bodyMedium)
                             Spacer(modifier = Modifier.width(8.dp))
                             RadioButton(selected = intervalMs == 604_800_000L, onClick = { intervalMs = 604_800_000L })
-                            Text("Weekly", style = MaterialTheme.typography.bodyMedium)
+                            Text(strings.weekly, style = MaterialTheme.typography.bodyMedium)
                         }
 
                         // Time Picker Trigger
@@ -297,7 +417,8 @@ fun ActionCreateScreen(
                             Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.Schedule, contentDescription = null, tint = colors.accent)
                                 Spacer(modifier = Modifier.width(12.dp))
-                                Text("Starting at: ${recurringStartTime.hour.toString().padStart(2, '0')}:${recurringStartTime.minute.toString().padStart(2, '0')}")
+                                val timeString = "${recurringStartTime.hour.toString().padStart(2, '0')}:${recurringStartTime.minute.toString().padStart(2, '0')}"
+                                Text(strings.startingAt.format(timeString))
                             }
                         }
 
@@ -314,8 +435,8 @@ fun ActionCreateScreen(
                                     text = if (recurrenceEndTime != null) {
                                         val date = Instant.fromEpochMilliseconds(recurrenceEndTime!!)
                                             .toLocalDateTime(TimeZone.currentSystemDefault()).date
-                                        "Ends on: ${date.dayOfMonth}/${date.monthNumber}/${date.year}"
-                                    } else "End Date (Optional)",
+                                        strings.endsOn.format("${date.dayOfMonth}/${date.monthNumber}/${date.year}")
+                                    } else strings.endDateOptional,
                                     color = if (recurrenceEndTime != null) MaterialTheme.colorScheme.onSurface else colors.muted
                                 )
                             }
@@ -324,16 +445,16 @@ fun ActionCreateScreen(
                         OutlinedTextField(
                             value = notifyBeforeMins,
                             onValueChange = { notifyBeforeMins = it },
-                            label = { Text("Notify me (mins before)") },
+                            label = { Text(strings.notifyMeBefore) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
                             keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
                         )
                         
                         // Day multi-select
-                        Text("Days of Week", style = MaterialTheme.typography.bodySmall, color = colors.muted)
+                        Text(strings.daysOfWeek, style = MaterialTheme.typography.bodySmall, color = colors.muted)
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+                            val days = strings.daysShort
                             days.forEachIndexed { index, day ->
                                 val dayNum = index + 1
                                 FilterChip(
@@ -350,7 +471,7 @@ fun ActionCreateScreen(
 
                 if (scheduleType == "Habit") {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text("Habit Strategy", style = MaterialTheme.typography.labelLarge, color = colors.muted, fontWeight = FontWeight.SemiBold)
+                        Text(strings.habitStrategy, style = MaterialTheme.typography.labelLarge, color = colors.muted, fontWeight = FontWeight.SemiBold)
                         
                         // Habit Start Date
                         OutlinedCard(
@@ -365,8 +486,8 @@ fun ActionCreateScreen(
                                     text = if (habitStartTime != null) {
                                         val date = Instant.fromEpochMilliseconds(habitStartTime!!)
                                             .toLocalDateTime(TimeZone.currentSystemDefault()).date
-                                        "Starts on: ${date.dayOfMonth}/${date.monthNumber}/${date.year}"
-                                    } else "Start Date (Immediately)",
+                                        strings.startsOnDate.format("${date.dayOfMonth}/${date.monthNumber}/${date.year}")
+                                    } else strings.startDateImmediately,
                                     color = if (habitStartTime != null) MaterialTheme.colorScheme.onSurface else colors.muted
                                 )
                             }
@@ -375,8 +496,8 @@ fun ActionCreateScreen(
                         OutlinedTextField(
                             value = sessionDurationMins,
                             onValueChange = { sessionDurationMins = it },
-                            label = { Text("Session Duration (mins)") },
-                            placeholder = { Text("e.g. 30") },
+                            label = { Text(strings.sessionDuration) },
+                            placeholder = { Text(strings.durationPlaceholder) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
                             keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
@@ -385,8 +506,8 @@ fun ActionCreateScreen(
                         OutlinedTextField(
                             value = habitPeriodDays,
                             onValueChange = { habitPeriodDays = it },
-                            label = { Text("Frequency (every X days)") },
-                            placeholder = { Text("1 for daily, 7 for weekly") },
+                            label = { Text(strings.frequencyXDays) },
+                            placeholder = { Text(strings.frequencyPlaceholder) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
                             keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
@@ -395,8 +516,8 @@ fun ActionCreateScreen(
                         OutlinedTextField(
                             value = habitTotalWeeks,
                             onValueChange = { habitTotalWeeks = it },
-                            label = { Text("Commitment (Total weeks)") },
-                            placeholder = { Text("e.g. 12") },
+                            label = { Text(strings.commitmentWeeks) },
+                            placeholder = { Text(strings.weeksPlaceholder) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
                             keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
@@ -404,66 +525,112 @@ fun ActionCreateScreen(
                     }
                 }
 
-                Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showAdvanced = !showAdvanced }
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = "Completion Criteria",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = colors.muted,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = completionCriteria,
-                        onValueChange = { completionCriteria = it },
-                        placeholder = { Text("What does 'done' look like?") },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = colors.accent,
-                            unfocusedBorderColor = colors.border,
-                            unfocusedContainerColor = colors.bgLight.copy(alpha = 0.5f)
-                        )
+                        text = if (showAdvanced) strings.hideOptionalDetails else strings.customizeDescriptionCosts,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        color = colors.accent
                     )
                 }
 
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = "Estimated Costs (0-100)",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = colors.muted,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    
-                    CostSlider(label = "Energy", value = energyCost, onValueChange = { energyCost = it }, colors = colors)
-                    CostSlider(label = "Time", value = timeCost, onValueChange = { timeCost = it }, colors = colors)
-                    CostSlider(label = "Money", value = moneyCost, onValueChange = { moneyCost = it }, colors = colors)
-                }
+                AnimatedVisibility(
+                    visible = showAdvanced,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Column {
+                            Text(
+                                text = strings.description,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = colors.muted,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = description,
+                                onValueChange = { description = it },
+                                placeholder = { Text(strings.howWillYouDoThis) },
+                                modifier = Modifier.fillMaxWidth(),
+                                minLines = 4,
+                                shape = RoundedCornerShape(12.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = colors.accent,
+                                    unfocusedBorderColor = colors.border,
+                                    unfocusedContainerColor = colors.bgLight.copy(alpha = 0.5f)
+                                )
+                            )
+                        }
 
-                Column {
-                    Text(
-                        text = "Select an Icon",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = colors.muted,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    FlowRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        icons.forEach { icon ->
-                            val isSelected = selectedIcon == icon
-                            Box(
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .clip(RoundedCornerShape(14.dp))
-                                    .background(if (isSelected) colors.accent.copy(alpha = 0.1f) else colors.bgLight)
-                                    .border(2.dp, if (isSelected) colors.accent else colors.border, RoundedCornerShape(14.dp))
-                                    .clickable { selectedIcon = icon },
-                                contentAlignment = Alignment.Center
+                        Column {
+                            Text(
+                                text = strings.completionCriteria,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = colors.muted,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = completionCriteria,
+                                onValueChange = { completionCriteria = it },
+                                placeholder = { Text(strings.completionCriteriaPlaceholder) },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = colors.accent,
+                                    unfocusedBorderColor = colors.border,
+                                    unfocusedContainerColor = colors.bgLight.copy(alpha = 0.5f)
+                                )
+                            )
+                        }
+
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = strings.estimatedCosts,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = colors.muted,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            
+                            CostSlider(label = strings.energy, value = energyCost, onValueChange = { energyCost = it }, colors = colors)
+                            CostSlider(label = strings.time, value = timeCost, onValueChange = { timeCost = it }, colors = colors)
+                            CostSlider(label = strings.money, value = moneyCost, onValueChange = { moneyCost = it }, colors = colors)
+                        }
+
+                        Column {
+                            Text(
+                                text = strings.selectIcon,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = colors.muted,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            FlowRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                Text(text = icon, fontSize = 24.sp)
+                                icons.forEach { icon ->
+                                    val isSelected = selectedIcon == icon
+                                    Box(
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .clip(RoundedCornerShape(14.dp))
+                                            .background(if (isSelected) colors.accent.copy(alpha = 0.1f) else colors.bgLight)
+                                            .border(2.dp, if (isSelected) colors.accent else colors.border, RoundedCornerShape(14.dp))
+                                            .clickable { selectedIcon = icon },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(text = icon, fontSize = 24.sp)
+                                    }
+                                }
                             }
                         }
                     }
@@ -513,8 +680,9 @@ fun ActionCreateScreen(
                         }
                         else -> null
                     }
+                    val finalTitle = if (title.startsWith(selectedIcon)) title else "$selectedIcon $title"
                     component.onIntent(ActionCreateContract.Intent.OnSaveGoal(
-                        title = title,
+                        title = finalTitle,
                         description = description,
                         completionCriteria = completionCriteria,
                         energyCost = energyCost.toInt(),
@@ -531,11 +699,12 @@ fun ActionCreateScreen(
             colors = ButtonDefaults.buttonColors(containerColor = colors.accent),
             shape = RoundedCornerShape(28.dp)
         ) {
-            Text("Create Action Goal", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+            Text(strings.createActionGoal, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
         }
         
         Spacer(modifier = Modifier.height(24.dp))
     }
+}
 }
 
 @Composable

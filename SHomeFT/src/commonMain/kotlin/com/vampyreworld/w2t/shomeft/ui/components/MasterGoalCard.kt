@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.vampyreworld.w2t.domain.data.model.Goal
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 
 @Composable
 fun MasterGoalCard(
@@ -20,6 +21,7 @@ fun MasterGoalCard(
     onDelete: () -> Unit,
     onChallenge: () -> Unit
 ) {
+    val strings = LocalAppStrings.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -41,18 +43,18 @@ fun MasterGoalCard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Master Goal #${goal.id}",
+                        text = strings.masterGoalPrefix.format(goal.title),
                         style = MaterialTheme.typography.titleLarge
                     )
                 }
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
+                    Icon(Icons.Default.Delete, contentDescription = strings.deleteGoal, tint = MaterialTheme.colorScheme.error)
                 }
             }
             
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Developing core skills and achieving major milestones.",
+                text = goal.description.ifEmpty { strings.masterGoalDesc },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -73,7 +75,7 @@ fun MasterGoalCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Progress: 40%",
+                    text = strings.percentComplete.format(40),
                     style = MaterialTheme.typography.labelMedium
                 )
                 Button(
@@ -81,7 +83,7 @@ fun MasterGoalCard(
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                     modifier = Modifier.height(32.dp)
                 ) {
-                    Text("New Challenge", style = MaterialTheme.typography.labelSmall)
+                    Text(strings.createChallenge, style = MaterialTheme.typography.labelSmall)
                 }
             }
         }

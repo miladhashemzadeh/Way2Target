@@ -6,6 +6,8 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.vampyreworld.w2t.domain.usecase.prefrences.GetThemeUseCase
 import com.vampyreworld.w2t.domain.usecase.prefrences.SetThemeUseCase
+import com.vampyreworld.w2t.domain.usecase.prefrences.GetLanguageUseCase
+import com.vampyreworld.w2t.domain.usecase.prefrences.SetLanguageUseCase
 import com.vampyreworld.w2t.sharedui.arch.componentScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,14 +20,29 @@ interface PrefrencesComponent {
     val sideEffects: Flow<PrefrencesContract.SideEffect>
     
     fun onIntent(intent: PrefrencesContract.Intent)
+
+    fun onNavigateToHome() {}
+    fun onNavigateToProfile() {}
+    fun onNavigateToSChallenge() {}
+    fun onNavigateToPreferences() {}
 }
 
 class DefaultPrefrencesComponent(
     componentContext: ComponentContext,
     private val getThemeUseCase: GetThemeUseCase,
     private val setThemeUseCase: SetThemeUseCase,
-    private val onBack: () -> Unit
+    private val getLanguageUseCase: GetLanguageUseCase,
+    private val setLanguageUseCase: SetLanguageUseCase,
+    private val onBack: () -> Unit,
+    private val navigateToHome: () -> Unit = {},
+    private val navigateToProfile: () -> Unit = {},
+    private val navigateToSChallenge: () -> Unit = {}
 ) : PrefrencesComponent, ComponentContext by componentContext {
+
+    override fun onNavigateToHome() = navigateToHome()
+    override fun onNavigateToProfile() = navigateToProfile()
+    override fun onNavigateToSChallenge() = navigateToSChallenge()
+    override fun onNavigateToPreferences() {}
 
     private val _state = MutableValue(PrefrencesContract.State())
     override val state: Value<PrefrencesContract.State> = _state
@@ -39,6 +56,12 @@ class DefaultPrefrencesComponent(
                 _state.update { it.copy(isDarkMode = isDarkMode) }
             }
             .launchIn(componentScope())
+
+        getLanguageUseCase()
+            .onEach { lang ->
+                _state.update { it.copy(language = lang) }
+            }
+            .launchIn(componentScope())
     }
 
     override fun onIntent(intent: PrefrencesContract.Intent) {
@@ -46,6 +69,9 @@ class DefaultPrefrencesComponent(
             PrefrencesContract.Intent.OnBackClicked -> onBack()
             is PrefrencesContract.Intent.OnThemeChanged -> {
                 setThemeUseCase(intent.isDarkMode)
+            }
+            is PrefrencesContract.Intent.OnLanguageChanged -> {
+                setLanguageUseCase(intent.language)
             }
         }
     }

@@ -12,6 +12,8 @@ import com.vampyreworld.w2t.domain.usecase.profile.GetUserProfileUseCase
 import com.vampyreworld.w2t.domain.usecase.profile.SaveUserProfileUseCase
 import com.vampyreworld.w2t.domain.usecase.prefrences.GetThemeUseCase
 import com.vampyreworld.w2t.domain.usecase.prefrences.SetThemeUseCase
+import com.vampyreworld.w2t.domain.usecase.prefrences.GetLanguageUseCase
+import com.vampyreworld.w2t.domain.usecase.prefrences.SetLanguageUseCase
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -22,6 +24,8 @@ val useCaseModule = module {
     // Preferences
     factory { GetThemeUseCase(get()) }
     factory { SetThemeUseCase(get()) }
+    factory { GetLanguageUseCase(get()) }
+    factory { SetLanguageUseCase(get()) }
 
     // Onboarding
     factory<IsOnboardingCompletedUseCase> { IsOnboardingCompletedUseCaseImpl(get()) }

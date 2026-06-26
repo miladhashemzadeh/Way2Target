@@ -18,6 +18,10 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.domain.data.model.GoalStatus
 import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
+
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,23 +32,32 @@ fun MilestoneDetailScreen(
     val state by component.state.subscribeAsState()
     val goal = state.selectedGoal ?: return
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     
     var isEditing by remember { mutableStateOf(false) }
     var editedTitle by remember { mutableStateOf(goal.title) }
     var editedDescription by remember { mutableStateOf(goal.description) }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(padding),
-        contentPadding = PaddingValues(24.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        item {
-            W2THeader(
-                title = "Milestone Detail",
-                subtitle = "Sub-targets lead to big wins",
-                avatarText = "M"
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            val (icon, cleanTitle) = goal.title.extractIcon()
+            TopAppBar(
+                title = { Text(if (icon.isNotEmpty()) "$icon $cleanTitle" else cleanTitle, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
+                navigationIcon = {
+                    IconButton(onClick = { component.onIntent(MilestoneDetailContract.Intent.OnBackClicked) }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.goBack)
+                    }
+                },
+                colors = com.vampyreworld.w2t.sharedui.catalog.w2tTopAppBarColors()
             )
         }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
 
         item {
             W2TCard {
@@ -53,14 +66,14 @@ fun MilestoneDetailScreen(
                         OutlinedTextField(
                             value = editedTitle,
                             onValueChange = { editedTitle = it },
-                            label = { Text("Title") },
+                            label = { Text(strings.titleLabel) },
                             modifier = Modifier.fillMaxWidth()
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
                             value = editedDescription,
                             onValueChange = { editedDescription = it },
-                            label = { Text("Description") },
+                            label = { Text(strings.description) },
                             modifier = Modifier.fillMaxWidth(),
                             minLines = 3
                         )
@@ -77,16 +90,16 @@ fun MilestoneDetailScreen(
                                     isEditing = false
                                 },
                                 modifier = Modifier.weight(1f)
-                            ) { Text("Save") }
-                            OutlinedButton(onClick = { isEditing = false }, modifier = Modifier.weight(1f)) { Text("Cancel") }
+                            ) { Text(strings.save) }
+                            OutlinedButton(onClick = { isEditing = false }, modifier = Modifier.weight(1f)) { Text(strings.cancel) }
                         }
                     } else {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            W2TStatusChip(text = "Ongoing", backgroundColor = colors.accent)
+                            W2TStatusChip(text = strings.ongoing, backgroundColor = colors.accent)
                             val parentId = state.parentId
                             if (parentId != null) {
                                 Text(
-                                    text = "Parent Goal ›", 
+                                    text = strings.parentGoalPrefix, 
                                     style = MaterialTheme.typography.bodySmall, 
                                     color = colors.muted,
                                     modifier = Modifier.clickable { component.onIntent(MilestoneDetailContract.Intent.OnGoalClick(parentId, "MASTER")) }
@@ -94,7 +107,7 @@ fun MilestoneDetailScreen(
                             }
                             Spacer(modifier = Modifier.weight(1f))
                             IconButton(onClick = { isEditing = true }) {
-                                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = colors.accent)
+                                Icon(Icons.Default.Edit, contentDescription = strings.edit, tint = colors.accent)
                             }
                         }
                         Spacer(modifier = Modifier.height(16.dp))
@@ -106,7 +119,7 @@ fun MilestoneDetailScreen(
                         W2TProgressBar(progress = 0.5f, color = colors.accent)
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "50% Complete",
+                            text = strings.percentComplete.format(50),
                             style = MaterialTheme.typography.bodySmall,
                             color = colors.accent,
                             fontWeight = FontWeight.Medium
@@ -125,26 +138,28 @@ fun MilestoneDetailScreen(
             ) {
                 Icon(Icons.Default.FlashOn, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("ساختن چالش برای این هدف")
+                Text(strings.createChallengeForGoal)
             }
         }
 
         item {
             W2TCard {
-                W2TSectionTitle("Action Goals (${state.actions.size})")
+                W2TSectionTitle(strings.actionGoalsCount.format(state.actions.size))
                 if (state.actions.isEmpty()) {
                     Text(
-                        text = "No actions defined for this milestone.",
+                        text = strings.noActionsDefined,
                         style = MaterialTheme.typography.bodyMedium,
                         color = colors.muted,
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                 } else {
                     state.actions.forEach { action ->
+                        val (actionIcon, actionCleanTitle) = action.title.extractIcon()
+                        val (_, milestoneCleanTitle) = goal.title.extractIcon()
                         W2TActionItem(
-                            title = action.title,
-                            subtitle = goal.title,
-                            time = if (action.status == GoalStatus.COMPLETED) "Completed" else "Due Tomorrow",
+                            title = if (actionIcon.isNotEmpty()) "$actionIcon $actionCleanTitle" else actionCleanTitle,
+                            subtitle = milestoneCleanTitle,
+                            time = if (action.status == GoalStatus.COMPLETED) strings.completed else strings.dueTomorrow,
                             checked = action.status == GoalStatus.COMPLETED,
                             onCheckedChange = { isChecked ->
                                 component.onIntent(MilestoneDetailContract.Intent.UpdateGoal(
@@ -161,13 +176,13 @@ fun MilestoneDetailScreen(
         if (state.challenges.isNotEmpty()) {
             item {
                 W2TCard {
-                    W2TSectionTitle("Active Challenges (${state.challenges.size})")
+                    W2TSectionTitle(strings.activeChallengesCount.format(state.challenges.size))
                     state.challenges.forEach { challenge ->
                         W2TChallengeCard(
                             title = challenge.title,
                             goalTitle = goal.title,
                             description = challenge.desc,
-                            status = if (challenge.status == GoalStatus.COMPLETED) "Finished" else "Ongoing",
+                            status = if (challenge.status == GoalStatus.COMPLETED) strings.finished else strings.ongoing,
                             modifier = Modifier.clickable { 
                                 component.onIntent(MilestoneDetailContract.Intent.OnChallengeClick(challenge.id))
                             }
@@ -188,7 +203,7 @@ fun MilestoneDetailScreen(
             ) {
                 Icon(Icons.Default.Add, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Add Action")
+                Text(strings.addAction)
             }
         }
 
@@ -198,10 +213,11 @@ fun MilestoneDetailScreen(
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
             ) {
-                Text("Delete Milestone")
+                Text(strings.deleteMilestone)
             }
         }
         
         item { Spacer(modifier = Modifier.height(24.dp)) }
     }
+}
 }

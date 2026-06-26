@@ -18,27 +18,25 @@ import com.vampyreworld.w2t.domain.data.model.SolutionType
 import com.vampyreworld.w2t.sharedui.catalog.W2TCard
 import com.vampyreworld.w2t.sharedui.catalog.W2TSectionTitle
 import com.vampyreworld.w2t.sharedui.catalog.W2TSelectableItem
+import com.vampyreworld.w2t.sharedui.catalog.W2THeader
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SolutionCreateScreen(component: SolutionCreateComponent) {
     val state by component.state.subscribeAsState()
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     var expandedTypes by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        "Add New Solution",
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                },
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(SolutionCreateContract.Intent.OnBackClicked) }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = strings.goBack)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -54,8 +52,13 @@ fun SolutionCreateScreen(component: SolutionCreateComponent) {
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
+            W2THeader(
+                title = strings.addNewSolution,
+                subtitle = strings.defineStrategy,
+                avatarText = "💡"
+            )
             Text(
-                text = "Select Source",
+                text = strings.selectSource,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -75,9 +78,9 @@ fun SolutionCreateScreen(component: SolutionCreateComponent) {
                     ) {
                         Text(
                             text = when(source) {
-                                SolutionCreateContract.SolutionSource.MY_IDEA -> "My Idea"
-                                SolutionCreateContract.SolutionSource.AI_ASSISTANT -> "AI"
-                                SolutionCreateContract.SolutionSource.EXTERNAL_RESOURCE -> "External"
+                                SolutionCreateContract.SolutionSource.MY_IDEA -> strings.myIdea
+                                SolutionCreateContract.SolutionSource.AI_ASSISTANT -> strings.ai
+                                SolutionCreateContract.SolutionSource.EXTERNAL_RESOURCE -> strings.external
                             },
                             style = MaterialTheme.typography.labelMedium
                         )
@@ -87,19 +90,19 @@ fun SolutionCreateScreen(component: SolutionCreateComponent) {
 
             if (state.source == SolutionCreateContract.SolutionSource.MY_IDEA) {
                 W2TCard {
-                    W2TSectionTitle("Solution Details")
+                    W2TSectionTitle(strings.solutionDetails)
                     
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text(
-                                "Solution Description",
+                                strings.solutionDescription,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = colors.muted
                             )
                             OutlinedTextField(
                                 value = state.description,
                                 onValueChange = { component.onIntent(SolutionCreateContract.Intent.OnDescriptionChanged(it)) },
-                                placeholder = { Text("Suggest a new approach, resource, or strategy.") },
+                                placeholder = { Text(strings.solutionDescriptionPlaceholder) },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .heightIn(min = 120.dp),
@@ -113,7 +116,7 @@ fun SolutionCreateScreen(component: SolutionCreateComponent) {
 
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text(
-                                "Strategy Type",
+                                strings.strategyType,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = colors.muted
                             )
@@ -122,7 +125,7 @@ fun SolutionCreateScreen(component: SolutionCreateComponent) {
                                 onExpandedChange = { expandedTypes = it }
                             ) {
                                 OutlinedTextField(
-                                    value = state.solutionType.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() },
+                                    value = state.solutionType.getLocalizedName(strings),
                                     onValueChange = {},
                                     readOnly = true,
                                     modifier = Modifier.fillMaxWidth().menuAnchor(),
@@ -139,7 +142,7 @@ fun SolutionCreateScreen(component: SolutionCreateComponent) {
                                 ) {
                                     SolutionType.values().forEach { type ->
                                         DropdownMenuItem(
-                                            text = { Text(type.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() }) },
+                                            text = { Text(type.getLocalizedName(strings)) },
                                             onClick = {
                                                 component.onIntent(SolutionCreateContract.Intent.OnSolutionTypeChanged(type))
                                                 expandedTypes = false
@@ -165,7 +168,7 @@ fun SolutionCreateScreen(component: SolutionCreateComponent) {
                         CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                     } else {
                         Text(
-                            "Add Solution",
+                            strings.addSolution,
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                         )
                     }
@@ -179,8 +182,8 @@ fun SolutionCreateScreen(component: SolutionCreateComponent) {
                 ) {
                     Text(
                         text = if (state.source == SolutionCreateContract.SolutionSource.AI_ASSISTANT) 
-                            "AI solutions are automatically generated based on the challenge." 
-                            else "External resources integration coming soon.",
+                            strings.aiSolutionNote 
+                            else strings.externalSolutionNote,
                         style = MaterialTheme.typography.bodyMedium,
                         color = colors.muted,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -189,4 +192,17 @@ fun SolutionCreateScreen(component: SolutionCreateComponent) {
             }
         }
     }
+}
+
+private fun SolutionType.getLocalizedName(strings: com.vampyreworld.w2t.sharedui.localization.AppStrings): String = when (this) {
+    SolutionType.AVOIDANCE -> strings.solTypeAvoidance
+    SolutionType.DIRECT_CONFRONTATION -> strings.solTypeDirectConfrontation
+    SolutionType.EDIT_STRUCTURAL -> strings.solTypeEditStructural
+    SolutionType.DIVIDING_AND_CONQUER -> strings.solTypeDividingAndConquer
+    SolutionType.SUBSTITUTION -> strings.solTypeSubstitution
+    SolutionType.DELEGATE -> strings.solTypeDelegate
+    SolutionType.PLANNING -> strings.solTypePlanning
+    SolutionType.EMOTIONAL_REGULATION -> strings.solTypeEmotionalRegulation
+    SolutionType.HELP -> strings.solTypeHelp
+    SolutionType.TRY_AND_FAIL -> strings.solTypeTryAndFail
 }

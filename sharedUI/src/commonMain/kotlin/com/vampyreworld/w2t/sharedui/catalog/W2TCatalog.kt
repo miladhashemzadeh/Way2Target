@@ -12,33 +12,78 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
-import com.vampyreworld.w2t.sharedui.theme.color.OD_Accent
 import androidx.compose.ui.tooling.preview.Preview
 import com.vampyreworld.w2t.sharedui.theme.W2TTheme
 import com.vampyreworld.w2t.sharedui.theme.LocalUserProfile
 import coil3.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.detectTapGestures
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+
+
 
 @Composable
 fun W2TCard(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colorScheme.surface,
+    backgroundColor: Color = Color.Unspecified,
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
+    val resolvedBgColor = if (backgroundColor == Color.Unspecified) {
+        if (isLight) Color.White.copy(alpha = 0.7f) else MaterialTheme.colorScheme.surface.copy(alpha = 0.35f)
+    } else {
+        backgroundColor
+    }
+    val borderBrush = if (isLight) {
+        Brush.linearGradient(
+            colors = listOf(
+                Color.White.copy(alpha = 0.8f),
+                Color.White.copy(alpha = 0.3f)
+            )
+        )
+    } else {
+        Brush.linearGradient(
+            colors = listOf(
+                Color.White.copy(alpha = 0.18f),
+                Color.White.copy(alpha = 0.05f)
+            )
+        )
+    }
     Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                brush = borderBrush,
+                shape = RoundedCornerShape(24.dp)
+            ),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = resolvedBgColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
@@ -75,14 +120,21 @@ fun W2TProgressBar(
             .fillMaxWidth()
             .height(height)
             .clip(CircleShape)
-            .background(LocalAppColorScheme.current.border)
+            .background(LocalAppColorScheme.current.border.copy(alpha = 0.3f))
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth(progress)
                 .fillMaxHeight()
                 .clip(CircleShape)
-                .background(color)
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            color,
+                            color.copy(alpha = 0.7f)
+                        )
+                    )
+                )
         )
     }
 }
@@ -96,14 +148,37 @@ fun W2TMoodWidget(
     modifier: Modifier = Modifier
 ) {
     val colors = LocalAppColorScheme.current
+    val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
+    val gradientColors = if (isLight) {
+        listOf(
+            Color(0xFFE0C3FC).copy(alpha = 0.9f),
+            Color(0xFF8EC5FC).copy(alpha = 0.9f)
+        )
+    } else {
+        listOf(
+            colors.moodHighEnergyStart.copy(alpha = 0.85f),
+            colors.moodHighEnergyEnd.copy(alpha = 0.85f)
+        )
+    }
+    val textAndButtonColor = if (isLight) Color(0xFF2C2440) else Color.White
+    val buttonBgColor = if (isLight) Color(0xFF2C2440).copy(alpha = 0.08f) else Color.White.copy(alpha = 0.15f)
+    val buttonBorderColor = if (isLight) Color(0xFF2C2440).copy(alpha = 0.25f) else Color.White.copy(alpha = 0.25f)
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
-            .background(
-                Brush.linearGradient(
-                    colors = listOf(colors.moodHighEnergyStart, colors.moodHighEnergyEnd)
-                )
+            .clip(RoundedCornerShape(24.dp))
+            .background(Brush.linearGradient(colors = gradientColors))
+            .border(
+                width = 1.dp,
+                brush = Brush.linearGradient(
+                    colors = if (isLight) {
+                        listOf(Color.White.copy(alpha = 0.8f), Color.White.copy(alpha = 0.4f))
+                    } else {
+                        listOf(Color.White.copy(alpha = 0.25f), Color.Transparent)
+                    }
+                ),
+                shape = RoundedCornerShape(24.dp)
             )
             .padding(20.dp)
     ) {
@@ -111,19 +186,20 @@ fun W2TMoodWidget(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                color = Color.White
+                color = textAndButtonColor
             )
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.White.copy(alpha = 0.9f)
+                color = textAndButtonColor.copy(alpha = 0.8f)
             )
             Button(
                 onClick = onButtonClick,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    contentColor = colors.accent
+                    containerColor = buttonBgColor,
+                    contentColor = textAndButtonColor
                 ),
+                border = androidx.compose.foundation.BorderStroke(1.dp, buttonBorderColor),
                 shape = CircleShape,
                 modifier = Modifier.padding(top = 12.dp)
             ) {
@@ -142,14 +218,37 @@ fun W2TAiInsightsCard(
     modifier: Modifier = Modifier
 ) {
     val colors = LocalAppColorScheme.current
+    val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
+    val gradientColors = if (isLight) {
+        listOf(
+            Color(0xFFE2F0D9).copy(alpha = 0.9f),
+            Color(0xFFC5E0B4).copy(alpha = 0.9f)
+        )
+    } else {
+        listOf(
+            colors.moodFocusedStart.copy(alpha = 0.85f),
+            colors.moodFocusedEnd.copy(alpha = 0.85f)
+        )
+    }
+    val textColor = if (isLight) Color(0xFF1E3512) else Color.White
+    val buttonBgColor = if (isLight) Color(0xFF1E3512).copy(alpha = 0.08f) else Color.White.copy(alpha = 0.15f)
+    val buttonBorderColor = if (isLight) Color(0xFF1E3512).copy(alpha = 0.25f) else Color.White.copy(alpha = 0.25f)
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
-            .background(
-                Brush.linearGradient(
-                    colors = listOf(colors.moodFocusedStart, colors.moodFocusedEnd)
-                )
+            .clip(RoundedCornerShape(24.dp))
+            .background(Brush.linearGradient(colors = gradientColors))
+            .border(
+                width = 1.dp,
+                brush = Brush.linearGradient(
+                    colors = if (isLight) {
+                        listOf(Color.White.copy(alpha = 0.8f), Color.White.copy(alpha = 0.4f))
+                    } else {
+                        listOf(Color.White.copy(alpha = 0.25f), Color.Transparent)
+                    }
+                ),
+                shape = RoundedCornerShape(24.dp)
             )
             .padding(20.dp)
     ) {
@@ -159,20 +258,21 @@ fun W2TAiInsightsCard(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                    color = Color.White
+                    color = textColor
                 )
             }
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.White.copy(alpha = 0.9f)
+                color = textColor.copy(alpha = 0.85f)
             )
             Button(
                 onClick = onButtonClick,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    contentColor = colors.moodFocusedStart
+                    containerColor = buttonBgColor,
+                    contentColor = textColor
                 ),
+                border = androidx.compose.foundation.BorderStroke(1.dp, buttonBorderColor),
                 shape = CircleShape,
                 modifier = Modifier.padding(top = 12.dp)
             ) {
@@ -195,7 +295,7 @@ fun W2TGoalItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .bounceClick(onClick = onClick)
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -204,7 +304,17 @@ fun W2TGoalItem(
             modifier = Modifier
                 .size(36.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(colors.accent.copy(alpha = 0.1f)),
+                .background(colors.accent.copy(alpha = 0.15f))
+                .border(
+                    width = 1.dp,
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.2f),
+                            Color.Transparent
+                        )
+                    ),
+                    shape = RoundedCornerShape(10.dp)
+                ),
             contentAlignment = Alignment.Center
         ) {
             Text(text = icon, fontSize = 16.sp)
@@ -241,7 +351,7 @@ fun W2TActionItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+            .then(if (onClick != null) Modifier.bounceClick(onClick = onClick) else Modifier)
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -345,12 +455,30 @@ fun W2TTreeNode(
     content: (@Composable ColumnScope.() -> Unit)? = null
 ) {
     val colors = LocalAppColorScheme.current
+    val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
+    val nodeBgColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = if (isLight) 0.7f else 0.45f)
+    val borderBrush = if (isLight) {
+        Brush.linearGradient(
+            colors = listOf(
+                Color.White.copy(alpha = 0.7f),
+                Color.White.copy(alpha = 0.3f)
+            )
+        )
+    } else {
+        Brush.linearGradient(
+            colors = listOf(
+                Color.White.copy(alpha = 0.15f),
+                Color.White.copy(alpha = 0.03f)
+            )
+        )
+    }
+
     Column {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+                .then(if (onClick != null) Modifier.bounceClick(onClick = onClick) else Modifier)
                 .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -376,8 +504,13 @@ fun W2TTreeNode(
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
-                    .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+                    .background(nodeBgColor)
+                    .border(
+                        width = 1.dp,
+                        brush = borderBrush,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .then(if (onClick != null) Modifier.bounceClick(onClick = onClick) else Modifier)
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -415,28 +548,54 @@ fun W2TTabNav(
     modifier: Modifier = Modifier
 ) {
     val colors = LocalAppColorScheme.current
+    val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = if (isLight) 0.7f else 0.35f))
+            .border(
+                width = 1.dp,
+                brush = Brush.linearGradient(
+                    colors = if (isLight) {
+                        listOf(
+                            Color.White.copy(alpha = 0.7f),
+                            Color.White.copy(alpha = 0.3f)
+                        )
+                    } else {
+                        listOf(
+                            Color.White.copy(alpha = 0.15f),
+                            Color.White.copy(alpha = 0.05f)
+                        )
+                    }
+                ),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         tabs.forEachIndexed { index, title ->
             val isSelected = selectedTabIndex == index
+            val bgColor by animateColorAsState(
+                targetValue = if (isSelected) colors.accent else Color.Transparent,
+                animationSpec = tween(durationMillis = 250)
+            )
+            val textColor by animateColorAsState(
+                targetValue = if (isSelected) Color.White else colors.muted,
+                animationSpec = tween(durationMillis = 250)
+            )
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(if (isSelected) colors.accent else Color.Transparent)
-                    .clickable { onTabSelected(index) }
-                    .padding(vertical = 10.dp, horizontal = 15.dp),
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(bgColor)
+                    .bounceClick { onTabSelected(index) }
+                    .padding(vertical = 10.dp, horizontal = 12.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = title,
-                    color = if (isSelected) Color.White else colors.muted,
+                    color = textColor,
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold)
                 )
             }
@@ -454,6 +613,7 @@ fun W2TChallengeCard(
     content: (@Composable ColumnScope.() -> Unit)? = null
 ) {
     val colors = LocalAppColorScheme.current
+    val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
     val statusColor = when(status) {
         "Ongoing" -> colors.challengeColor
         "Finished" -> colors.success
@@ -462,16 +622,34 @@ fun W2TChallengeCard(
     }
 
     Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                brush = Brush.linearGradient(
+                    colors = if (isLight) {
+                        listOf(
+                            Color.White.copy(alpha = 0.8f),
+                            Color.White.copy(alpha = 0.3f)
+                        )
+                    } else {
+                        listOf(
+                            Color.White.copy(alpha = 0.18f),
+                            Color.White.copy(alpha = 0.05f)
+                        )
+                    }
+                ),
+                shape = RoundedCornerShape(24.dp)
+            ),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = if (isLight) 0.7f else 0.35f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Box {
             // Left border accent
-            Box(modifier = Modifier.matchParentSize().border(width = 6.dp, color = statusColor, shape = RoundedCornerShape(18.dp)))
+            Box(modifier = Modifier.matchParentSize().border(width = 6.dp, color = statusColor.copy(alpha = 0.6f), shape = RoundedCornerShape(24.dp)))
             // Mask the border to only left side
-            Box(modifier = Modifier.matchParentSize().padding(start = 6.dp).background(MaterialTheme.colorScheme.surface, RoundedCornerShape(topEnd = 18.dp, bottomEnd = 18.dp)))
+            Box(modifier = Modifier.matchParentSize().padding(start = 6.dp).background(MaterialTheme.colorScheme.surface.copy(alpha = 0.01f), RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp)))
 
             Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Row(
@@ -518,12 +696,29 @@ fun W2TSolutionItem(
     modifier: Modifier = Modifier
 ) {
     val colors = LocalAppColorScheme.current
+    val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(colors.bgLight.copy(alpha = 0.5f))
-            .border(1.dp, colors.border, RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(16.dp))
+            .background(colors.bgLight.copy(alpha = if (isLight) 0.6f else 0.3f))
+            .border(
+                width = 1.dp,
+                brush = Brush.linearGradient(
+                    colors = if (isLight) {
+                        listOf(
+                            Color.White.copy(alpha = 0.7f),
+                            Color.White.copy(alpha = 0.3f)
+                        )
+                    } else {
+                        listOf(
+                            Color.White.copy(alpha = 0.15f),
+                            Color.White.copy(alpha = 0.03f)
+                        )
+                    }
+                ),
+                shape = RoundedCornerShape(16.dp)
+            )
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.Top
@@ -550,14 +745,37 @@ fun W2TStrategyCard(
     modifier: Modifier = Modifier
 ) {
     val colors = LocalAppColorScheme.current
+    val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
+    val gradientColors = if (isLight) {
+        listOf(
+            Color(0xFFE2F0D9).copy(alpha = 0.9f),
+            Color(0xFFC5E0B4).copy(alpha = 0.9f)
+        )
+    } else {
+        listOf(
+            colors.moodFocusedStart.copy(alpha = 0.85f),
+            colors.moodFocusedEnd.copy(alpha = 0.85f)
+        )
+    }
+    val textColor = if (isLight) Color(0xFF1E3512) else Color.White
+    val buttonBgColor = if (isLight) Color(0xFF1E3512).copy(alpha = 0.08f) else Color.White.copy(alpha = 0.15f)
+    val buttonBorderColor = if (isLight) Color(0xFF1E3512).copy(alpha = 0.25f) else Color.White.copy(alpha = 0.25f)
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(
-                Brush.linearGradient(
-                    colors = listOf(colors.moodFocusedStart, colors.moodFocusedEnd)
-                )
+            .clip(RoundedCornerShape(20.dp))
+            .background(Brush.linearGradient(colors = gradientColors))
+            .border(
+                width = 1.dp,
+                brush = Brush.linearGradient(
+                    colors = if (isLight) {
+                        listOf(Color.White.copy(alpha = 0.8f), Color.White.copy(alpha = 0.4f))
+                    } else {
+                        listOf(Color.White.copy(alpha = 0.25f), Color.Transparent)
+                    }
+                ),
+                shape = RoundedCornerShape(20.dp)
             )
             .padding(16.dp)
     ) {
@@ -567,17 +785,21 @@ fun W2TStrategyCard(
                 Text(
                     text = "AI Strategy Recommendation",
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-                    color = Color.White
+                    color = textColor
                 )
             }
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.White.copy(alpha = 0.9f)
+                color = textColor.copy(alpha = 0.9f)
             )
             Button(
                 onClick = onButtonClick,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface, contentColor = colors.moodFocusedStart),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = buttonBgColor,
+                    contentColor = textColor
+                ),
+                border = androidx.compose.foundation.BorderStroke(1.dp, buttonBorderColor),
                 shape = CircleShape,
                 modifier = Modifier.padding(top = 8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
@@ -596,11 +818,29 @@ fun W2TOnboardingItem(
     iconBackgroundColor: Color,
     modifier: Modifier = Modifier
 ) {
+    val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
-            .background(MaterialTheme.colorScheme.surface)
+            .clip(RoundedCornerShape(24.dp))
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = if (isLight) 0.7f else 0.35f))
+            .border(
+                width = 1.dp,
+                brush = Brush.linearGradient(
+                    colors = if (isLight) {
+                        listOf(
+                            Color.White.copy(alpha = 0.8f),
+                            Color.White.copy(alpha = 0.3f)
+                        )
+                    } else {
+                        listOf(
+                            Color.White.copy(alpha = 0.18f),
+                            Color.White.copy(alpha = 0.05f)
+                        )
+                    }
+                ),
+                shape = RoundedCornerShape(24.dp)
+            )
             .padding(20.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -638,13 +878,34 @@ fun W2TSelectableItem(
     modifier: Modifier = Modifier
 ) {
     val colors = LocalAppColorScheme.current
+    val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(if (selected) colors.accent.copy(alpha = 0.12f) else colors.bgLight.copy(alpha = 0.8f))
-            .border(1.dp, if (selected) colors.accent else colors.border, RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick)
+            .clip(RoundedCornerShape(16.dp))
+            .background(if (selected) colors.accent.copy(alpha = 0.15f) else colors.bgLight.copy(alpha = if (isLight) 0.6f else 0.45f))
+            .border(
+                width = 1.dp,
+                brush = if (selected) {
+                    SolidColor(colors.accent)
+                } else {
+                    Brush.linearGradient(
+                        colors = if (isLight) {
+                            listOf(
+                                Color.White.copy(alpha = 0.7f),
+                                Color.White.copy(alpha = 0.3f)
+                            )
+                        } else {
+                            listOf(
+                                Color.White.copy(alpha = 0.15f),
+                                Color.White.copy(alpha = 0.03f)
+                            )
+                        }
+                    )
+                },
+                shape = RoundedCornerShape(16.dp)
+            )
+            .bounceClick(onClick = onClick)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -751,6 +1012,44 @@ fun W2TDetailRow(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun w2tTopAppBarColors(): TopAppBarColors {
+    val colors = LocalAppColorScheme.current
+    val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
+    val containerColor = if (isLight) {
+        Color(0xFFD4D0F0).copy(alpha = 0.9f)
+    } else {
+        Color(0xFF0F0B20).copy(alpha = 0.9f)
+    }
+    return TopAppBarDefaults.topAppBarColors(
+        containerColor = containerColor,
+        scrolledContainerColor = containerColor,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        navigationIconContentColor = colors.accent,
+        actionIconContentColor = colors.accent
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun w2tCenterAlignedTopAppBarColors(): TopAppBarColors {
+    val colors = LocalAppColorScheme.current
+    val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
+    val containerColor = if (isLight) {
+        Color(0xFFD4D0F0).copy(alpha = 0.9f)
+    } else {
+        Color(0xFF0F0B20).copy(alpha = 0.9f)
+    }
+    return TopAppBarDefaults.topAppBarColors(
+        containerColor = containerColor,
+        scrolledContainerColor = containerColor,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        navigationIconContentColor = colors.accent,
+        actionIconContentColor = colors.accent
+    )
+}
+
 @Composable
 fun W2TBottomNavigation(
     onHomeClick: () -> Unit,
@@ -760,63 +1059,104 @@ fun W2TBottomNavigation(
     selectedTab: Int // 0: Home, 1: Profile, 2: Challenges, 3: Settings
 ) {
     val colors = LocalAppColorScheme.current
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface,
-        tonalElevation = 8.dp,
-        modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+    val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5f
+    val containerColor = if (isLight) {
+        Color(0xFFD4D0F0).copy(alpha = 0.9f)
+    } else {
+        Color(0xFF0F0B20).copy(alpha = 0.9f)
+    }
+    val borderBrush = if (isLight) {
+        Brush.linearGradient(
+            colors = listOf(
+                Color.White.copy(alpha = 0.8f),
+                colors.accent.copy(alpha = 0.3f),
+                Color.White.copy(alpha = 0.2f)
+            )
+        )
+    } else {
+        Brush.linearGradient(
+            colors = listOf(
+                Color.White.copy(alpha = 0.25f),
+                colors.accent.copy(alpha = 0.4f),
+                Color.White.copy(alpha = 0.05f)
+            )
+        )
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = 24.dp, vertical = 12.dp),
+        contentAlignment = Alignment.Center
     ) {
-        NavigationBarItem(
-            selected = selectedTab == 0,
-            onClick = onHomeClick,
-            icon = { Icon(Icons.Default.Home, contentDescription = null) },
-            label = { Text("Home") },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = colors.accent,
-                selectedTextColor = colors.accent,
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted,
-                indicatorColor = colors.accent.copy(alpha = 0.1f)
+        NavigationBar(
+            containerColor = containerColor,
+            tonalElevation = 8.dp,
+            modifier = Modifier
+                .height(68.dp)
+                .clip(RoundedCornerShape(32.dp))
+                .border(
+                    width = 1.5.dp,
+                    brush = borderBrush,
+                    shape = RoundedCornerShape(32.dp)
+                ),
+            windowInsets = WindowInsets(0.dp)
+        ) {
+            val strings = LocalAppStrings.current
+            NavigationBarItem(
+                selected = selectedTab == 0,
+                onClick = onHomeClick,
+                icon = { Icon(Icons.Default.Home, contentDescription = null, modifier = Modifier.size(24.dp)) },
+                label = { Text(strings.home, style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Medium)) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = colors.accent,
+                    selectedTextColor = colors.accent,
+                    unselectedIconColor = colors.muted,
+                    unselectedTextColor = colors.muted,
+                    indicatorColor = colors.accent.copy(alpha = 0.15f)
+                )
             )
-        )
-        NavigationBarItem(
-            selected = selectedTab == 1,
-            onClick = onProfileClick,
-            icon = { Icon(Icons.Default.Person, contentDescription = null) },
-            label = { Text("Profile") },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = colors.accent,
-                selectedTextColor = colors.accent,
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted,
-                indicatorColor = colors.accent.copy(alpha = 0.1f)
+            NavigationBarItem(
+                selected = selectedTab == 1,
+                onClick = onProfileClick,
+                icon = { Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(24.dp)) },
+                label = { Text(strings.profile, style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Medium)) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = colors.accent,
+                    selectedTextColor = colors.accent,
+                    unselectedIconColor = colors.muted,
+                    unselectedTextColor = colors.muted,
+                    indicatorColor = colors.accent.copy(alpha = 0.15f)
+                )
             )
-        )
-        NavigationBarItem(
-            selected = selectedTab == 2,
-            onClick = onChallengesClick,
-            icon = { Icon(Icons.Default.Flag, contentDescription = null) },
-            label = { Text("Challenges") },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = colors.accent,
-                selectedTextColor = colors.accent,
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted,
-                indicatorColor = colors.accent.copy(alpha = 0.1f)
+            NavigationBarItem(
+                selected = selectedTab == 2,
+                onClick = onChallengesClick,
+                icon = { Icon(Icons.Default.Flag, contentDescription = null, modifier = Modifier.size(24.dp)) },
+                label = { Text(strings.challenges, style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Medium)) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = colors.accent,
+                    selectedTextColor = colors.accent,
+                    unselectedIconColor = colors.muted,
+                    unselectedTextColor = colors.muted,
+                    indicatorColor = colors.accent.copy(alpha = 0.15f)
+                )
             )
-        )
-        NavigationBarItem(
-            selected = selectedTab == 3,
-            onClick = onSettingsClick,
-            icon = { Icon(Icons.Default.Settings, contentDescription = null) },
-            label = { Text("Settings") },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = colors.accent,
-                selectedTextColor = colors.accent,
-                unselectedIconColor = colors.muted,
-                unselectedTextColor = colors.muted,
-                indicatorColor = colors.accent.copy(alpha = 0.1f)
+            NavigationBarItem(
+                selected = selectedTab == 3,
+                onClick = onSettingsClick,
+                icon = { Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(24.dp)) },
+                label = { Text(strings.settings, style = MaterialTheme.typography.labelSmall.copy(fontWeight = if (selectedTab == 3) FontWeight.Bold else FontWeight.Medium)) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = colors.accent,
+                    selectedTextColor = colors.accent,
+                    unselectedIconColor = colors.muted,
+                    unselectedTextColor = colors.muted,
+                    indicatorColor = colors.accent.copy(alpha = 0.15f)
+                )
             )
-        )
+        }
     }
 }
 
@@ -885,3 +1225,61 @@ fun W2TTreePreview() {
         }
     }
 }
+
+fun String.extractIcon(): Pair<String, String> {
+    val icons = listOf("💻", "📈", "🧘‍♀️", "📚", "💰", "🚀", "🎨", "🏡", "🎯", "✨", "🏃", "🛒", "👥", "📢")
+    for (icon in icons) {
+        if (this.startsWith(icon)) {
+            val remaining = this.substring(icon.length).trim()
+            return Pair(icon, remaining)
+        }
+    }
+    return Pair("", this)
+}
+
+fun Modifier.bounceClick(
+    enabled: Boolean = true,
+    onClick: () -> Unit
+): Modifier = composed {
+    var isPressed by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.94f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
+
+    this.pointerInput(enabled) {
+        if (enabled) {
+            detectTapGestures(
+                onPress = {
+                    isPressed = true
+                    tryAwaitRelease()
+                    isPressed = false
+                },
+                onTap = { onClick() }
+            )
+        }
+    }.graphicsLayer {
+        scaleX = scale
+        scaleY = scale
+    }
+}
+
+fun Modifier.bounce(interactionSource: androidx.compose.foundation.interaction.InteractionSource): Modifier = composed {
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.94f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
+    this.graphicsLayer {
+        scaleX = scale
+        scaleY = scale
+    }
+}
+
+

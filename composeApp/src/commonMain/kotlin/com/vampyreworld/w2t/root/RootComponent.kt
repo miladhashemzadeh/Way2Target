@@ -22,6 +22,7 @@ import com.vampyreworld.w2t.sharedui.theme.UserProfileInfo
 interface RootComponent {
     val childStack: Value<ChildStack<*, Child>>
     val isDarkMode: Value<Boolean>
+    val language: Value<String>
     val userProfile: Value<UserProfileInfo>
 
     sealed class Child {

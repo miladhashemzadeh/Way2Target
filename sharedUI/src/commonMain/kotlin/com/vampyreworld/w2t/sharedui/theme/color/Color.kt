@@ -44,9 +44,9 @@ val White5 = white100.copy(alpha = .05f)
 // BACKGROUNDS
 // ======================================================
 
-val BgLight = Color(0xFFF8F9FF)
-val BgSecondary = Color(0xFFECEDF4)
-val BgCool = Color(0xFFE7E8EE)
+val BgLight = Color(0xFFF0EEF9)
+val BgSecondary = Color(0xFFECEAF4)
+val BgCool = Color(0xFFE5E2F0)
 
 // ======================================================
 // ACCENT COLORS
@@ -54,22 +54,22 @@ val BgCool = Color(0xFFE7E8EE)
 
 val lightBlue100 = Color(0xFFD3E4FF)
 
-val greenBlue = Color(0xFF2B6A46)
-val greenBoarder = Color(0xFFAFF1C4)
+val greenBlue = Color(0xFF059669)
+val greenBoarder = Color(0xFFA7F3D0)
 
-val blueFill = Color(0xFFCDE5FF)
+val blueFill = Color(0xFFE0F2FE)
 
 // tertiary replacement
-val purple = Color(0xFF815512)
+val purple = Color(0xFF8B5CF6)
 
 // ======================================================
 // ERROR / WARNING
 // ======================================================
 
-val red = Color(0xFFBA1A1A)
+val red = Color(0xFFEF4444)
 
 // warning -> customColor2Dark
-val Warning100 = Color(0xFFF6BC70)
+val Warning100 = Color(0xFFF59E0B)
 
 val Warning80 = Warning100.copy(alpha = .8f)
 val Warning60 = Warning100.copy(alpha = .6f)
@@ -79,7 +79,7 @@ val Warning10 = Warning100.copy(alpha = .1f)
 val Warning5 = Warning100.copy(alpha = .05f)
 
 // error -> errorContainerDarkMediumContrast
-val error100 = Color(0xFFFF5449)
+val error100 = Color(0xFFEF4444)
 
 val Error80 = error100.copy(alpha = .8f)
 val Error60 = error100.copy(alpha = .6f)
@@ -93,8 +93,8 @@ val Error5 = error100.copy(alpha = .05f)
 // ORANGE
 // ======================================================
 
-val Orange = Color(0xFF815512)
-val Orange2 = Color(0xFFF6BC70)
+val Orange = Color(0xFFD97706)
+val Orange2 = Color(0xFFF59E0B)
 
 // ======================================================
 // SURFACE / NEUTRAL
@@ -139,39 +139,39 @@ val Success5 = Success100.copy(alpha = .05f)
 // MISC
 // ======================================================
 
-val InfoLight = Color(0xFF2E628C)
+val InfoLight = Color(0xFF2563EB)
 
 val Shadow = Color(0xFF000000).copy(alpha = 0.8f)
 
-val Gray = Color(0xFF73777F)
-val GrayDeep = Color(0xFF43474E)
-val GrayBorderColor = Color(0xFFC3C6CF)
+val Gray = Color(0xFF6B7280)
+val GrayDeep = Color(0xFF374151)
+val GrayBorderColor = Color(0xFFE2E8F0)
 
-val MessageBackground = Color(0xFFAFF1C4)
-val MessageStateColor = Color(0xFF2B6A46)
+val MessageBackground = Color(0xFFD1FAE5)
+val MessageStateColor = Color(0xFF047857)
 
 val Transparent = Color.Transparent
 val Unspecified = Color.Unspecified
 
-val GradientBlue = Color(0xFF39608F)
+val GradientBlue = Color(0xFF2563EB)
 
 val BrightRed = error100
 
-val Blue = Color(0xFF2E628C)
+val Blue = Color(0xFF2563EB)
 
 
 // ======================================================
 // OPEN DESIGN COLORS
 // ======================================================
 
-val OD_Bg = Color(0xFFF7F9FA)
+val OD_Bg = Color(0xFFF3F1FA)
 val OD_Surface = Color(0xFFFFFFFF)
-val OD_Fg = Color(0xFF12181F)
-val OD_Muted = Color(0xFF747A8A)
-val OD_Border = Color(0xFFE2E4E9)
-val OD_Accent = Color(0xFF540092)
-val OD_Success = Color(0xFF008C4E)
-val OD_Challenge = Color(0xFFE47500)
+val OD_Fg = Color(0xFF191724)
+val OD_Muted = Color(0xFF6B7280)
+val OD_Border = Color(0xFFE2E0EE)
+val OD_Accent = Color(0xFF6366F1)
+val OD_Success = Color(0xFF059669)
+val OD_Challenge = Color(0xFFEA580C)
 
 val OD_Mood_HighEnergy_Start = Color(0xFF5FB8FF)
 val OD_Mood_HighEnergy_End = Color(0xFFCDB4F9)

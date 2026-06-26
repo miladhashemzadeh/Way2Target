@@ -19,6 +19,10 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.domain.data.model.GoalStatus
 import com.vampyreworld.w2t.sharedui.catalog.*
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
+
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,23 +33,32 @@ fun ActionDetailScreen(
     val state by component.state.subscribeAsState()
     val goal = state.selectedGoal ?: return
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     
     var isEditing by remember { mutableStateOf(false) }
     var editedTitle by remember { mutableStateOf(goal.title) }
     var editedDescription by remember { mutableStateOf(goal.description) }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(padding),
-        contentPadding = PaddingValues(24.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        item {
-            W2THeader(
-                title = "Action Detail",
-                subtitle = "Consistency is key",
-                avatarText = "A"
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            val (icon, cleanTitle) = goal.title.extractIcon()
+            TopAppBar(
+                title = { Text(if (icon.isNotEmpty()) "$icon $cleanTitle" else cleanTitle, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)) },
+                navigationIcon = {
+                    IconButton(onClick = { component.onIntent(ActionDetailContract.Intent.OnBackClicked) }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.goBack)
+                    }
+                },
+                colors = com.vampyreworld.w2t.sharedui.catalog.w2tTopAppBarColors()
             )
         }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
 
         item {
             W2TCard {
@@ -54,14 +67,14 @@ fun ActionDetailScreen(
                         OutlinedTextField(
                             value = editedTitle,
                             onValueChange = { editedTitle = it },
-                            label = { Text("Title") },
+                            label = { Text(strings.titleLabel) },
                             modifier = Modifier.fillMaxWidth()
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
                             value = editedDescription,
                             onValueChange = { editedDescription = it },
-                            label = { Text("Description") },
+                            label = { Text(strings.description) },
                             modifier = Modifier.fillMaxWidth(),
                             minLines = 3
                         )
@@ -78,8 +91,8 @@ fun ActionDetailScreen(
                                     isEditing = false
                                 },
                                 modifier = Modifier.weight(1f)
-                            ) { Text("Save") }
-                            OutlinedButton(onClick = { isEditing = false }, modifier = Modifier.weight(1f)) { Text("Cancel") }
+                            ) { Text(strings.save) }
+                            OutlinedButton(onClick = { isEditing = false }, modifier = Modifier.weight(1f)) { Text(strings.cancel) }
                         }
                     } else {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -88,7 +101,7 @@ fun ActionDetailScreen(
                                 shape = CircleShape
                             ) {
                                 Text(
-                                    text = if (goal.status == GoalStatus.COMPLETED) "Completed" else "Pending",
+                                    text = if (goal.status == GoalStatus.COMPLETED) strings.completed else strings.pending,
                                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.onPrimary,
@@ -97,7 +110,7 @@ fun ActionDetailScreen(
                             }
                             Spacer(modifier = Modifier.weight(1f))
                             IconButton(onClick = { isEditing = true }) {
-                                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = colors.accent)
+                                Icon(Icons.Default.Edit, contentDescription = strings.edit, tint = colors.accent)
                             }
                         }
                         Spacer(modifier = Modifier.height(16.dp))
@@ -107,7 +120,7 @@ fun ActionDetailScreen(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = goal.description.ifEmpty { "Apply foundational knowledge to create functional components." },
+                            text = goal.description.ifEmpty { strings.actionsDesc },
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onBackground,
                             lineHeight = 24.sp
@@ -119,8 +132,8 @@ fun ActionDetailScreen(
 
         item {
             W2TCard {
-                W2TSectionTitle("Details")
-                W2TDetailRow("Due Date", "Tomorrow, 5:00 PM")
+                W2TSectionTitle(strings.details)
+                W2TDetailRow(strings.dueDate, strings.tomorrow5pm)
             }
         }
 
@@ -133,20 +146,20 @@ fun ActionDetailScreen(
             ) {
                 Icon(Icons.Default.FlashOn, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Create Challenges")
+                Text(strings.createChallenges)
             }
         }
 
         if (state.challenges.isNotEmpty()) {
             item {
                 W2TCard {
-                    W2TSectionTitle("Active Challenges")
+                    W2TSectionTitle(strings.activeChallenges)
                     state.challenges.forEach { challenge ->
                         W2TChallengeCard(
                             title = challenge.title,
                             goalTitle = goal.title,
                             description = challenge.desc,
-                            status = if (challenge.status == GoalStatus.COMPLETED) "Finished" else "Ongoing",
+                            status = if (challenge.status == GoalStatus.COMPLETED) strings.finished else strings.ongoing,
                             modifier = Modifier.clickable { 
                                 component.onIntent(ActionDetailContract.Intent.OnChallengeClick(challenge.id))
                             }
@@ -159,9 +172,9 @@ fun ActionDetailScreen(
 
         item {
             W2TAiInsightsCard(
-                title = "AI Insights",
-                description = "Focus on completing this task today to maintain your 5-day streak!",
-                buttonText = "View Strategy",
+                title = strings.aiInsights,
+                description = strings.focus5dayStreak,
+                buttonText = strings.viewStrategy,
                 onButtonClick = { }
             )
         }
@@ -172,10 +185,12 @@ fun ActionDetailScreen(
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
             ) {
-                Text("Delete Action")
+                Text(strings.deleteAction)
             }
         }
         
         item { Spacer(modifier = Modifier.height(24.dp)) }
     }
 }
+}
+

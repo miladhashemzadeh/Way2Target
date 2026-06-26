@@ -14,8 +14,10 @@ import androidx.compose.ui.unit.dp
 import com.vampyreworld.w2t.domain.data.model.Challenges
 import com.vampyreworld.w2t.domain.data.model.Solution
 import com.vampyreworld.w2t.domain.data.model.StabilityCondition
+import com.vampyreworld.w2t.domain.data.model.SolutionType
 import com.vampyreworld.w2t.schallengeft.SChallengeContract
 import com.vampyreworld.w2t.schallengeft.component.SChallengeComponent
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 
 @Composable
 fun ChallengeDetailScreen(
@@ -24,6 +26,7 @@ fun ChallengeDetailScreen(
     component: SChallengeComponent,
     padding: PaddingValues
 ) {
+    val strings = LocalAppStrings.current
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(padding),
         contentPadding = PaddingValues(16.dp),
@@ -39,7 +42,7 @@ fun ChallengeDetailScreen(
 
         if (challenge.stabilityConditions.isNotEmpty()) {
             item {
-                Text("Stability Conditions", style = MaterialTheme.typography.titleLarge)
+                Text(strings.stabilityConditions, style = MaterialTheme.typography.titleLarge)
             }
             items(challenge.stabilityConditions) { condition ->
                 StabilityConditionItem(condition, component)
@@ -52,16 +55,16 @@ fun ChallengeDetailScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Suggested Solutions", style = MaterialTheme.typography.titleLarge)
+                Text(strings.suggestedSolutions, style = MaterialTheme.typography.titleLarge)
                 TextButton(onClick = { component.onIntent(SChallengeContract.Intent.OnViewSolutions) }) {
-                    Text("View All")
+                    Text(strings.viewAll)
                 }
             }
         }
 
         if (solutions.isEmpty()) {
             item {
-                Text("No solutions found. Try AI Help or make a decision.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(strings.noSolutionsFound, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         } else {
             items(solutions) { solution ->
@@ -73,18 +76,19 @@ fun ChallengeDetailScreen(
 
 @Composable
 private fun ChallengeHeader(challenge: Challenges) {
+    val strings = LocalAppStrings.current
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Bolt, contentDescription = null, tint = MaterialTheme.colorScheme.tertiary)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Active Challenge", style = MaterialTheme.typography.labelLarge)
+                Text(text = strings.activeChallenge, style = MaterialTheme.typography.labelLarge)
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = challenge.title, style = MaterialTheme.typography.headlineMedium)
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = challenge.desc.ifEmpty { "No description provided for this challenge." },
+                text = challenge.desc.ifEmpty { strings.noDescriptionChallenge },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -94,6 +98,7 @@ private fun ChallengeHeader(challenge: Challenges) {
 
 @Composable
 private fun ActionRow(component: SChallengeComponent, challengeId: Long) {
+    val strings = LocalAppStrings.current
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
@@ -103,20 +108,20 @@ private fun ActionRow(component: SChallengeComponent, challengeId: Long) {
             ) {
                 Icon(Icons.Default.AutoAwesome, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("AI Help")
+                Text(strings.aiHelp)
             }
             Button(
                 onClick = { component.onIntent(SChallengeContract.Intent.OnAddSolution) },
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                Text("Solution")
+                Text(strings.solution)
             }
             OutlinedButton(
                 onClick = { component.onIntent(SChallengeContract.Intent.OnMakeDecision) },
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Decide")
+                Text(strings.decide)
             }
         }
         
@@ -127,13 +132,14 @@ private fun ActionRow(component: SChallengeComponent, challengeId: Long) {
         ) {
             Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Delete Challenge")
+            Text(strings.deleteChallenge)
         }
     }
 }
 
 @Composable
 private fun SolutionItem(solution: Solution) {
+    val strings = LocalAppStrings.current
     OutlinedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -145,8 +151,8 @@ private fun SolutionItem(solution: Solution) {
             Text(solution.desc, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(modifier = Modifier.height(8.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Type: ${solution.solutionType}", style = MaterialTheme.typography.labelSmall)
-                Text("Strength: ${solution.aidStrength}%", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                Text(strings.strategyType + ": " + solution.solutionType.getLocalizedName(strings), style = MaterialTheme.typography.labelSmall)
+                Text(strings.strategicStrength + ": ${solution.aidStrength}%", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
             }
         }
     }
@@ -169,4 +175,17 @@ private fun StabilityConditionItem(condition: StabilityCondition, component: SCh
             }
         }
     }
+}
+
+private fun SolutionType.getLocalizedName(strings: com.vampyreworld.w2t.sharedui.localization.AppStrings): String = when (this) {
+    SolutionType.AVOIDANCE -> strings.solTypeAvoidance
+    SolutionType.DIRECT_CONFRONTATION -> strings.solTypeDirectConfrontation
+    SolutionType.EDIT_STRUCTURAL -> strings.solTypeEditStructural
+    SolutionType.DIVIDING_AND_CONQUER -> strings.solTypeDividingAndConquer
+    SolutionType.SUBSTITUTION -> strings.solTypeSubstitution
+    SolutionType.DELEGATE -> strings.solTypeDelegate
+    SolutionType.PLANNING -> strings.solTypePlanning
+    SolutionType.EMOTIONAL_REGULATION -> strings.solTypeEmotionalRegulation
+    SolutionType.HELP -> strings.solTypeHelp
+    SolutionType.TRY_AND_FAIL -> strings.solTypeTryAndFail
 }

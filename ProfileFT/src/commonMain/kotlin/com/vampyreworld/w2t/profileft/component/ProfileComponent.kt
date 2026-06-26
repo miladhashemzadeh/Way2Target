@@ -22,8 +22,16 @@ class DefaultProfileComponent(
     storeFactory: StoreFactory,
     getUserProfileUseCase: GetUserProfileUseCase,
     saveUserProfileUseCase: SaveUserProfileUseCase,
-    private val onBack: () -> Unit
+    private val onBack: () -> Unit,
+    private val navigateToHome: () -> Unit = {},
+    private val navigateToSChallenge: () -> Unit = {},
+    private val navigateToPreferences: () -> Unit = {}
 ) : ProfileContract.Component, ComponentContext by componentContext {
+
+    override fun onNavigateToHome() = navigateToHome()
+    override fun onNavigateToProfile() {}
+    override fun onNavigateToSChallenge() = navigateToSChallenge()
+    override fun onNavigateToPreferences() = navigateToPreferences()
 
     private val store = instanceKeeper.getStore {
         ProfileStoreFactory(

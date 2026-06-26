@@ -17,28 +17,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.sharedui.catalog.W2TCard
+import com.vampyreworld.w2t.sharedui.catalog.W2THeader
 import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChallengeCreateScreen(component: ChallengeCreateComponent) {
     val state by component.state.subscribeAsState()
     val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
     var expandedGoals by remember { mutableStateOf(false) }
     var expandedImpact by remember { mutableStateOf(false) }
+
+    val getImpactLabel = { level: ChallengeCreateContract.ImpactLevel ->
+        when (level) {
+            ChallengeCreateContract.ImpactLevel.HIGH -> strings.highImpact
+            ChallengeCreateContract.ImpactLevel.MEDIUM -> strings.mediumImpact
+            ChallengeCreateContract.ImpactLevel.LOW -> strings.lowImpact
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        "Add New Challenge",
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                },
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(ChallengeCreateContract.Intent.OnBackClicked) }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = strings.goBack)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -54,19 +60,24 @@ fun ChallengeCreateScreen(component: ChallengeCreateComponent) {
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
+            W2THeader(
+                title = strings.addNewChallenge,
+                subtitle = strings.onboardingChallengeDesc,
+                avatarText = "⚡"
+            )
             W2TCard {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     // Challenge Title
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
-                            "Challenge Title",
+                            strings.challengeTitle,
                             style = MaterialTheme.typography.labelLarge,
                             color = colors.muted
                         )
                         OutlinedTextField(
                             value = state.title,
                             onValueChange = { component.onIntent(ChallengeCreateContract.Intent.OnTitleChanged(it)) },
-                            placeholder = { Text("e.g., Stuck on complex data structures") },
+                            placeholder = { Text(strings.challengeTitlePlaceholder) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
@@ -81,14 +92,14 @@ fun ChallengeCreateScreen(component: ChallengeCreateComponent) {
                     // Description
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
-                            "Description",
+                            strings.description,
                             style = MaterialTheme.typography.labelLarge,
                             color = colors.muted
                         )
                         OutlinedTextField(
                             value = state.description,
                             onValueChange = { component.onIntent(ChallengeCreateContract.Intent.OnDescriptionChanged(it)) },
-                            placeholder = { Text("Describe the blocker or problem you're facing.") },
+                            placeholder = { Text(strings.challengeDescriptionPlaceholder) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(min = 120.dp),
@@ -105,7 +116,7 @@ fun ChallengeCreateScreen(component: ChallengeCreateComponent) {
                     // Link to Goal
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
-                            "Link to Goal",
+                            strings.linkToGoal,
                             style = MaterialTheme.typography.labelLarge,
                             color = colors.muted
                         )
@@ -114,7 +125,7 @@ fun ChallengeCreateScreen(component: ChallengeCreateComponent) {
                             onExpandedChange = { expandedGoals = it }
                         ) {
                             OutlinedTextField(
-                                value = state.availableGoals.find { it.id == state.selectedGoalId }?.title ?: "Select a Goal",
+                                value = state.availableGoals.find { it.id == state.selectedGoalId }?.title ?: strings.selectAGoal,
                                 onValueChange = {},
                                 readOnly = true,
                                 modifier = Modifier
@@ -147,7 +158,7 @@ fun ChallengeCreateScreen(component: ChallengeCreateComponent) {
                     // Impact Level
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
-                            "Impact Level",
+                            strings.impactLevel,
                             style = MaterialTheme.typography.labelLarge,
                             color = colors.muted
                         )
@@ -156,7 +167,7 @@ fun ChallengeCreateScreen(component: ChallengeCreateComponent) {
                             onExpandedChange = { expandedImpact = it }
                         ) {
                             OutlinedTextField(
-                                value = state.impactLevel.name.lowercase().replaceFirstChar { it.uppercase() } + " Impact",
+                                value = getImpactLabel(state.impactLevel),
                                 onValueChange = {},
                                 readOnly = true,
                                 modifier = Modifier
@@ -175,7 +186,7 @@ fun ChallengeCreateScreen(component: ChallengeCreateComponent) {
                             ) {
                                 ChallengeCreateContract.ImpactLevel.values().forEach { level ->
                                     DropdownMenuItem(
-                                        text = { Text(level.name.lowercase().replaceFirstChar { it.uppercase() } + " Impact") },
+                                        text = { Text(getImpactLabel(level)) },
                                         onClick = {
                                             component.onIntent(ChallengeCreateContract.Intent.OnImpactLevelSelected(level))
                                             expandedImpact = false
@@ -201,7 +212,7 @@ fun ChallengeCreateScreen(component: ChallengeCreateComponent) {
                     CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                 } else {
                     Text(
-                        "Create Challenge",
+                        strings.createChallenge,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                     )
                 }

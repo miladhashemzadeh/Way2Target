@@ -12,20 +12,26 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vampyreworld.w2t.appraiseft.AppraiseContract
 import com.vampyreworld.w2t.appraiseft.component.AppraiseComponent
+import com.vampyreworld.w2t.sharedui.localization.LocalAppStrings
+import com.vampyreworld.w2t.sharedui.catalog.*
+import com.vampyreworld.w2t.sharedui.theme.color.LocalAppColorScheme
+import androidx.compose.runtime.remember
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppraiseScreen(component: AppraiseComponent) {
     val state by component.state.subscribeAsState()
+    val colors = LocalAppColorScheme.current
+    val strings = LocalAppStrings.current
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Appraisal") },
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = { component.onIntent(AppraiseContract.Intent.OnBackClicked) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = strings.goBack)
                     }
                 }
             )
@@ -35,22 +41,29 @@ fun AppraiseScreen(component: AppraiseComponent) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
+                .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = if (state.challengeId != null) "Appraising Challenge" else "Appraising Target",
-                style = MaterialTheme.typography.titleLarge
+            W2THeader(
+                title = strings.appraisalTitle,
+                subtitle = if (state.challengeId != null) strings.appraisingChallenge else strings.appraisingTarget,
+                avatarText = "🤖"
             )
             
             if (state.isLoading) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = colors.accent)
             } else if (state.appraisalResult.isNotEmpty()) {
                 Text(text = state.appraisalResult)
             } else {
-                Button(onClick = { component.onIntent(AppraiseContract.Intent.OnAppraiseClicked) }) {
-                    Text("Start AI Appraisal")
+                val appraiseInteractionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                Button(
+                    onClick = { component.onIntent(AppraiseContract.Intent.OnAppraiseClicked) },
+                    interactionSource = appraiseInteractionSource,
+                    modifier = Modifier.bounce(appraiseInteractionSource),
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.accent)
+                ) {
+                    Text(strings.startAiAppraisal)
                 }
             }
         }

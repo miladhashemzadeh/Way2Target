@@ -7,6 +7,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
 import com.vampyreworld.w2t.sharedui.theme.color.DarkAppColors
 import org.jetbrains.compose.resources.Font
 import way2target.sharedui.generated.resources.CrimsonPro_Black
@@ -20,11 +21,11 @@ import way2target.sharedui.generated.resources.Res
 
 
 @Composable
-fun createAppTypography(): Typography {
+fun createAppTypography(isDarkMode: Boolean): Typography {
     // Define text colors based on theme mode
-    val primaryTextColor = DarkAppColors.black100
-    val secondaryTextColor = DarkAppColors.black80
-    val tertiaryTextColor = DarkAppColors.black60
+    val primaryTextColor = if (isDarkMode) Color.White else Color(0xFF1C1929)
+    val secondaryTextColor = if (isDarkMode) Color.White.copy(alpha = 0.8f) else Color(0xFF1C1929).copy(alpha = 0.8f)
+    val tertiaryTextColor = if (isDarkMode) Color.White.copy(alpha = 0.6f) else Color(0xFF1C1929).copy(alpha = 0.6f)
 
 
     val font = FontFamily(

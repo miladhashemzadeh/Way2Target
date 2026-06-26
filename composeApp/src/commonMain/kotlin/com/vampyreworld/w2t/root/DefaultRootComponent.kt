@@ -36,6 +36,7 @@ import com.vampyreworld.w2t.domain.usecase.SaveGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.DeleteGoalUseCase
 import com.vampyreworld.w2t.domain.usecase.onboarding.SetOnboardingCompletedUseCase
 import com.vampyreworld.w2t.domain.usecase.prefrences.GetThemeUseCase
+import com.vampyreworld.w2t.domain.usecase.prefrences.GetLanguageUseCase
 import com.vampyreworld.w2t.domain.usecase.profile.GetUserProfileUseCase
 import com.vampyreworld.w2t.sharedui.arch.componentScope
 import com.vampyreworld.w2t.sharedui.theme.UserProfileInfo
@@ -51,6 +52,7 @@ class DefaultRootComponent(
 ) : RootComponent, KoinComponent, ComponentContext by componentContext {
 
     private val getThemeUseCase: GetThemeUseCase = get()
+    private val getLanguageUseCase: GetLanguageUseCase = get()
     private val getUserProfileUseCase: GetUserProfileUseCase = get()
     private val isOnboardingCompletedUseCase: IsOnboardingCompletedUseCase = get()
     private val setOnboardingCompletedUseCase: SetOnboardingCompletedUseCase = get()
@@ -58,6 +60,9 @@ class DefaultRootComponent(
 
     private val _isDarkMode = MutableValue(true)
     override val isDarkMode: Value<Boolean> = _isDarkMode
+
+    private val _language = MutableValue("en")
+    override val language: Value<String> = _language
 
     private val _userProfile = MutableValue(UserProfileInfo())
     override val userProfile: Value<UserProfileInfo> = _userProfile
@@ -68,6 +73,12 @@ class DefaultRootComponent(
         getThemeUseCase()
             .onEach { isDark ->
                 _isDarkMode.update { isDark }
+            }
+            .launchIn(componentScope())
+
+        getLanguageUseCase()
+            .onEach { lang ->
+                _language.update { lang }
             }
             .launchIn(componentScope())
 
@@ -470,7 +481,12 @@ class DefaultRootComponent(
                     componentContext = componentContext,
                     getThemeUseCase = get(),
                     setThemeUseCase = get(),
-                    onBack = { navigation.pop() }
+                    getLanguageUseCase = get(),
+                    setLanguageUseCase = get(),
+                    onBack = { navigation.pop() },
+                    navigateToHome = { navigation.bringToFront(Screens.Home) },
+                    navigateToProfile = { navigation.bringToFront(Screens.Profile) },
+                    navigateToSChallenge = { navigation.bringToFront(Screens.ListOfChallenges(null)) }
                 )
             )
 
@@ -480,7 +496,10 @@ class DefaultRootComponent(
                     storeFactory = get(),
                     getUserProfileUseCase = get(),
                     saveUserProfileUseCase = get(),
-                    onBack = { navigation.pop() }
+                    onBack = { navigation.pop() },
+                    navigateToHome = { navigation.bringToFront(Screens.Home) },
+                    navigateToSChallenge = { navigation.bringToFront(Screens.ListOfChallenges(null)) },
+                    navigateToPreferences = { navigation.bringToFront(Screens.Preferences) }
                 )
             )
 
