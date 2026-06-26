@@ -1,78 +1,83 @@
 # 🎯 Way2Target
 
-Way2Target is a modern, cross-platform self-growth lifestyle application designed to empower individuals to achieve their personal goals and navigate life's challenges with confidence.
+[![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-%237F52FF?style=for-the-badge&logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html)
+[![Compose Multiplatform](https://img.shields.io/badge/Compose-Multiplatform-%23000000?style=for-the-badge&logo=jetbrains)](https://www.jetbrains.com/lp/compose-multiplatform/)
+[![MVI Architecture](https://img.shields.io/badge/Architecture-MVI%20%2F%20Clean-%230052FF?style=for-the-badge)](https://github.com/arkivanov/MVIKotlin)
+[![Decompose](https://img.shields.io/badge/Navigation-Decompose-%23FC6D26?style=for-the-badge)](https://github.com/arkivanov/Decompose)
+
+**Way2Target** is a premium, cross-platform self-growth lifestyle application designed to empower individuals to define personal goals, track milestones, and conquer life's blockers with confidence using AI-driven strategies.
+
+---
+
+## 📱 App Previews
+
+<p align="center">
+  <img src="assets/home.png" width="45%" alt="Home Screen" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/in-action.png" width="45%" alt="In Action Screen" />
+</p>
 
 ---
 
 ## ✨ Features
 
-- 🎯 **Goal Selection** – Define your path to success by choosing and customizing personal goals.
-- 📈 **Progress Guidance** – Actionable, data-driven steps to keep you moving forward.
-- 🧠 **Challenge Support** – AI-driven or strategy-based assistance when facing obstacles.
-- 🛠️ **Practical Strategies** – A library of effective methods to overcome difficulties.
-- 🌓 **Modern UI** – Beautifully designed interface with dark/light mode support.
+*   🎯 **Strategic Goal Setting** – Define your long-term vision with custom master goals.
+*   🏁 **Roadmap Breakdown** – Fragment goals into clear, actionable milestones.
+*   ⚡ **Daily Actions** – Small, bite-sized tasks integrated directly into your routine.
+*   🧠 **AI Appraisal & Insights** – Conversational AI analysis to keep your habits optimized.
+*   🛡️ **Smart Challenge System** – Map out bottlenecks and get strategies to overcome hurdles.
+*   🎨 **Dynamic Dark & Light Mode** – Beautiful, premium glassmorphism interface.
+*   🌐 **Dynamic Localization** – Complete, system-wide support for English and Farsi (RTL & LTR).
 
 ---
 
 ## 🏗️ Architecture
 
-The project follows a **Modular Clean Architecture** approach, ensuring scalability and maintainability.
+Way2Target is built on a **Modular Clean Architecture** design ensuring absolute separation of concerns, scalability, and performance.
 
-- **MVI (Model-View-Intent)**: Ensures a predictable state management flow across the UI.
-- **Decompose**: Used for lifecycle-aware component navigation and business logic encapsulation.
-- **Dependency Injection**: Powered by **Koin** for clean and modular dependency management.
-- **Clean Architecture**: Separation of concerns into `domain`, `data`, `core`, and feature-specific modules (`*FT`).
+```text
+├── composeApp/          # Main Android & iOS application shell
+├── core/               # Shared utilities, extensions, and core libraries
+├── domain/             # Business models, repositories, and use cases
+├── data/               # Local database (SQLDelight) and API storage implementations
+├── di/                 # Dependency Injection setup (Koin)
+├── sharedUI/           # UI catalog, design system, theme tokens, and localizations
+└── *FT/                # Self-contained feature modules (e.g. SHomeFT, SChallengeFT, etc.)
+```
+
+*   **MVI (Model-View-Intent)** – Unidirectional data flow via MVIKotlin.
+*   **Decompose** – Lifecycle-aware routing and component navigation hierarchy.
+*   **Koin** – Light, modular dependency injection.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Multiplatform**: [Kotlin Multiplatform (KMP)](https://kotlinlang.org/docs/multiplatform.html)
-- **UI Framework**: [Jetpack Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/)
-- **Navigation & Lifecycle**: [Decompose](https://github.com/arkivanov/Decompose)
-- **Dependency Injection**: [Koin](https://insert-koin.io/)
-- **Reactive Programming**: [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) & [Flow](https://kotlinlang.org/docs/flow.html)
-- **Local Database**: [SQLDelight](https://cashapp.github.io/sqldelight/) (planned/in-use)
-- **Resources**: [Compose Resources](https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-resources.html)
-
----
-
-## 📂 Project Structure
-
-The project is highly modularized to keep feature logic isolated:
-
-```text
-├── composeApp/          # Main entry point for Android and iOS
-├── core/               # Shared utilities, base classes, and extensions
-├── domain/             # Business logic and entity definitions
-├── data/               # Data sources, repositories, and API/DB implementations
-├── di/                 # Dependency injection modules
-├── sharedUI/           # Common UI components, themes, and design system
-└── *FT/                # Feature-specific modules (e.g., TargetFT, MoodAddFT, etc.)
-    ├── SHomeFT         # Home Feature
-    ├── TargetFT        # Goal/Target Management
-    ├── SolutionFT      # Solution Discovery
-    ├── PrefrencesFT    # User Settings
-    └── ...             # And more
-```
+*   **Language:** [Kotlin](https://kotlinlang.org/) (Multiplatform)
+*   **UI:** [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/) (Jetpack Compose)
+*   **Navigation:** [Decompose](https://github.com/arkivanov/Decompose)
+*   **DI:** [Koin](https://insert-koin.io/)
+*   **DB:** [SQLDelight](https://cashapp.github.io/sqldelight/)
+*   **Async:** [Kotlin Coroutines & Flow](https://kotlinlang.org/docs/coroutines-overview.html)
 
 ---
 
 ## 🚀 Getting Started
+
+### Prerequisites
+
+*   **Android Studio Ladybug (or newer)**
+*   **Xcode 15+** (for building/running on iOS)
+*   **Kotlin Multiplatform plugin** installed in your IDE
+
+### Setup
 
 1.  **Clone the repository**:
     ```bash
     git clone https://github.com/vampyreLord/Way2Target.git
     ```
 2.  **Open in Android Studio**:
-    Ensure you have the latest **Kotlin Multiplatform** plugin installed.
+    Open the root project directory and let the Gradle sync finish.
 3.  **Run the app**:
-    -   Select `composeApp` and run on an **Android Emulator** or **iOS Simulator**.
-
----
-
-## 📌 Purpose
-
-**Way2Target** is more than just a tracker; it's a companion for continuous growth. Built with the latest Android & Multiplatform standards, it provides a seamless experience across devices.
-
-> *Build your path. Achieve your goals. Become your best self.*
+    -   Select `composeApp` to run on Android.
+    -   Use `iosApp` run configuration or Xcode to run on iOS.
